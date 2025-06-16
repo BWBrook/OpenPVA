@@ -1,0 +1,21 @@
+---
+title: "About OpenPVA"
+format: html
+---
+
+## The Project
+
+OpenPVA is an open-source platform for transparent, modular population viability analysis.  
+It builds on decades of research in ecology, conservation biology, and software architecture, beginning with the GAPPS system in the 1980s.
+
+## People
+
+**Lead Developer:** Barry W. Brook  
+**Future contributors:** Welcome once the system enters beta.
+
+## Status
+
+The project is in alpha-phase. Major milestones:
+- Simulation engine prototyped in R
+- Modular lifecycle processes implemented
+- Genetic and spatial modules in development

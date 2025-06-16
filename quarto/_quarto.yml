@@ -1,0 +1,24 @@
+project:
+  type: website
+  output-dir: ../docs
+
+website:
+  title: "OpenPVA"
+  navbar:
+    left:
+      - text: Home
+        href: index.qmd
+      - text: Tutorials
+        href: tutorials/index.qmd
+      - text: API
+        href: reference/index.qmd
+      - text: About
+        href: about.qmd
+    right:
+      - icon: github
+        href: https://github.com/yourorg/OpenPVA
+
+format:
+  html:
+    theme: cosmo
+    toc: true
