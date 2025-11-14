@@ -31,3 +31,5 @@ Collate:
     'lifecycle_reproduction.R'
     'lifecycle_harvest.R'
     'simulation_core.R'
+    'simulation_summary.R'
+    'simulation_plots.R'

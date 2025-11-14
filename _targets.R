@@ -35,5 +35,34 @@ list(
       K = 80,
       harvest_quota = 5
     )
+  ),
+  targets::tar_target(
+    sim_basic_reps_extinction_summary,
+    summarise_extinction(sim_basic_reps)
+  ),
+  targets::tar_target(
+    sim_basic_dense_harvest_extinction_summary,
+    summarise_extinction(sim_basic_dense_harvest)
+  ),
+  targets::tar_target(
+    sim_basic_dense_harvest_trajectory,
+    compute_mean_trajectory(sim_basic_dense_harvest)
+  ),
+  targets::tar_target(
+    sim_basic_dense_harvest_trajectory_plot,
+    {
+      plot_obj <- plot_mean_trajectory(sim_basic_dense_harvest_trajectory)
+      if (!dir.exists("outputs")) dir.create("outputs", recursive = TRUE)
+      out_path <- file.path("outputs", "sim_basic_dense_harvest_trajectory.png")
+      ggplot2::ggsave(
+        filename = out_path,
+        plot = plot_obj,
+        width = 7,
+        height = 5,
+        dpi = 300
+      )
+      out_path
+    },
+    format = "file"
   )
 )
