@@ -1,18 +1,21 @@
 # bootstrap_env.R
 
 if (!requireNamespace("renv", quietly = TRUE)) install.packages("renv")
-
-import::from("renv", init, install, snapshot, status)
+if (!requireNamespace("pak", quietly = TRUE)) install.packages("pak")
 
 required_pkgs <- c(
-  "targets", "import", "here",
+  "pak",
+  "targets", "here",
   "dplyr", "tibble", "purrr", "ggplot2", "rlang",
   "readr", "stringr", "testthat"
 )
 
-init(bare = TRUE) |> invisible()
-missing <- setdiff(required_pkgs, status()$library$packages)
+renv::init(bare = TRUE) |> invisible()
+lib_status <- renv::status()
+installed <- names(lib_status$library$Packages)
+if (is.null(installed)) installed <- character()
+missing <- setdiff(required_pkgs, installed)
 
-if (length(missing)) install(missing)
+if (length(missing)) pak::pkg_install(missing, ask = FALSE)
 
-snapshot()
+renv::snapshot()

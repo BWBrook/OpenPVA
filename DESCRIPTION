@@ -19,9 +19,11 @@ Suggests:
     ggplot2,
     usethis,
     devtools,
+    targets,
     quarto,
-    shiny
-RoxygenNote: 7.2.3
+    shiny,
+    pak
+RoxygenNote: 7.3.3
 Collate:
     'init_population.R'
     'lifecycle_age.R'
