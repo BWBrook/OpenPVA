@@ -11,7 +11,8 @@ run_basic_simulation(
   breeding_fun = default_breeding_fun,
   fecundity_fun = default_fecundity_fun,
   K = NULL,
-  harvest_quota = NULL
+  harvest_quota = NULL,
+  lifecycle_steps = default_lifecycle_steps()
 )
 }
 \arguments{
@@ -27,7 +28,12 @@ run_basic_simulation(
 
 \item{K}{Optional numeric carrying capacity for ceiling-based survival scaling.}
 
-\item{harvest_quota}{Optional harvest quota (single value or length `n_years` vector).}
+\item{harvest_quota}{Optional harvest quota (single value or length `n_years` vector). If
+`lifecycle_steps` does not include `"harvest"`, quotas are ignored.}
+
+\item{lifecycle_steps}{Character vector of lifecycle step labels describing the order in
+which processes occur. Allowed values are `"age"`, `"survival"`, `"breeding_births"`,
+and `"harvest"`. Steps omitted from the vector are skipped.}
 }
 \value{
 List with the final `population` and a `summary` tibble of yearly metrics.

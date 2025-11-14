@@ -12,7 +12,8 @@ run_basic_simulation_replicates(
   breeding_fun = default_breeding_fun,
   fecundity_fun = default_fecundity_fun,
   K = NULL,
-  harvest_quota = NULL
+  harvest_quota = NULL,
+  lifecycle_steps = default_lifecycle_steps()
 )
 }
 \arguments{
@@ -30,7 +31,10 @@ run_basic_simulation_replicates(
 
 \item{K}{Optional numeric carrying capacity for ceiling-based survival scaling.}
 
-\item{harvest_quota}{Optional harvest quota (single value or length `n_years` vector).}
+\item{harvest_quota}{Optional harvest quota (single value or length `n_years` vector). If
+`lifecycle_steps` omits `"harvest"`, quotas are ignored.}
+
+\item{lifecycle_steps}{Character vector specifying lifecycle order for each run.}
 }
 \value{
 A list with elements:

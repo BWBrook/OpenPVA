@@ -43,6 +43,7 @@ No analysis logic should live in top-level ad hoc scripts; code belongs in `R/` 
 The only exceptions:
 
 - `bootstrap_env.R` may call `install.packages()` and `library()` or `renv::init()` as needed to create or restore the environment.
+- Optional helpers that use `yaml` (e.g. scenario configuration loading) must access the package via `yaml::` and guard calls with `requireNamespace("yaml", quietly = TRUE)` before use.
 
 ### 2.2 Using `package::function()` style
 

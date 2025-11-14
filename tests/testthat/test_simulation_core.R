@@ -180,3 +180,82 @@ test_that("harvest quota reduces abundance after survival and reproduction", {
   expect_equal(res$summary$n_harvested[1], 2L)
   expect_equal(res$summary$n_alive[1], 3L)
 })
+
+test_that("default_lifecycle_steps returns expected labels", {
+  steps <- default_lifecycle_steps()
+  expect_type(steps, "character")
+  expect_identical(steps, c("age", "survival", "breeding_births", "harvest"))
+})
+
+test_that("invalid lifecycle steps trigger errors", {
+  expect_error(
+    run_basic_simulation(
+      initial_population = list(),
+      n_years = 0,
+      lifecycle_steps = c("age", "foo")
+    ),
+    "foo"
+  )
+})
+
+test_that("reordering harvest and births changes outcomes", {
+  make_population <- function() {
+    lapply(1:4, function(id) create_individual(id, "F", 3L))
+  }
+  survival_fun <- function(ind) 1
+  breeding_fun <- function(ind) TRUE
+  fecundity_fun <- function(ind) 1L
+
+  res_default <- run_basic_simulation(
+    initial_population = make_population(),
+    n_years = 1,
+    survival_fun = survival_fun,
+    breeding_fun = breeding_fun,
+    fecundity_fun = fecundity_fun,
+    harvest_quota = 2,
+    lifecycle_steps = default_lifecycle_steps()
+  )
+
+  steps_harvest_first <- c("age", "survival", "harvest", "breeding_births")
+  res_harvest_first <- run_basic_simulation(
+    initial_population = make_population(),
+    n_years = 1,
+    survival_fun = survival_fun,
+    breeding_fun = breeding_fun,
+    fecundity_fun = fecundity_fun,
+    harvest_quota = 2,
+    lifecycle_steps = steps_harvest_first
+  )
+
+  expect_equal(res_default$summary$n_births[1], 4L)
+  expect_equal(res_harvest_first$summary$n_births[1], 2L)
+  expect_equal(res_default$summary$n_alive[1], 6L)
+  expect_equal(res_harvest_first$summary$n_alive[1], 4L)
+})
+
+test_that("replicates accept custom lifecycle steps", {
+  init_fun <- function() {
+    list(
+      create_individual(1L, "F", 4L),
+      create_individual(2L, "F", 5L)
+    )
+  }
+  survival_fun <- function(ind) 1
+  breeding_fun <- function(ind) TRUE
+  fecundity_fun <- function(ind) 1L
+
+  res <- run_basic_simulation_replicates(
+    n_runs = 2,
+    n_years = 1,
+    init_fun = init_fun,
+    survival_fun = survival_fun,
+    breeding_fun = breeding_fun,
+    fecundity_fun = fecundity_fun,
+    harvest_quota = 5,
+    lifecycle_steps = c("age", "survival", "breeding_births")
+  )
+
+  expect_equal(nrow(res$summary), 2L)
+  expect_true(all(res$summary$n_harvested == 0L))
+  expect_true(all(c("run", "year", "n_alive", "n_births") %in% names(res$summary)))
+})

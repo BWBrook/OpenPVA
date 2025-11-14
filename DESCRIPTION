@@ -21,7 +21,8 @@ Suggests:
     targets,
     quarto,
     shiny,
-    pak
+    pak,
+    yaml
 RoxygenNote: 7.3.3
 Collate:
     'init_population.R'
@@ -30,6 +31,7 @@ Collate:
     'lifecycle_breeding.R'
     'lifecycle_reproduction.R'
     'lifecycle_harvest.R'
+    'lifecycle_pipeline.R'
     'simulation_core.R'
     'simulation_summary.R'
     'simulation_plots.R'

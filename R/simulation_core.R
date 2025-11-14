@@ -9,7 +9,11 @@
 #' @param fecundity_fun Function returning offspring counts for breeders.
 #'
 #' @param K Optional numeric carrying capacity for ceiling-based survival scaling.
-#' @param harvest_quota Optional harvest quota (single value or length `n_years` vector).
+#' @param harvest_quota Optional harvest quota (single value or length `n_years` vector). If
+#'   `lifecycle_steps` does not include `"harvest"`, quotas are ignored.
+#' @param lifecycle_steps Character vector of lifecycle step labels describing the order in
+#'   which processes occur. Allowed values are `"age"`, `"survival"`, `"breeding_births"`,
+#'   and `"harvest"`. Steps omitted from the vector are skipped.
 #'
 #' @return List with the final `population` and a `summary` tibble of yearly metrics.
 #' @export
@@ -20,7 +24,9 @@ run_basic_simulation <- function(
     breeding_fun = default_breeding_fun,
     fecundity_fun = default_fecundity_fun,
     K = NULL,
-    harvest_quota = NULL) {
+    harvest_quota = NULL,
+    lifecycle_steps = default_lifecycle_steps()) {
+  lifecycle_steps <- force(lifecycle_steps)
   if (!is.numeric(n_years) || length(n_years) != 1L || n_years < 0) {
     stop("n_years must be a single non-negative numeric value")
   }
@@ -50,6 +56,8 @@ run_basic_simulation <- function(
     }
   }
 
+  .validate_lifecycle_steps(lifecycle_steps)
+
   population <- initial_population
 
   if (n_years == 0) {
@@ -68,32 +76,38 @@ run_basic_simulation <- function(
   summary_rows <- vector("list", n_years)
 
   for (year in seq_len(n_years)) {
-    population <- age_individuals(population)
+    n_births_year <- 0L
+    n_harvested_year <- 0L
+    survival_scale_year <- 1
 
-    alive_flags_pre <- vapply(population, function(ind) isTRUE(ind$alive), logical(1))
-    n_alive_pre <- sum(alive_flags_pre)
-    survival_scale <- compute_survival_scale(n_alive_pre, K)
-    survival_fun_year <- function(ind) {
-      p <- survival_fun(ind)
-      p_scaled <- p * survival_scale
-      if (p_scaled < 0) p_scaled <- 0
-      if (p_scaled > 1) p_scaled <- 1
-      p_scaled
-    }
-
-    population <- apply_survival(population, survival_fun_year)
-    breeders <- determine_breeding(population, breeding_fun)
-    pre_birth_count <- length(population)
-    population <- apply_reproduction(population, breeders, fecundity_fun)
-    n_births <- length(population) - pre_birth_count
-
-    quota_this_year <- if (length(harvest_vec)) harvest_vec[year] else 0L
-    if (quota_this_year > 0) {
-      harvest_result <- apply_harvest_quota(population, quota_this_year)
-      population <- harvest_result$population
-      n_harvested <- harvest_result$n_harvested
-    } else {
-      n_harvested <- 0L
+    for (step in lifecycle_steps) {
+      if (step == "age") {
+        population <- age_individuals(population)
+      } else if (step == "survival") {
+        alive_flags_pre <- vapply(population, function(ind) isTRUE(ind$alive), logical(1))
+        n_alive_pre <- sum(alive_flags_pre)
+        survival_scale_year <- compute_survival_scale(n_alive_pre, K)
+        survival_fun_year <- function(ind) {
+          p <- survival_fun(ind)
+          p_scaled <- p * survival_scale_year
+          if (p_scaled < 0) p_scaled <- 0
+          if (p_scaled > 1) p_scaled <- 1
+          p_scaled
+        }
+        population <- apply_survival(population, survival_fun_year)
+      } else if (step == "breeding_births") {
+        breeders <- determine_breeding(population, breeding_fun)
+        pre_birth_count <- length(population)
+        population <- apply_reproduction(population, breeders, fecundity_fun)
+        n_births_year <- n_births_year + as.integer(length(population) - pre_birth_count)
+      } else if (step == "harvest") {
+        quota_this_year <- if (length(harvest_vec)) harvest_vec[year] else 0L
+        if (quota_this_year > 0) {
+          harvest_result <- apply_harvest_quota(population, quota_this_year)
+          population <- harvest_result$population
+          n_harvested_year <- n_harvested_year + harvest_result$n_harvested
+        }
+      }
     }
 
     alive_flags <- vapply(population, function(ind) isTRUE(ind$alive), logical(1))
@@ -108,9 +122,9 @@ run_basic_simulation <- function(
       n_alive = n_alive,
       n_female_alive = n_female_alive,
       n_male_alive = n_male_alive,
-      n_births = n_births,
-      n_harvested = n_harvested,
-      survival_scale = survival_scale
+      n_births = n_births_year,
+      n_harvested = n_harvested_year,
+      survival_scale = survival_scale_year
     )
   }
 
@@ -140,7 +154,9 @@ run_basic_simulation <- function(
 #' @param fecundity_fun Function returning offspring counts for breeders.
 #'
 #' @param K Optional numeric carrying capacity for ceiling-based survival scaling.
-#' @param harvest_quota Optional harvest quota (single value or length `n_years` vector).
+#' @param harvest_quota Optional harvest quota (single value or length `n_years` vector). If
+#'   `lifecycle_steps` omits `"harvest"`, quotas are ignored.
+#' @param lifecycle_steps Character vector specifying lifecycle order for each run.
 #'
 #' @return A list with elements:
 #'   \itemize{
@@ -157,7 +173,9 @@ run_basic_simulation_replicates <- function(
     breeding_fun = default_breeding_fun,
     fecundity_fun = default_fecundity_fun,
     K = NULL,
-    harvest_quota = NULL) {
+    harvest_quota = NULL,
+    lifecycle_steps = default_lifecycle_steps()) {
+  lifecycle_steps <- force(lifecycle_steps)
   if (!is.numeric(n_runs) || length(n_runs) != 1L || n_runs < 1) {
     stop("n_runs must be a single numeric value greater than or equal to 1")
   }
@@ -183,7 +201,8 @@ run_basic_simulation_replicates <- function(
       breeding_fun = breeding_fun,
       fecundity_fun = fecundity_fun,
       K = K,
-      harvest_quota = harvest_quota
+      harvest_quota = harvest_quota,
+      lifecycle_steps = lifecycle_steps
     )
     run_results[[run]] <- sim_result
     run_summaries[[run]] <- sim_result$summary
