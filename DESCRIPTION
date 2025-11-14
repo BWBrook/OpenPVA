@@ -2,13 +2,12 @@ Package: OpenPVA
 Title: Open, Modular Population Viability Analysis Framework
 Version: 0.0.0.9000
 Authors@R: 
-    person("Barry", "Brook", email = "barry.brook@domain.com", role = c("aut", "cre")),
-    person("Janus", "ChatGPT", role = c("aut"))
+    person("Barry", "Brook", email = "barry.brook@domain.com", role = c("aut", "cre"))
 Description: OpenPVA is a general-purpose, open-source R framework for population viability analysis. It enables transparent, modular modeling of population dynamics under demographic, genetic, environmental, and management scenarios.
 License: MIT
 Encoding: UTF-8
 LazyData: true
-Depends: R (>= 4.3.0)
+Depends: R (>= 4.5.0)
 Imports: 
     dplyr, 
     tibble,
@@ -29,3 +28,5 @@ Collate:
     'lifecycle_age.R'
     'lifecycle_survival.R'
     'lifecycle_breeding.R'
+    'lifecycle_reproduction.R'
+    'simulation_core.R'
