@@ -17,5 +17,23 @@ list(
       initial_population = initialize_population(50),
       n_years = 20
     )
+  ),
+  targets::tar_target(
+    sim_basic_reps,
+    run_basic_simulation_replicates(
+      n_runs = 100,
+      n_years = 50,
+      init_fun = function() initialize_population(50)
+    )
+  ),
+  targets::tar_target(
+    sim_basic_dense_harvest,
+    run_basic_simulation_replicates(
+      n_runs = 50,
+      n_years = 50,
+      init_fun = function() initialize_population(100),
+      K = 80,
+      harvest_quota = 5
+    )
   )
 )

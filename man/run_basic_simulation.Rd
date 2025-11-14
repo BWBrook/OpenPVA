@@ -9,7 +9,9 @@ run_basic_simulation(
   n_years,
   survival_fun = default_survival_fun,
   breeding_fun = default_breeding_fun,
-  fecundity_fun = default_fecundity_fun
+  fecundity_fun = default_fecundity_fun,
+  K = NULL,
+  harvest_quota = NULL
 )
 }
 \arguments{
@@ -22,6 +24,10 @@ run_basic_simulation(
 \item{breeding_fun}{Function identifying breeding-eligible individuals.}
 
 \item{fecundity_fun}{Function returning offspring counts for breeders.}
+
+\item{K}{Optional numeric carrying capacity for ceiling-based survival scaling.}
+
+\item{harvest_quota}{Optional harvest quota (single value or length `n_years` vector).}
 }
 \value{
 List with the final `population` and a `summary` tibble of yearly metrics.

@@ -29,4 +29,5 @@ Collate:
     'lifecycle_survival.R'
     'lifecycle_breeding.R'
     'lifecycle_reproduction.R'
+    'lifecycle_harvest.R'
     'simulation_core.R'
