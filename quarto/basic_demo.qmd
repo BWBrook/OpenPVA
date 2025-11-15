@@ -1,0 +1,63 @@
+---
+title: "OpenPVA basic demo"
+format: html
+---
+
+```{r setup, include=FALSE}
+target_script <- "../_targets.R"
+target_store <- "../_targets"
+devtools::load_all(quiet = TRUE)
+```
+
+## Overview
+
+This walkthrough shows how to run the OpenPVA targets pipeline, inspect replicate outputs, plot mean trajectories, and run a scenario defined in YAML.
+
+## Set up environment
+
+Ensure the `renv` environment has been initialised (via `Rscript bootstrap_env.R` or `renv::restore()`).
+
+## Run the targets pipeline
+
+```{r}
+targets::tar_make(script = target_script, store = target_store)
+```
+
+## Inspect replicate outputs
+
+```{r}
+# Extinction summary for the baseline replicate scenario
+sim_basic_reps_extinction_summary <- targets::tar_read(sim_basic_reps_extinction_summary, store = target_store)
+sim_basic_reps_extinction_summary
+```
+
+```{r}
+# Extinction summary for the density + harvest scenario
+sim_basic_dense_harvest_extinction_summary <- targets::tar_read(sim_basic_dense_harvest_extinction_summary, store = target_store)
+sim_basic_dense_harvest_extinction_summary
+```
+
+```{r}
+# Mean trajectory across replicates
+sim_basic_dense_harvest_trajectory <- targets::tar_read(sim_basic_dense_harvest_trajectory, store = target_store)
+head(sim_basic_dense_harvest_trajectory)
+```
+
+## Plot the mean trajectory
+
+```{r}
+plot_mean_trajectory(sim_basic_dense_harvest_trajectory)
+```
+
+## Run a scenario from YAML
+
+```{r}
+path <- system.file("extdata", "demo_density_harvest.yaml", package = "OpenPVA")
+scenario <- read_scenario_yaml(path)
+scenario
+```
+
+```{r}
+yaml_result <- run_scenario(scenario)
+summarise_extinction(yaml_result$sim_output)
+```
