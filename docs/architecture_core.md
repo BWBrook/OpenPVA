@@ -29,7 +29,7 @@ An **individual** is the basic unit of simulation in OpenPVA. In the initial imp
 - `sex` — character, typically `"M"` or `"F"`
 - `age` — integer, age in years or time steps
 - `alive` — logical, living status
-- `alleles` — list or `NULL`, placeholder for genetic information
+- `alleles` — `NULL` or a 2 × L integer matrix representing two haplotypes across L loci
 - `F` — numeric, inbreeding coefficient (optional in early phases)
 
 Example (conceptual):
@@ -40,7 +40,10 @@ ind <- list(
   sex = "F",
   age = 4L,
   alive = TRUE,
-  alleles = NULL,
+  alleles = rbind(
+    c(1L, 2L, 1L),
+    c(2L, 1L, 2L)
+  ),
   F = 0
 )
 ```

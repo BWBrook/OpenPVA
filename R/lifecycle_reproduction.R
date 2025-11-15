@@ -19,6 +19,9 @@ default_fecundity_fun <- function(ind) {
 #' @param fecundity_fun Function returning the number of offspring for a breeder.
 #' @param mating_fun Function selecting a mate for each breeder. Defaults to
 #'   `default_mating_fun` and may be `NULL` if fathers should not be recorded.
+#' @param inherit_fun Optional function taking `(mother, father)` and returning an
+#'   allele matrix for the offspring. Defaults to `NULL`, in which case newborns
+#'   inherit no genotype (alleles remain `NULL`).
 #'
 #' @return Updated population list containing newborn individuals appended.
 #' @export
@@ -26,7 +29,8 @@ apply_reproduction <- function(
     population,
     breeders,
     fecundity_fun = default_fecundity_fun,
-    mating_fun = default_mating_fun) {
+    mating_fun = default_mating_fun,
+    inherit_fun = NULL) {
   if (!length(population)) {
     max_id <- 0L
   } else {
@@ -37,11 +41,12 @@ apply_reproduction <- function(
 
   if (length(breeders)) {
     for (breeder in breeders) {
-      mother_id <- breeder$id
-      father <- if (is.null(mating_fun)) NULL else mating_fun(population, breeder)
+      mother <- breeder
+      mother_id <- mother$id
+      father <- if (is.null(mating_fun)) NULL else mating_fun(population, mother)
       father_id <- if (is.null(father)) NA_integer_ else father$id
 
-      n_offspring <- fecundity_fun(breeder)
+      n_offspring <- fecundity_fun(mother)
       if (!is.numeric(n_offspring) || length(n_offspring) != 1L) {
         stop("fecundity_fun must return a single numeric value")
       }
@@ -51,10 +56,18 @@ apply_reproduction <- function(
       }
       for (i in seq_len(n_offspring)) {
         max_id <- max_id + 1L
+        alleles_new <- NULL
+        if (!is.null(inherit_fun) &&
+            !is.null(mother$alleles) &&
+            !is.null(father) &&
+            !is.null(father$alleles)) {
+          alleles_new <- inherit_fun(mother, father)
+        }
         newborns[[length(newborns) + 1L]] <- create_individual(
           id = max_id,
           sex = sample(c("M", "F"), 1L),
           age = 0L,
+          alleles = alleles_new,
           mother_id = mother_id,
           father_id = father_id
         )

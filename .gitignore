@@ -57,3 +57,6 @@ quarto/*_files/
 
 # Quarto rendered outputs
 quarto/rendered/
+
+# Generated analysis artefacts
+outputs/

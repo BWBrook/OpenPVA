@@ -8,7 +8,8 @@ apply_reproduction(
   population,
   breeders,
   fecundity_fun = default_fecundity_fun,
-  mating_fun = default_mating_fun
+  mating_fun = default_mating_fun,
+  inherit_fun = NULL
 )
 }
 \arguments{
@@ -20,6 +21,10 @@ apply_reproduction(
 
 \item{mating_fun}{Function selecting a mate for each breeder. Defaults to
 `default_mating_fun` and may be `NULL` if fathers should not be recorded.}
+
+\item{inherit_fun}{Optional function taking `(mother, father)` and returning an
+allele matrix for the offspring. Defaults to `NULL`, in which case newborns
+inherit no genotype (alleles remain `NULL`).}
 }
 \value{
 Updated population list containing newborn individuals appended.
