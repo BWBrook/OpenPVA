@@ -68,3 +68,36 @@ lifecycle_steps:
   res <- run_scenario(sc)
   expect_equal(nrow(res$sim_output$summary), 6L)
 })
+
+test_that("make_simple_genetic_scenario builds runnable scenario", {
+  sc <- make_simple_genetic_scenario(
+    name = "genetic_demo_test",
+    n_runs = 3,
+    n_years = 2,
+    initial_n = 10,
+    n_loci = 4,
+    n_alleles = 2,
+    mutation_rate = 0,
+    beta_F = 0.5,
+    K = NULL,
+    harvest_quota = NULL
+  )
+
+  expect_true(inherits(sc, "openpva_scenario"))
+  expect_equal(sc$n_runs, 3L)
+  expect_equal(sc$n_years, 2L)
+  expect_true(is.function(sc$inherit_fun))
+  expect_true(is.function(sc$mating_fun))
+
+  ind <- create_individual(99L, "F", age = 3L, inbreeding_coeff = 1)
+  expect_lt(sc$survival_fun(ind), default_survival_fun(ind))
+
+  set.seed(123)
+  out <- run_scenario(sc)
+  expect_equal(out$scenario, sc)
+  expect_equal(nrow(out$sim_output$summary), 6L)
+
+  final_pop <- out$sim_output$runs[[1]]$population
+  alleles_flag <- vapply(final_pop, function(individual) !is.null(individual$alleles), logical(1))
+  expect_true(any(alleles_flag))
+})

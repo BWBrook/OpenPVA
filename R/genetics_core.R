@@ -1,3 +1,24 @@
+# Internal helpers --------------------------------------------------------
+
+.heterozygosity_from_alleles <- function(alleles) {
+  if (is.null(alleles) || !is.matrix(alleles) || nrow(alleles) != 2L) {
+    return(NA_real_)
+  }
+  n_loci <- ncol(alleles)
+  if (n_loci == 0L) {
+    return(NA_real_)
+  }
+  mean(alleles[1L, ] != alleles[2L, ])
+}
+
+.Fhat_from_alleles <- function(alleles) {
+  H <- .heterozygosity_from_alleles(alleles)
+  if (is.na(H)) {
+    return(NA_real_)
+  }
+  1 - H
+}
+
 #' Initialize simple diploid genotypes
 #'
 #' Assigns each individual a 2 \u00d7 `n_loci` integer matrix representing two haplotypes.
@@ -27,6 +48,7 @@ initialize_genotypes <- function(population, n_loci, n_alleles = 2L) {
     paternal <- sample(allele_values, size = n_loci, replace = TRUE)
     ind$alleles <- rbind(maternal, paternal)
     rownames(ind$alleles) <- c("hap1", "hap2")
+    ind$F <- .Fhat_from_alleles(ind$alleles)
     ind
   }
 
@@ -125,21 +147,49 @@ summarise_genetic_diversity <- function(population, alive_only = TRUE) {
   }
 
   heterozygosity <- vapply(eligible, function(ind) {
-    alleles <- ind$alleles
-    if (!is.matrix(alleles) || nrow(alleles) != 2L) {
-      stop("Allele matrices must be 2 \u00d7 L", call. = FALSE)
-    }
-    loci <- ncol(alleles)
-    if (loci == 0L) {
-      stop("Allele matrices must have at least one locus", call. = FALSE)
-    }
-    mean(alleles[1L, ] != alleles[2L, ])
+    .heterozygosity_from_alleles(ind$alleles)
   }, numeric(1))
+
+  mean_H <- mean(heterozygosity, na.rm = TRUE)
+  mean_F <- mean(1 - heterozygosity, na.rm = TRUE)
+  if (is.nan(mean_H)) mean_H <- NA_real_
+  if (is.nan(mean_F)) mean_F <- NA_real_
 
   tibble::tibble(
     n_individuals = length(eligible),
     alive_only = alive_only,
-    mean_heterozygosity = mean(heterozygosity),
-    mean_Fhat = mean(1 - heterozygosity)
+    mean_heterozygosity = mean_H,
+    mean_Fhat = mean_F
   )
+}
+
+#' Build an inbreeding-aware survival function
+#'
+#' Wraps a baseline survival function with a linear penalty based on an individual's
+#' inbreeding coefficient (`F`).
+#'
+#' @param base_survival_fun Function returning baseline survival probabilities in [0, 1].
+#' @param beta Non-negative numeric strength parameter (0 = no inbreeding effect).
+#'
+#' @return A function suitable for use as a survival function.
+#' @export
+make_inbreeding_survival_fun <- function(base_survival_fun, beta) {
+  beta <- as.numeric(beta)
+  if (length(beta) != 1L || is.na(beta) || beta < 0) {
+    stop("beta must be a non-negative numeric scalar", call. = FALSE)
+  }
+  function(ind) {
+    p_base <- base_survival_fun(ind)
+    F_i <- ind$F
+    if (is.null(F_i) || is.na(F_i)) {
+      F_i <- 0
+    }
+    scale <- 1 - beta * F_i
+    if (scale < 0) scale <- 0
+    if (scale > 1) scale <- 1
+    p_scaled <- p_base * scale
+    if (p_scaled < 0) p_scaled <- 0
+    if (p_scaled > 1) p_scaled <- 1
+    p_scaled
+  }
 }

@@ -63,10 +63,12 @@ apply_reproduction <- function(
             !is.null(father$alleles)) {
           alleles_new <- inherit_fun(mother, father)
         }
+        F_new <- if (is.null(alleles_new)) NA_real_ else .Fhat_from_alleles(alleles_new)
         newborns[[length(newborns) + 1L]] <- create_individual(
           id = max_id,
           sex = sample(c("M", "F"), 1L),
           age = 0L,
+          inbreeding_coeff = F_new,
           alleles = alleles_new,
           mother_id = mother_id,
           father_id = father_id

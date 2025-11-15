@@ -12,7 +12,9 @@ run_basic_simulation(
   fecundity_fun = default_fecundity_fun,
   K = NULL,
   harvest_quota = NULL,
-  lifecycle_steps = default_lifecycle_steps()
+  lifecycle_steps = default_lifecycle_steps(),
+  mating_fun = default_mating_fun,
+  inherit_fun = NULL
 )
 }
 \arguments{
@@ -34,6 +36,13 @@ run_basic_simulation(
 \item{lifecycle_steps}{Character vector of lifecycle step labels describing the order in
 which processes occur. Allowed values are `"age"`, `"survival"`, `"breeding_births"`,
 and `"harvest"`. Steps omitted from the vector are skipped.}
+
+\item{mating_fun}{Function selecting mates for breeding females. Defaults to
+`default_mating_fun`.}
+
+\item{inherit_fun}{Optional function taking `(mother, father)` and returning an
+allele matrix for newborns (e.g. `inherit_genotype_simple`). Defaults to `NULL`,
+which leaves newborn alleles as `NULL`.}
 }
 \value{
 List with the final `population` and a `summary` tibble of yearly metrics.

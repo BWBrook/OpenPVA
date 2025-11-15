@@ -61,3 +61,30 @@ scenario
 yaml_result <- run_scenario(scenario)
 summarise_extinction(yaml_result$sim_output)
 ```
+
+## Genetics and inbreeding demo
+
+```{r}
+sc_gen <- OpenPVA::make_simple_genetic_scenario(
+  name = "genetic_demo",
+  n_runs = 20,
+  n_years = 50,
+  initial_n = 80,
+  n_loci = 10,
+  n_alleles = 2,
+  mutation_rate = 0.001,
+  beta_F = 0.5,
+  K = 100
+)
+
+out_gen <- OpenPVA::run_scenario(sc_gen)
+
+# Extinction summary for the genetics-enabled scenario
+OpenPVA::summarise_extinction(out_gen$sim_output)
+```
+
+```{r}
+# Diversity summary for the final population of the first run
+final_pop_run1 <- out_gen$sim_output$runs[[1]]$population
+OpenPVA::summarise_genetic_diversity(final_pop_run1, alive_only = TRUE)
+```

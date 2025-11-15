@@ -14,7 +14,9 @@ scenario_spec(
   fecundity_fun = default_fecundity_fun,
   K = NULL,
   harvest_quota = NULL,
-  lifecycle_steps = default_lifecycle_steps()
+  lifecycle_steps = default_lifecycle_steps(),
+  mating_fun = default_mating_fun,
+  inherit_fun = NULL
 )
 }
 \arguments{
@@ -37,6 +39,11 @@ scenario_spec(
 \item{harvest_quota}{Optional harvest quota (scalar or length `n_years`).}
 
 \item{lifecycle_steps}{Character vector describing the lifecycle order.}
+
+\item{mating_fun}{Function used for mate selection (defaults to `default_mating_fun`).}
+
+\item{inherit_fun}{Optional function for generating offspring genotypes. `NULL`
+disables inheritance.}
 }
 \value{
 An object of class `openpva_scenario`.

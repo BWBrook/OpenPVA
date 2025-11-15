@@ -30,7 +30,7 @@ An **individual** is the basic unit of simulation in OpenPVA. In the initial imp
 - `age` — integer, age in years or time steps
 - `alive` — logical, living status
 - `alleles` — `NULL` or a 2 × L integer matrix representing two haplotypes across L loci
-- `F` — numeric, inbreeding coefficient (optional in early phases)
+- `F` — numeric inbreeding coefficient, computed as \(1 -\) heterozygosity when `alleles` exist (may be `NA` otherwise; missing values are treated as zero by default)
 
 Example (conceptual):
 
@@ -49,6 +49,8 @@ ind <- list(
 ```
 
 Lists are chosen for **flexibility and simplicity**. Later implementations may layer S3/R6 classes or alternative backends on top of this representation, but all code should treat individuals as **opaque objects with a documented interface**, not as rigid class instances.
+
+Individuals lacking genotype data may have `F` set to `NA` (or 0). Inbreeding-aware survival helpers interpret missing values as zero, ensuring legacy demographic runs remain unaffected until genetics are explicitly enabled.
 
 ---
 

@@ -13,7 +13,9 @@ run_basic_simulation_replicates(
   fecundity_fun = default_fecundity_fun,
   K = NULL,
   harvest_quota = NULL,
-  lifecycle_steps = default_lifecycle_steps()
+  lifecycle_steps = default_lifecycle_steps(),
+  mating_fun = default_mating_fun,
+  inherit_fun = NULL
 )
 }
 \arguments{
@@ -35,6 +37,10 @@ run_basic_simulation_replicates(
 `lifecycle_steps` omits `"harvest"`, quotas are ignored.}
 
 \item{lifecycle_steps}{Character vector specifying lifecycle order for each run.}
+
+\item{mating_fun}{Function used for mate selection within each run.}
+
+\item{inherit_fun}{Optional inheritance function applied to newborns.}
 }
 \value{
 A list with elements:

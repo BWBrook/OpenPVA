@@ -14,6 +14,11 @@
 #' @param lifecycle_steps Character vector of lifecycle step labels describing the order in
 #'   which processes occur. Allowed values are `"age"`, `"survival"`, `"breeding_births"`,
 #'   and `"harvest"`. Steps omitted from the vector are skipped.
+#' @param mating_fun Function selecting mates for breeding females. Defaults to
+#'   `default_mating_fun`.
+#' @param inherit_fun Optional function taking `(mother, father)` and returning an
+#'   allele matrix for newborns (e.g. `inherit_genotype_simple`). Defaults to `NULL`,
+#'   which leaves newborn alleles as `NULL`.
 #'
 #' @return List with the final `population` and a `summary` tibble of yearly metrics.
 #' @export
@@ -25,7 +30,9 @@ run_basic_simulation <- function(
     fecundity_fun = default_fecundity_fun,
     K = NULL,
     harvest_quota = NULL,
-    lifecycle_steps = default_lifecycle_steps()) {
+    lifecycle_steps = default_lifecycle_steps(),
+    mating_fun = default_mating_fun,
+    inherit_fun = NULL) {
   lifecycle_steps <- force(lifecycle_steps)
   if (!is.numeric(n_years) || length(n_years) != 1L || n_years < 0) {
     stop("n_years must be a single non-negative numeric value")
@@ -98,7 +105,13 @@ run_basic_simulation <- function(
       } else if (step == "breeding_births") {
         breeders <- determine_breeding(population, breeding_fun)
         pre_birth_count <- length(population)
-        population <- apply_reproduction(population, breeders, fecundity_fun)
+        population <- apply_reproduction(
+          population = population,
+          breeders = breeders,
+          fecundity_fun = fecundity_fun,
+          mating_fun = mating_fun,
+          inherit_fun = inherit_fun
+        )
         n_births_year <- n_births_year + as.integer(length(population) - pre_birth_count)
       } else if (step == "harvest") {
         quota_this_year <- if (length(harvest_vec)) harvest_vec[year] else 0L
@@ -157,6 +170,8 @@ run_basic_simulation <- function(
 #' @param harvest_quota Optional harvest quota (single value or length `n_years` vector). If
 #'   `lifecycle_steps` omits `"harvest"`, quotas are ignored.
 #' @param lifecycle_steps Character vector specifying lifecycle order for each run.
+#' @param mating_fun Function used for mate selection within each run.
+#' @param inherit_fun Optional inheritance function applied to newborns.
 #'
 #' @return A list with elements:
 #'   \itemize{
@@ -174,7 +189,9 @@ run_basic_simulation_replicates <- function(
     fecundity_fun = default_fecundity_fun,
     K = NULL,
     harvest_quota = NULL,
-    lifecycle_steps = default_lifecycle_steps()) {
+    lifecycle_steps = default_lifecycle_steps(),
+    mating_fun = default_mating_fun,
+    inherit_fun = NULL) {
   lifecycle_steps <- force(lifecycle_steps)
   if (!is.numeric(n_runs) || length(n_runs) != 1L || n_runs < 1) {
     stop("n_runs must be a single numeric value greater than or equal to 1")
@@ -202,7 +219,9 @@ run_basic_simulation_replicates <- function(
       fecundity_fun = fecundity_fun,
       K = K,
       harvest_quota = harvest_quota,
-      lifecycle_steps = lifecycle_steps
+      lifecycle_steps = lifecycle_steps,
+      mating_fun = mating_fun,
+      inherit_fun = inherit_fun
     )
     run_results[[run]] <- sim_result
     run_summaries[[run]] <- sim_result$summary

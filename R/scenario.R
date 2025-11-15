@@ -12,6 +12,9 @@
 #' @param K Optional numeric carrying capacity for density scaling.
 #' @param harvest_quota Optional harvest quota (scalar or length `n_years`).
 #' @param lifecycle_steps Character vector describing the lifecycle order.
+#' @param mating_fun Function used for mate selection (defaults to `default_mating_fun`).
+#' @param inherit_fun Optional function for generating offspring genotypes. `NULL`
+#'   disables inheritance.
 #'
 #' @return An object of class `openpva_scenario`.
 #' @export
@@ -25,7 +28,9 @@ scenario_spec <- function(
     fecundity_fun = default_fecundity_fun,
     K = NULL,
     harvest_quota = NULL,
-    lifecycle_steps = default_lifecycle_steps()) {
+    lifecycle_steps = default_lifecycle_steps(),
+    mating_fun = default_mating_fun,
+    inherit_fun = NULL) {
   scenario <- list(
     name = name,
     n_runs = n_runs,
@@ -36,7 +41,9 @@ scenario_spec <- function(
     fecundity_fun = fecundity_fun,
     K = K,
     harvest_quota = harvest_quota,
-    lifecycle_steps = lifecycle_steps
+    lifecycle_steps = lifecycle_steps,
+    mating_fun = mating_fun,
+    inherit_fun = inherit_fun
   )
   .validate_scenario(scenario)
   class(scenario) <- c("openpva_scenario", "list")
@@ -66,9 +73,91 @@ run_scenario <- function(scenario) {
     fecundity_fun = scenario$fecundity_fun,
     K = scenario$K,
     harvest_quota = scenario$harvest_quota,
-    lifecycle_steps = scenario$lifecycle_steps
+    lifecycle_steps = scenario$lifecycle_steps,
+    mating_fun = scenario$mating_fun,
+    inherit_fun = scenario$inherit_fun
   )
   list(scenario = scenario, sim_output = sim_output)
+}
+
+#' Construct a simple genetics-enabled scenario
+#'
+#' Provides a convenience wrapper that initialises genotypes, applies inbreeding-
+#' aware survival, and enables genotype inheritance for each run.
+#'
+#' @param name Scenario name.
+#' @param n_runs Number of replicate runs.
+#' @param n_years Number of years per run.
+#' @param initial_n Initial population size for each run.
+#' @param n_loci Number of loci per individual.
+#' @param n_alleles Number of possible allele states per locus.
+#' @param mutation_rate Mutation probability per allele during inheritance.
+#' @param beta_F Strength of inbreeding depression (passed to
+#'   `make_inbreeding_survival_fun()`).
+#' @inheritParams run_basic_simulation
+#'
+#' @return An `openpva_scenario` ready to run with `run_scenario()`.
+#' @export
+make_simple_genetic_scenario <- function(
+    name,
+    n_runs,
+    n_years,
+    initial_n,
+    n_loci = 10L,
+    n_alleles = 2L,
+    mutation_rate = 0,
+    beta_F = 0.5,
+    K = NULL,
+    harvest_quota = NULL,
+    lifecycle_steps = default_lifecycle_steps()) {
+  .assert_positive_int <- function(value, label) {
+    if (!is.numeric(value) || length(value) != 1L || value <= 0) {
+      stop(label, " must be a positive numeric value", call. = FALSE)
+    }
+  }
+  .assert_positive_int(n_runs, "n_runs")
+  .assert_positive_int(n_years, "n_years")
+  .assert_positive_int(initial_n, "initial_n")
+  .assert_positive_int(n_loci, "n_loci")
+  .assert_positive_int(n_alleles, "n_alleles")
+  mutation_rate <- as.numeric(mutation_rate)
+  if (length(mutation_rate) != 1L || is.na(mutation_rate) ||
+      mutation_rate < 0 || mutation_rate > 1) {
+    stop("mutation_rate must be within [0, 1]", call. = FALSE)
+  }
+  beta_F <- as.numeric(beta_F)
+  if (length(beta_F) != 1L || is.na(beta_F) || beta_F < 0) {
+    stop("beta_F must be a non-negative numeric value", call. = FALSE)
+  }
+
+  init_fun <- function() {
+    pop <- initialize_population(initial_n)
+    initialize_genotypes(pop, n_loci = n_loci, n_alleles = n_alleles)
+  }
+  survival_fun <- make_inbreeding_survival_fun(default_survival_fun, beta = beta_F)
+  inherit_fun <- function(mother, father) {
+    inherit_genotype_simple(
+      mother = mother,
+      father = father,
+      mutation_rate = mutation_rate,
+      n_alleles = n_alleles
+    )
+  }
+
+  scenario_spec(
+    name = name,
+    n_runs = n_runs,
+    n_years = n_years,
+    init_fun = init_fun,
+    survival_fun = survival_fun,
+    breeding_fun = default_breeding_fun,
+    fecundity_fun = default_fecundity_fun,
+    K = K,
+    harvest_quota = harvest_quota,
+    lifecycle_steps = lifecycle_steps,
+    mating_fun = default_mating_fun,
+    inherit_fun = inherit_fun
+  )
 }
 
 #' @export
@@ -156,6 +245,10 @@ read_scenario_yaml <- function(path) {
   if (!is.function(scenario$survival_fun)) stop("survival_fun must be a function")
   if (!is.function(scenario$breeding_fun)) stop("breeding_fun must be a function")
   if (!is.function(scenario$fecundity_fun)) stop("fecundity_fun must be a function")
+  if (!is.function(scenario$mating_fun)) stop("mating_fun must be a function")
+  if (!is.null(scenario$inherit_fun) && !is.function(scenario$inherit_fun)) {
+    stop("inherit_fun must be NULL or a function")
+  }
   .validate_lifecycle_steps(scenario$lifecycle_steps)
   invisible(scenario)
 }
