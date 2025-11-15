@@ -4,7 +4,12 @@
 \alias{apply_reproduction}
 \title{Apply reproduction to a population}
 \usage{
-apply_reproduction(population, breeders, fecundity_fun = default_fecundity_fun)
+apply_reproduction(
+  population,
+  breeders,
+  fecundity_fun = default_fecundity_fun,
+  mating_fun = default_mating_fun
+)
 }
 \arguments{
 \item{population}{List of individual objects.}
@@ -12,6 +17,9 @@ apply_reproduction(population, breeders, fecundity_fun = default_fecundity_fun)
 \item{breeders}{List of individual objects eligible to breed.}
 
 \item{fecundity_fun}{Function returning the number of offspring for a breeder.}
+
+\item{mating_fun}{Function selecting a mate for each breeder. Defaults to
+`default_mating_fun` and may be `NULL` if fathers should not be recorded.}
 }
 \value{
 Updated population list containing newborn individuals appended.

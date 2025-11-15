@@ -1,4 +1,4 @@
-library(testthat)
-library(OpenPVA)
-
-test_check("OpenPVA")
+if (requireNamespace("testthat", quietly = TRUE) &&
+    requireNamespace("OpenPVA", quietly = TRUE)) {
+  testthat::test_check("OpenPVA")
+}

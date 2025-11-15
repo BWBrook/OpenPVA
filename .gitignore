@@ -50,3 +50,10 @@ _targets/
 
 # editor settings
 .vscode/
+
+# Quarto renders
+quarto/*.html
+quarto/*_files/
+
+# Quarto rendered outputs
+quarto/rendered/

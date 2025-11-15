@@ -1,9 +1,12 @@
+
 # OpenPVA  
 **An Open, Modular Framework for Population Viability Analysis**
 
+![OpenPVA logo](OpenPVA.png)
+
 [![Status: WIP](https://img.shields.io/badge/status-WIP-orange.svg)]()  
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)  
-[![R version](https://img.shields.io/badge/R-4.3%2B-blue.svg)](https://cran.r-project.org/)  
+[![R version](https://img.shields.io/badge/R-4.5%2B-blue.svg)](https://cran.r-project.org/)  
 [![Reproducible](https://img.shields.io/badge/reproducible-yes-brightgreen.svg)]()  
 [![Open Source](https://img.shields.io/badge/open--source-100%25-brightgreen.svg)]()
 
@@ -19,25 +22,13 @@ OpenPVA is being developed as a long-lived, community-maintained framework rathe
 
 ---
 
-## Key Features (Planned)
+## Key Features
 
-- **Fully Modular Lifecycle Modelling**  
-  Each stage of the life cycle (survival, reproduction, dispersal, etc.) is handled by interchangeable process modules.
-
-- **Individual- and Population-Level Simulation**  
-  Individual-based by design, with scope to support stage/matrix representations where useful.
-
-- **Genetic and Demographic Integration**  
-  Genetics (alleles, inbreeding, diversity) is treated as a first-class optional module, not an afterthought.
-
-- **Spatial and Environmental Dynamics**  
-  Planned support for patches/landscapes and time-varying environmental drivers.
-
-- **Open Extensibility**  
-  Contributors can add new modules, write custom demographic functions, or extend simulation logic via a documented API.
-
-- **Transparent and Reproducible**  
-  Built in R with script-based workflows, `renv` for environments, and `targets` for pipelines; no black boxes.
+- Individual-based demographic engine with age/sex structure.
+- Optional density feedback (ceiling K) and quota-based harvest.
+- Replicated simulations with extinction metrics and mean trajectories.
+- Lifecycle pipeline control via `lifecycle_steps` for custom sequencing.
+- Scenario API (`scenario_spec()` / `run_scenario()`) with optional YAML loader (`read_scenario_yaml()`).
 
 ---
 
@@ -48,19 +39,7 @@ OpenPVA is under **active development**.
 Current phase: **Phase 1 – Core Demographic Engine**  
 (see `docs/roadmap_and_scope.md`)
 
-Initial goals:
-
-- A minimal working system simulating age-structured individual-based dynamics.
-- Basic stochastic demography and survival/breeding logic.
-- A modular architecture for lifecycle processes.
-- A reproducible example for a stylised population (and later, classic systems such as grizzly bears).
-
-Later planned modules include:
-
-- Genetic modelling (inbreeding coefficients, alleles, drift).
-- Spatial dynamics (patch structure, habitat linkage, landscape change).
-- Calibration and validation tools (e.g. ABC-style workflows).
-- GUI/shiny interfaces for non-coding users.
+Phase 1 focuses on the core demographic engine, density feedback, harvest, replicates, and scenario/YAML tooling. Genetics, spatial structure, decision-support tooling, and GUIs remain roadmap items for later phases.
 
 ---
 
@@ -74,7 +53,7 @@ Key top-level elements:
 - `tests/` – Unit tests (`testthat`).
 - `docs/` – Design and governance docs for architecture, conventions, scope, and agent behaviour.
 - `quarto/` – Quarto sources for the documentation site (rendered into `docs/` as needed).
-- `data/` – Input data and small example datasets.
+- `inst/extdata/` – Packaged example inputs (e.g. demo YAML scenarios).
 - `outputs/` – Generated outputs (via targets, not ad hoc scripts).
 
 For a map of the internal documentation, see `docs/docs_index.md`.
@@ -181,8 +160,54 @@ A formal software paper is forthcoming. For now, please cite as:
 
 ## Contact
 
-Lead developer: **Barry W. Brook**
-With contributions from an emerging open-science community.
-
+Lead developer: **Barry W. Brook**  
 Email: [barry.brook@utas.edu.au](mailto:barry.brook@utas.edu.au)
-Project codename: *RGAPPS*
+
+---
+
+## Quick start: run the basic example
+
+```bash
+Rscript -e "targets::tar_make()"
+```
+
+Inspect selected targets inside R using `targets::tar_read()`:
+
+```r
+# Extinction summaries and trajectories
+targets::tar_read(sim_basic_reps_extinction_summary)
+targets::tar_read(sim_basic_dense_harvest_extinction_summary)
+traj <- targets::tar_read(sim_basic_dense_harvest_trajectory)
+head(traj)
+
+# File path for the mean trajectory plot
+plot_path <- targets::tar_read(sim_basic_dense_harvest_trajectory_plot)
+plot_path
+```
+
+## Scenarios and YAML
+
+Define scenarios directly in R:
+
+```r
+sc <- OpenPVA::scenario_spec(
+  name = "demo",
+  n_runs = 20,
+  n_years = 30,
+  init_fun = function() OpenPVA::initialize_population(80),
+  K = 60,
+  harvest_quota = 3
+)
+res <- OpenPVA::run_scenario(sc)
+OpenPVA::summarise_extinction(res$sim_output)
+```
+
+Or load a scenario from YAML (optional):
+
+```r
+path <- system.file("extdata", "demo_density_harvest.yaml", package = "OpenPVA")
+sc_yaml <- OpenPVA::read_scenario_yaml(path)
+res_yaml <- OpenPVA::run_scenario(sc_yaml)
+```
+
+YAML is a convenience for sharing scenarios; all functionality is accessible directly from R.

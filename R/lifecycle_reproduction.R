@@ -17,10 +17,16 @@ default_fecundity_fun <- function(ind) {
 #' @param population List of individual objects.
 #' @param breeders List of individual objects eligible to breed.
 #' @param fecundity_fun Function returning the number of offspring for a breeder.
+#' @param mating_fun Function selecting a mate for each breeder. Defaults to
+#'   `default_mating_fun` and may be `NULL` if fathers should not be recorded.
 #'
 #' @return Updated population list containing newborn individuals appended.
 #' @export
-apply_reproduction <- function(population, breeders, fecundity_fun = default_fecundity_fun) {
+apply_reproduction <- function(
+    population,
+    breeders,
+    fecundity_fun = default_fecundity_fun,
+    mating_fun = default_mating_fun) {
   if (!length(population)) {
     max_id <- 0L
   } else {
@@ -31,6 +37,10 @@ apply_reproduction <- function(population, breeders, fecundity_fun = default_fec
 
   if (length(breeders)) {
     for (breeder in breeders) {
+      mother_id <- breeder$id
+      father <- if (is.null(mating_fun)) NULL else mating_fun(population, breeder)
+      father_id <- if (is.null(father)) NA_integer_ else father$id
+
       n_offspring <- fecundity_fun(breeder)
       if (!is.numeric(n_offspring) || length(n_offspring) != 1L) {
         stop("fecundity_fun must return a single numeric value")
@@ -44,7 +54,9 @@ apply_reproduction <- function(population, breeders, fecundity_fun = default_fec
         newborns[[length(newborns) + 1L]] <- create_individual(
           id = max_id,
           sex = sample(c("M", "F"), 1L),
-          age = 0L
+          age = 0L,
+          mother_id = mother_id,
+          father_id = father_id
         )
       }
     }

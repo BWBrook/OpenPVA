@@ -259,3 +259,37 @@ test_that("replicates accept custom lifecycle steps", {
   expect_true(all(res$summary$n_harvested == 0L))
   expect_true(all(c("run", "year", "n_alive", "n_births") %in% names(res$summary)))
 })
+
+test_that("apply_reproduction records parent ids when mates exist", {
+  population <- list(
+    create_individual(1L, "F", 5L),
+    create_individual(2L, "M", 4L),
+    create_individual(3L, "M", 6L)
+  )
+  breeders <- list(population[[1]])
+  fecundity_fun <- function(ind) 1L
+
+  result <- apply_reproduction(population, breeders, fecundity_fun)
+  newborns <- result[(length(population) + 1L):length(result)]
+  male_ids <- c(2L, 3L)
+
+  expect_equal(length(newborns), 1L)
+  expect_equal(newborns[[1]]$mother_id, 1L)
+  expect_true(newborns[[1]]$father_id %in% male_ids)
+})
+
+test_that("apply_reproduction leaves father ids NA when no males", {
+  population <- list(
+    create_individual(1L, "F", 5L),
+    create_individual(2L, "F", 4L)
+  )
+  breeders <- population
+  fecundity_fun <- function(ind) 1L
+
+  result <- apply_reproduction(population, breeders, fecundity_fun)
+  newborns <- result[(length(population) + 1L):length(result)]
+
+  expect_equal(length(newborns), length(breeders))
+  expect_true(all(vapply(newborns, function(ind) ind$mother_id %in% c(1L, 2L), logical(1))))
+  expect_true(all(vapply(newborns, function(ind) is.na(ind$father_id), logical(1))))
+})

@@ -35,3 +35,4 @@ Collate:
     'simulation_core.R'
     'simulation_summary.R'
     'simulation_plots.R'
+    'scenario.R'

@@ -11,14 +11,24 @@
 #'
 #' @return A list representing an individual.
 #' @export
-create_individual <- function(id, sex, age, alive = TRUE, alleles = NULL, inbreeding_coeff = 0) {
+create_individual <- function(
+    id,
+    sex,
+    age,
+    alive = TRUE,
+    alleles = NULL,
+    inbreeding_coeff = 0,
+    mother_id = NA_integer_,
+    father_id = NA_integer_) {
   list(
     id = id,
     sex = sex,
     age = age,
     alive = alive,
     alleles = alleles,
-    F = inbreeding_coeff
+    F = inbreeding_coeff,
+    mother_id = mother_id,
+    father_id = father_id
   )
 }
 

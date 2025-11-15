@@ -10,7 +10,9 @@ create_individual(
   age,
   alive = TRUE,
   alleles = NULL,
-  inbreeding_coeff = 0
+  inbreeding_coeff = 0,
+  mother_id = NA_integer_,
+  father_id = NA_integer_
 )
 }
 \arguments{
