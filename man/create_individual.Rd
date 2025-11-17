@@ -12,7 +12,8 @@ create_individual(
   alleles = NULL,
   inbreeding_coeff = 0,
   mother_id = NA_integer_,
-  father_id = NA_integer_
+  father_id = NA_integer_,
+  patch_id = NA_integer_
 )
 }
 \arguments{
@@ -27,6 +28,12 @@ create_individual(
 \item{alleles}{List or NULL. Placeholder for genetic attributes.}
 
 \item{inbreeding_coeff}{Numeric. Inbreeding coefficient (F). Defaults to 0.}
+
+\item{mother_id}{Integer. ID of the mother if known.}
+
+\item{father_id}{Integer. ID of the father if known.}
+
+\item{patch_id}{Integer. Optional patch identifier.}
 }
 \value{
 A list representing an individual.

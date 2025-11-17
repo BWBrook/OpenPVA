@@ -10,11 +10,14 @@
 #' @param breeding_fun Function identifying breeding-eligible individuals.
 #' @param fecundity_fun Function returning offspring counts for breeders.
 #' @param K Optional numeric carrying capacity for density scaling.
+#' @param K_patches Optional numeric vector of patch-specific carrying capacities.
 #' @param harvest_quota Optional harvest quota (scalar or length `n_years`).
 #' @param lifecycle_steps Character vector describing the lifecycle order.
 #' @param mating_fun Function used for mate selection (defaults to `default_mating_fun`).
 #' @param inherit_fun Optional function for generating offspring genotypes. `NULL`
 #'   disables inheritance.
+#' @param dispersal_fun Function controlling movement between patches (defaults to
+#'   `default_dispersal_fun`).
 #'
 #' @return An object of class `openpva_scenario`.
 #' @export
@@ -27,10 +30,12 @@ scenario_spec <- function(
     breeding_fun = default_breeding_fun,
     fecundity_fun = default_fecundity_fun,
     K = NULL,
+    K_patches = NULL,
     harvest_quota = NULL,
     lifecycle_steps = default_lifecycle_steps(),
     mating_fun = default_mating_fun,
-    inherit_fun = NULL) {
+    inherit_fun = NULL,
+    dispersal_fun = default_dispersal_fun) {
   scenario <- list(
     name = name,
     n_runs = n_runs,
@@ -40,10 +45,12 @@ scenario_spec <- function(
     breeding_fun = breeding_fun,
     fecundity_fun = fecundity_fun,
     K = K,
+    K_patches = K_patches,
     harvest_quota = harvest_quota,
     lifecycle_steps = lifecycle_steps,
     mating_fun = mating_fun,
-    inherit_fun = inherit_fun
+    inherit_fun = inherit_fun,
+    dispersal_fun = dispersal_fun
   )
   .validate_scenario(scenario)
   class(scenario) <- c("openpva_scenario", "list")
@@ -72,10 +79,12 @@ run_scenario <- function(scenario) {
     breeding_fun = scenario$breeding_fun,
     fecundity_fun = scenario$fecundity_fun,
     K = scenario$K,
+    K_patches = scenario$K_patches,
     harvest_quota = scenario$harvest_quota,
     lifecycle_steps = scenario$lifecycle_steps,
     mating_fun = scenario$mating_fun,
-    inherit_fun = scenario$inherit_fun
+    inherit_fun = scenario$inherit_fun,
+    dispersal_fun = scenario$dispersal_fun
   )
   list(scenario = scenario, sim_output = sim_output)
 }
@@ -156,7 +165,80 @@ make_simple_genetic_scenario <- function(
     harvest_quota = harvest_quota,
     lifecycle_steps = lifecycle_steps,
     mating_fun = default_mating_fun,
-    inherit_fun = inherit_fun
+    inherit_fun = inherit_fun,
+    dispersal_fun = default_dispersal_fun
+  )
+}
+
+#' Construct a simple two-patch spatial scenario
+#'
+#' Builds a scenario with two patches, patch-specific carrying capacities,
+#' and Markov dispersal.
+#'
+#' @param name Scenario name.
+#' @param n_runs Number of replicate runs.
+#' @param n_years Number of years per run.
+#' @param initial_n Integer vector of length 2 giving starting individuals per patch.
+#' @param K_patches Numeric vector of length 2 giving patch-specific carrying capacities.
+#' @param dispersal_matrix 2x2 matrix of movement probabilities (rows origin, columns destination).
+#' @inheritParams scenario_spec
+#'
+#' @return An `openpva_scenario`.
+#' @export
+make_two_patch_spatial_scenario <- function(
+    name,
+    n_runs,
+    n_years,
+    initial_n = c(50L, 50L),
+    K_patches = c(80, 80),
+    dispersal_matrix = matrix(c(0.9, 0.1,
+                                0.1, 0.9),
+                              nrow = 2, byrow = TRUE),
+    survival_fun = default_survival_fun,
+    breeding_fun = default_breeding_fun,
+    fecundity_fun = default_fecundity_fun,
+    lifecycle_steps = c("age", "survival", "dispersal", "breeding_births", "harvest")) {
+  .assert_positive_int <- function(value, label) {
+    if (!is.numeric(value) || length(value) != 1L || value <= 0) {
+      stop(label, " must be a positive numeric value", call. = FALSE)
+    }
+  }
+  .assert_positive_int(n_runs, "n_runs")
+  .assert_positive_int(n_years, "n_years")
+  if (length(initial_n) != 2L || any(initial_n < 0)) {
+    stop("initial_n must be a length-2 vector with non-negative entries", call. = FALSE)
+  }
+  if (length(K_patches) != 2L || any(K_patches <= 0)) {
+    stop("K_patches must be a length-2 vector with values > 0", call. = FALSE)
+  }
+
+  init_fun <- function() {
+    total_n <- sum(as.integer(initial_n))
+    pop <- initialize_population(n = total_n)
+    patch_ids <- c(
+      rep.int(1L, initial_n[1]),
+      rep.int(2L, initial_n[2])
+    )
+    initialize_patches(pop, patch_ids = patch_ids)
+  }
+
+  dispersal_fun <- make_markov_dispersal_fun(dispersal_matrix)
+
+  scenario_spec(
+    name = name,
+    n_runs = n_runs,
+    n_years = n_years,
+    init_fun = init_fun,
+    survival_fun = survival_fun,
+    breeding_fun = breeding_fun,
+    fecundity_fun = fecundity_fun,
+    K = NULL,
+    K_patches = K_patches,
+    harvest_quota = NULL,
+    lifecycle_steps = lifecycle_steps,
+    mating_fun = default_mating_fun,
+    inherit_fun = NULL,
+    dispersal_fun = dispersal_fun
   )
 }
 
@@ -241,6 +323,15 @@ read_scenario_yaml <- function(path) {
     }
     scenario[[field]] <- as.integer(value)
   }
+  if (!is.null(scenario$K) && !is.null(scenario$K_patches)) {
+    stop("Specify either K or K_patches in scenario_spec(), not both", call. = FALSE)
+  }
+  if (!is.null(scenario$K_patches)) {
+    if (!is.numeric(scenario$K_patches) || !length(scenario$K_patches) ||
+        any(scenario$K_patches <= 0)) {
+      stop("K_patches must be NULL or a numeric vector > 0", call. = FALSE)
+    }
+  }
   if (!is.function(scenario$init_fun)) stop("init_fun must be a function")
   if (!is.function(scenario$survival_fun)) stop("survival_fun must be a function")
   if (!is.function(scenario$breeding_fun)) stop("breeding_fun must be a function")
@@ -248,6 +339,9 @@ read_scenario_yaml <- function(path) {
   if (!is.function(scenario$mating_fun)) stop("mating_fun must be a function")
   if (!is.null(scenario$inherit_fun) && !is.function(scenario$inherit_fun)) {
     stop("inherit_fun must be NULL or a function")
+  }
+  if (!is.function(scenario$dispersal_fun)) {
+    stop("dispersal_fun must be a function")
   }
   .validate_lifecycle_steps(scenario$lifecycle_steps)
   invisible(scenario)

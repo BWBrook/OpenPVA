@@ -88,3 +88,27 @@ OpenPVA::summarise_extinction(out_gen$sim_output)
 final_pop_run1 <- out_gen$sim_output$runs[[1]]$population
 OpenPVA::summarise_genetic_diversity(final_pop_run1, alive_only = TRUE)
 ```
+
+## Spatial patches and dispersal
+
+```{r}
+sc_spatial <- OpenPVA::make_two_patch_spatial_scenario(
+  name = "two_patch_demo",
+  n_runs = 30,
+  n_years = 50,
+  initial_n = c(50L, 10L),
+  K_patches = c(80, 40),
+  dispersal_matrix = matrix(c(0.9, 0.1,
+                               0.2, 0.8),
+                             nrow = 2, byrow = TRUE)
+)
+
+out_spatial <- OpenPVA::run_scenario(sc_spatial)
+
+patch_summary <- OpenPVA::summarise_patch_occupancy_final(
+  sim_output = out_spatial$sim_output,
+  n_patches = 2,
+  alive_only = TRUE
+)
+patch_summary
+```

@@ -9,6 +9,10 @@
 #' @param fecundity_fun Function returning offspring counts for breeders.
 #'
 #' @param K Optional numeric carrying capacity for ceiling-based survival scaling.
+#' @param K_patches Optional numeric vector of patch-specific carrying capacities.
+#'   Provide either `K` or `K_patches`, not both. When `K_patches` is used,
+#'   density dependence is applied per patch based on `patch_id` and the
+#'   `survival_scale` summary column is set to `NA`.
 #' @param harvest_quota Optional harvest quota (single value or length `n_years` vector). If
 #'   `lifecycle_steps` does not include `"harvest"`, quotas are ignored.
 #' @param lifecycle_steps Character vector of lifecycle step labels describing the order in
@@ -19,6 +23,9 @@
 #' @param inherit_fun Optional function taking `(mother, father)` and returning an
 #'   allele matrix for newborns (e.g. `inherit_genotype_simple`). Defaults to `NULL`,
 #'   which leaves newborn alleles as `NULL`.
+#' @param dispersal_fun Function with signature `function(ind, population)`
+#'   returning a new `patch_id` for the individual. Defaults to
+#'   `default_dispersal_fun` (no movement).
 #'
 #' @return List with the final `population` and a `summary` tibble of yearly metrics.
 #' @export
@@ -29,10 +36,12 @@ run_basic_simulation <- function(
     breeding_fun = default_breeding_fun,
     fecundity_fun = default_fecundity_fun,
     K = NULL,
+    K_patches = NULL,
     harvest_quota = NULL,
     lifecycle_steps = default_lifecycle_steps(),
     mating_fun = default_mating_fun,
-    inherit_fun = NULL) {
+    inherit_fun = NULL,
+    dispersal_fun = default_dispersal_fun) {
   lifecycle_steps <- force(lifecycle_steps)
   if (!is.numeric(n_years) || length(n_years) != 1L || n_years < 0) {
     stop("n_years must be a single non-negative numeric value")
@@ -43,6 +52,18 @@ run_basic_simulation <- function(
       stop("K must be NULL or a single numeric value greater than zero")
     }
     K <- as.numeric(K)
+  }
+  if (!is.null(K_patches)) {
+    if (!is.numeric(K_patches) || !length(K_patches)) {
+      stop("K_patches must be NULL or a numeric vector", call. = FALSE)
+    }
+    if (any(K_patches <= 0)) {
+      stop("K_patches values must be greater than zero", call. = FALSE)
+    }
+    K_patches <- as.numeric(K_patches)
+  }
+  if (!is.null(K) && !is.null(K_patches)) {
+    stop("Specify either K or K_patches, not both", call. = FALSE)
   }
 
   if (is.null(harvest_quota)) {
@@ -92,16 +113,62 @@ run_basic_simulation <- function(
         population <- age_individuals(population)
       } else if (step == "survival") {
         alive_flags_pre <- vapply(population, function(ind) isTRUE(ind$alive), logical(1))
-        n_alive_pre <- sum(alive_flags_pre)
-        survival_scale_year <- compute_survival_scale(n_alive_pre, K)
-        survival_fun_year <- function(ind) {
-          p <- survival_fun(ind)
-          p_scaled <- p * survival_scale_year
-          if (p_scaled < 0) p_scaled <- 0
-          if (p_scaled > 1) p_scaled <- 1
-          p_scaled
+        if (!is.null(K_patches)) {
+          patch_ids_pre <- vapply(
+            population,
+            function(ind) {
+              pid <- ind$patch_id
+              if (is.null(pid) || is.na(pid)) NA_integer_ else as.integer(pid)
+            },
+            integer(1)
+          )
+          patch_counts <- integer(length(K_patches))
+          if (length(population)) {
+            for (idx in seq_along(population)) {
+              pid <- patch_ids_pre[idx]
+              if (!is.na(pid) &&
+                  pid >= 1L && pid <= length(K_patches) &&
+                  alive_flags_pre[idx]) {
+                patch_counts[pid] <- patch_counts[pid] + 1L
+              }
+            }
+          }
+          patch_scales <- rep(1, length(K_patches))
+          for (pid in seq_along(K_patches)) {
+            if (patch_counts[pid] > K_patches[pid]) {
+              patch_scales[pid] <- K_patches[pid] / patch_counts[pid]
+            }
+          }
+          survival_scale_year <- NA_real_
+          survival_fun_year <- function(ind) {
+            p <- survival_fun(ind)
+            scale <- 1
+            pid <- ind$patch_id
+            if (!is.null(pid) && !is.na(pid)) {
+              pid_int <- as.integer(pid)
+              if (pid_int >= 1L && pid_int <= length(patch_scales)) {
+                scale <- patch_scales[pid_int]
+              }
+            }
+            p_scaled <- p * scale
+            if (p_scaled < 0) p_scaled <- 0
+            if (p_scaled > 1) p_scaled <- 1
+            p_scaled
+          }
+        } else {
+          n_alive_pre <- sum(alive_flags_pre)
+          survival_scale_year <- compute_survival_scale(n_alive_pre, K)
+          survival_fun_year <- function(ind) {
+            p <- survival_fun(ind)
+            p_scaled <- p * survival_scale_year
+            if (p_scaled < 0) p_scaled <- 0
+            if (p_scaled > 1) p_scaled <- 1
+            p_scaled
+          }
         }
         population <- apply_survival(population, survival_fun_year)
+      } else if (step == "dispersal") {
+        population <- apply_dispersal(population, dispersal_fun)
       } else if (step == "breeding_births") {
         breeders <- determine_breeding(population, breeding_fun)
         pre_birth_count <- length(population)
@@ -170,9 +237,12 @@ run_basic_simulation <- function(
 #' @param harvest_quota Optional harvest quota (single value or length `n_years` vector). If
 #'   `lifecycle_steps` omits `"harvest"`, quotas are ignored.
 #' @param lifecycle_steps Character vector specifying lifecycle order for each run.
+#' @param K_patches Optional numeric vector of patch-specific carrying capacities.
+#'   Provide either `K` or `K_patches`, not both.
 #' @param mating_fun Function used for mate selection within each run.
 #' @param inherit_fun Optional inheritance function applied to newborns.
-#'
+#' @param dispersal_fun Function applied during the `"dispersal"` lifecycle step.
+#' 
 #' @return A list with elements:
 #'   \itemize{
 #'     \item `runs`: list of length `n_runs`, each containing the output of `run_basic_simulation()`.
@@ -188,10 +258,12 @@ run_basic_simulation_replicates <- function(
     breeding_fun = default_breeding_fun,
     fecundity_fun = default_fecundity_fun,
     K = NULL,
+    K_patches = NULL,
     harvest_quota = NULL,
     lifecycle_steps = default_lifecycle_steps(),
     mating_fun = default_mating_fun,
-    inherit_fun = NULL) {
+    inherit_fun = NULL,
+    dispersal_fun = default_dispersal_fun) {
   lifecycle_steps <- force(lifecycle_steps)
   if (!is.numeric(n_runs) || length(n_runs) != 1L || n_runs < 1) {
     stop("n_runs must be a single numeric value greater than or equal to 1")
@@ -206,6 +278,19 @@ run_basic_simulation_replicates <- function(
   n_runs <- as.integer(n_runs)
   n_years <- as.integer(n_years)
 
+  if (!is.null(K) && !is.null(K_patches)) {
+    stop("Specify either K or K_patches, not both", call. = FALSE)
+  }
+  if (!is.null(K_patches)) {
+    if (!is.numeric(K_patches) || !length(K_patches)) {
+      stop("K_patches must be NULL or a numeric vector", call. = FALSE)
+    }
+    if (any(K_patches <= 0)) {
+      stop("K_patches values must be greater than zero", call. = FALSE)
+    }
+    K_patches <- as.numeric(K_patches)
+  }
+
   run_results <- vector("list", n_runs)
   run_summaries <- vector("list", n_runs)
 
@@ -218,10 +303,12 @@ run_basic_simulation_replicates <- function(
       breeding_fun = breeding_fun,
       fecundity_fun = fecundity_fun,
       K = K,
+      K_patches = K_patches,
       harvest_quota = harvest_quota,
       lifecycle_steps = lifecycle_steps,
       mating_fun = mating_fun,
-      inherit_fun = inherit_fun
+      inherit_fun = inherit_fun,
+      dispersal_fun = dispersal_fun
     )
     run_results[[run]] <- sim_result
     run_summaries[[run]] <- sim_result$summary

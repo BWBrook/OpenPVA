@@ -31,6 +31,7 @@ An **individual** is the basic unit of simulation in OpenPVA. In the initial imp
 - `alive` — logical, living status
 - `alleles` — `NULL` or a 2 × L integer matrix representing two haplotypes across L loci
 - `F` — numeric inbreeding coefficient, computed as \(1 -\) heterozygosity when `alleles` exist (may be `NA` otherwise; missing values are treated as zero by default)
+- `patch_id` — integer or `NA`, indicating the spatial patch membership used by spatial/density modules
 
 Example (conceptual):
 
@@ -137,6 +138,10 @@ These are not different “kinds” of engines, but **modules acting on the same
 - **Demographic modules**: ageing, survival, reproduction, density dependence, catastrophes, harvest, supplementation.
 - **Genetic modules**: assign alleles, calculate inbreeding coefficients, model genetic drift and diversity, apply inbreeding depression.
 - **Spatial modules**: assign individuals to patches or coordinates, model dispersal, apply spatial variation in vital rates.
+
+Density feedback can now be specified either as a single global carrying capacity (`K`) or as per-patch capacities (`K_patches`). Patch-level regulation uses each individual's `patch_id` to apply independent survival scaling within each patch, while the global `survival_scale` summary is set to `NA` because no single value applies.
+
+Spatial processes now include a dispersal module (`apply_dispersal()`) that updates `patch_id` based on a `dispersal_fun`. The lifecycle pipeline accepts an optional `"dispersal"` step, allowing users to place movement anywhere in the yearly sequence.
 
 Each of these modules should follow the same core interface: operate on a population, return a modified population, and avoid side effects.
 

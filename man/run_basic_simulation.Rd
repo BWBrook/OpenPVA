@@ -11,10 +11,12 @@ run_basic_simulation(
   breeding_fun = default_breeding_fun,
   fecundity_fun = default_fecundity_fun,
   K = NULL,
+  K_patches = NULL,
   harvest_quota = NULL,
   lifecycle_steps = default_lifecycle_steps(),
   mating_fun = default_mating_fun,
-  inherit_fun = NULL
+  inherit_fun = NULL,
+  dispersal_fun = default_dispersal_fun
 )
 }
 \arguments{
@@ -30,6 +32,11 @@ run_basic_simulation(
 
 \item{K}{Optional numeric carrying capacity for ceiling-based survival scaling.}
 
+\item{K_patches}{Optional numeric vector of patch-specific carrying capacities.
+Provide either `K` or `K_patches`, not both. When `K_patches` is used,
+density dependence is applied per patch based on `patch_id` and the
+`survival_scale` summary column is set to `NA`.}
+
 \item{harvest_quota}{Optional harvest quota (single value or length `n_years` vector). If
 `lifecycle_steps` does not include `"harvest"`, quotas are ignored.}
 
@@ -43,6 +50,10 @@ and `"harvest"`. Steps omitted from the vector are skipped.}
 \item{inherit_fun}{Optional function taking `(mother, father)` and returning an
 allele matrix for newborns (e.g. `inherit_genotype_simple`). Defaults to `NULL`,
 which leaves newborn alleles as `NULL`.}
+
+\item{dispersal_fun}{Function with signature `function(ind, population)`
+returning a new `patch_id` for the individual. Defaults to
+`default_dispersal_fun` (no movement).}
 }
 \value{
 List with the final `population` and a `summary` tibble of yearly metrics.

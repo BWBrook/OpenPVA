@@ -13,10 +13,12 @@ scenario_spec(
   breeding_fun = default_breeding_fun,
   fecundity_fun = default_fecundity_fun,
   K = NULL,
+  K_patches = NULL,
   harvest_quota = NULL,
   lifecycle_steps = default_lifecycle_steps(),
   mating_fun = default_mating_fun,
-  inherit_fun = NULL
+  inherit_fun = NULL,
+  dispersal_fun = default_dispersal_fun
 )
 }
 \arguments{
@@ -36,6 +38,8 @@ scenario_spec(
 
 \item{K}{Optional numeric carrying capacity for density scaling.}
 
+\item{K_patches}{Optional numeric vector of patch-specific carrying capacities.}
+
 \item{harvest_quota}{Optional harvest quota (scalar or length `n_years`).}
 
 \item{lifecycle_steps}{Character vector describing the lifecycle order.}
@@ -44,6 +48,9 @@ scenario_spec(
 
 \item{inherit_fun}{Optional function for generating offspring genotypes. `NULL`
 disables inheritance.}
+
+\item{dispersal_fun}{Function controlling movement between patches (defaults to
+`default_dispersal_fun`).}
 }
 \value{
 An object of class `openpva_scenario`.

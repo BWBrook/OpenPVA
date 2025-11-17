@@ -12,10 +12,12 @@ run_basic_simulation_replicates(
   breeding_fun = default_breeding_fun,
   fecundity_fun = default_fecundity_fun,
   K = NULL,
+  K_patches = NULL,
   harvest_quota = NULL,
   lifecycle_steps = default_lifecycle_steps(),
   mating_fun = default_mating_fun,
-  inherit_fun = NULL
+  inherit_fun = NULL,
+  dispersal_fun = default_dispersal_fun
 )
 }
 \arguments{
@@ -33,6 +35,9 @@ run_basic_simulation_replicates(
 
 \item{K}{Optional numeric carrying capacity for ceiling-based survival scaling.}
 
+\item{K_patches}{Optional numeric vector of patch-specific carrying capacities.
+Provide either `K` or `K_patches`, not both.}
+
 \item{harvest_quota}{Optional harvest quota (single value or length `n_years` vector). If
 `lifecycle_steps` omits `"harvest"`, quotas are ignored.}
 
@@ -41,6 +46,8 @@ run_basic_simulation_replicates(
 \item{mating_fun}{Function used for mate selection within each run.}
 
 \item{inherit_fun}{Optional inheritance function applied to newborns.}
+
+\item{dispersal_fun}{Function applied during the `"dispersal"` lifecycle step.}
 }
 \value{
 A list with elements:

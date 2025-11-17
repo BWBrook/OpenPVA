@@ -10,7 +10,7 @@ default_lifecycle_steps <- function() {
 }
 
 .validate_lifecycle_steps <- function(steps) {
-  allowed <- c("age", "survival", "breeding_births", "harvest")
+  allowed <- c("age", "survival", "dispersal", "breeding_births", "harvest")
   if (!is.character(steps) || !length(steps)) {
     stop("lifecycle_steps must be a non-empty character vector")
   }

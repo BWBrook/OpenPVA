@@ -101,3 +101,65 @@ test_that("make_simple_genetic_scenario builds runnable scenario", {
   alleles_flag <- vapply(final_pop, function(individual) !is.null(individual$alleles), logical(1))
   expect_true(any(alleles_flag))
 })
+
+test_that("scenario_spec carries dispersal_fun through run_scenario", {
+  init_fun <- function() {
+    pop <- initialize_population(n = 4, max_age = 1)
+    initialize_patches(pop, patch_ids = c(1, 1, 2, 2))
+  }
+  survival_fun <- function(ind) 1
+  breeding_fun <- function(ind) FALSE
+  fecundity_fun <- function(ind) 0L
+  dispersal_fun <- function(ind, population) {
+    if (!is.na(ind$patch_id) && ind$patch_id == 1L) return(2L)
+    ind$patch_id
+  }
+
+  sc <- scenario_spec(
+    name = "dispersal_test",
+    n_runs = 2,
+    n_years = 1,
+    init_fun = init_fun,
+    survival_fun = survival_fun,
+    breeding_fun = breeding_fun,
+    fecundity_fun = fecundity_fun,
+    lifecycle_steps = c("age", "survival", "dispersal"),
+    dispersal_fun = dispersal_fun
+  )
+  expect_true(inherits(sc, "openpva_scenario"))
+
+  out <- run_scenario(sc)
+  expect_equal(out$scenario, sc)
+  expect_equal(length(out$sim_output$runs), 2L)
+
+  check_pids <- function(run_output) {
+    all(vapply(run_output$population, function(ind) ind$patch_id, integer(1)) == 2L)
+  }
+  expect_true(all(vapply(out$sim_output$runs, check_pids, logical(1))))
+})
+
+test_that("make_two_patch_spatial_scenario builds and runs", {
+  sc <- make_two_patch_spatial_scenario(
+    name = "two_patch_test",
+    n_runs = 3,
+    n_years = 2,
+    initial_n = c(5L, 5L),
+    K_patches = c(10, 10),
+    dispersal_matrix = matrix(c(1, 0,
+                                0, 1),
+                              nrow = 2, byrow = TRUE)
+  )
+  expect_true(inherits(sc, "openpva_scenario"))
+  expect_equal(sc$n_runs, 3L)
+  expect_equal(sc$n_years, 2L)
+  expect_equal(sc$K_patches, c(10, 10))
+  expect_true(is.function(sc$dispersal_fun))
+
+  set.seed(456)
+  out <- run_scenario(sc)
+  expect_equal(length(out$sim_output$runs), 3L)
+  check_patches <- function(run_output) {
+    all(vapply(run_output$population, function(ind) ind$patch_id, integer(1)) %in% c(1L, 2L, NA_integer_))
+  }
+  expect_true(all(vapply(out$sim_output$runs, check_patches, logical(1))))
+})

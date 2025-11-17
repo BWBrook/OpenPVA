@@ -77,5 +77,31 @@ list(
       out_path
     },
     format = "file"
+  ),
+
+  # Spatial example: two-patch scenario with dispersal
+  targets::tar_target(
+    spatial_scenario_two_patch,
+    make_two_patch_spatial_scenario(
+      name = "two_patch_targets",
+      n_runs = 10,
+      n_years = 30,
+      initial_n = c(50L, 10L),
+      K_patches = c(80, 40),
+      dispersal_matrix = matrix(c(0.9, 0.1,
+                                  0.2, 0.8),
+                                nrow = 2, byrow = TRUE)
+    )
+  ),
+  targets::tar_target(
+    spatial_sim_two_patch,
+    run_scenario(spatial_scenario_two_patch)
+  ),
+  targets::tar_target(
+    spatial_two_patch_patch_summary,
+    summarise_patch_occupancy_final(
+      sim_output = spatial_sim_two_patch$sim_output,
+      n_patches = 2
+    )
   )
 )
