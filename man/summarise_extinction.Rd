@@ -4,15 +4,20 @@
 \alias{summarise_extinction}
 \title{Summarise extinction outcomes across replicates}
 \usage{
-summarise_extinction(sim_output)
+summarise_extinction(sim_output, threshold = 0)
 }
 \arguments{
 \item{sim_output}{A list returned by `run_basic_simulation_replicates()`.}
+
+\item{threshold}{Population size threshold at or below which a run is
+considered (quasi-)extinct. Defaults to `0`, which matches the previous
+behaviour of treating only true extinction as failure.}
 }
 \value{
 A tibble with columns `n_runs`, `p_extinct`, `mean_time_to_extinction`,
   and `median_time_to_extinction`.
 }
 \description{
-Computes high-level extinction statistics from `run_basic_simulation_replicates()` output.
+Computes high-level extinction or quasi-extinction statistics from
+`run_basic_simulation_replicates()` output.
 }

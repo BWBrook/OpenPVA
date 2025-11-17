@@ -143,6 +143,10 @@ Density feedback can now be specified either as a single global carrying capacit
 
 Spatial processes now include a dispersal module (`apply_dispersal()`) that updates `patch_id` based on a `dispersal_fun`. The lifecycle pipeline accepts an optional `"dispersal"` step, allowing users to place movement anywhere in the yearly sequence.
 
+Management-facing helpers expose extinction probabilities (including quasi-extinction thresholds), harvest yields, and a simple `compare_scenarios()` wrapper so different strategies can be evaluated side by side using common decision metrics.
+
+Supplementation/translocation is modelled as an optional "supplementation" lifecycle step that adds individuals via `apply_supplementation()`, with per-year quotas threaded through controllers and scenarios for basic rescue experiments.
+
 Each of these modules should follow the same core interface: operate on a population, return a modified population, and avoid side effects.
 
 We will progressively build these modules in phases. Early development focuses on **demography**, with genetics and spatial structure layered in afterwards.

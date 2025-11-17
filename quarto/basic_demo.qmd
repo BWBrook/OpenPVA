@@ -112,3 +112,84 @@ patch_summary <- OpenPVA::summarise_patch_occupancy_final(
 )
 patch_summary
 ```
+
+## Comparing harvest strategies
+
+```{r}
+sc_low_harvest <- OpenPVA::scenario_spec(
+  name = "low_harvest",
+  n_runs = 50,
+  n_years = 50,
+  init_fun = function() OpenPVA::initialize_population(80),
+  survival_fun = OpenPVA::default_survival_fun,
+  breeding_fun = OpenPVA::default_breeding_fun,
+  fecundity_fun = OpenPVA::default_fecundity_fun,
+  K = 100,
+  harvest_quota = 2,
+  lifecycle_steps = OpenPVA::default_lifecycle_steps()
+)
+
+sc_high_harvest <- OpenPVA::scenario_spec(
+  name = "high_harvest",
+  n_runs = 50,
+  n_years = 50,
+  init_fun = function() OpenPVA::initialize_population(80),
+  survival_fun = OpenPVA::default_survival_fun,
+  breeding_fun = OpenPVA::default_breeding_fun,
+  fecundity_fun = OpenPVA::default_fecundity_fun,
+  K = 100,
+  harvest_quota = 10,
+  lifecycle_steps = OpenPVA::default_lifecycle_steps()
+)
+
+harvest_scenarios <- list(
+  low = sc_low_harvest,
+  high = sc_high_harvest
+)
+
+harvest_comparison <- OpenPVA::compare_scenarios(
+  harvest_scenarios,
+  extinction_threshold = 0
+)
+harvest_comparison
+```
+
+## Rescue via supplementation
+
+```{r}
+supp_steps <- c("age", "survival", "supplementation", "harvest")
+
+sc_harvest_only <- OpenPVA::scenario_spec(
+  name = "harvest_only",
+  n_runs = 40,
+  n_years = 40,
+  init_fun = function() OpenPVA::initialize_population(50),
+  survival_fun = OpenPVA::default_survival_fun,
+  breeding_fun = OpenPVA::default_breeding_fun,
+  fecundity_fun = OpenPVA::default_fecundity_fun,
+  K = 80,
+  harvest_quota = 5,
+  lifecycle_steps = supp_steps
+)
+
+sc_harvest_plus_supp <- OpenPVA::scenario_spec(
+  name = "harvest_plus_supp",
+  n_runs = 40,
+  n_years = 40,
+  init_fun = function() OpenPVA::initialize_population(50),
+  survival_fun = OpenPVA::default_survival_fun,
+  breeding_fun = OpenPVA::default_breeding_fun,
+  fecundity_fun = OpenPVA::default_fecundity_fun,
+  K = 80,
+  harvest_quota = 5,
+  lifecycle_steps = supp_steps,
+  supplement_quota = 2,
+  supplement_patch = 1L
+)
+
+rescue_comparison <- OpenPVA::compare_scenarios(
+  list(harvest_only = sc_harvest_only, harvest_plus_supp = sc_harvest_plus_supp),
+  extinction_threshold = 0
+)
+rescue_comparison
+```

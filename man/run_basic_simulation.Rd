@@ -16,7 +16,9 @@ run_basic_simulation(
   lifecycle_steps = default_lifecycle_steps(),
   mating_fun = default_mating_fun,
   inherit_fun = NULL,
-  dispersal_fun = default_dispersal_fun
+  dispersal_fun = default_dispersal_fun,
+  supplement_quota = NULL,
+  supplement_patch = NULL
 )
 }
 \arguments{
@@ -54,9 +56,16 @@ which leaves newborn alleles as `NULL`.}
 \item{dispersal_fun}{Function with signature `function(ind, population)`
 returning a new `patch_id` for the individual. Defaults to
 `default_dispersal_fun` (no movement).}
+
+\item{supplement_quota}{Optional supplementation quota (single value or length
+`n_years` vector). Applied only if `"supplementation"` is in `lifecycle_steps`.}
+
+\item{supplement_patch}{Optional patch identifier assigned to all
+supplemented individuals (defaults to `NA`).}
 }
 \value{
-List with the final `population` and a `summary` tibble of yearly metrics.
+List with the final `population` and a `summary` tibble of yearly metrics
+  (including a `n_supplemented` column).
 }
 \description{
 Applies ageing, survival, and reproduction processes over multiple years.

@@ -18,6 +18,10 @@
 #'   disables inheritance.
 #' @param dispersal_fun Function controlling movement between patches (defaults to
 #'   `default_dispersal_fun`).
+#' @param supplement_quota Optional numeric scalar or vector (length `n_years`)
+#'   giving supplementation quotas for the "supplementation" lifecycle step.
+#' @param supplement_patch Optional patch identifier assigned to all added
+#'   individuals (defaults to `NA`).
 #'
 #' @return An object of class `openpva_scenario`.
 #' @export
@@ -35,7 +39,9 @@ scenario_spec <- function(
     lifecycle_steps = default_lifecycle_steps(),
     mating_fun = default_mating_fun,
     inherit_fun = NULL,
-    dispersal_fun = default_dispersal_fun) {
+    dispersal_fun = default_dispersal_fun,
+    supplement_quota = NULL,
+    supplement_patch = NULL) {
   scenario <- list(
     name = name,
     n_runs = n_runs,
@@ -50,7 +56,9 @@ scenario_spec <- function(
     lifecycle_steps = lifecycle_steps,
     mating_fun = mating_fun,
     inherit_fun = inherit_fun,
-    dispersal_fun = dispersal_fun
+    dispersal_fun = dispersal_fun,
+    supplement_quota = supplement_quota,
+    supplement_patch = supplement_patch
   )
   .validate_scenario(scenario)
   class(scenario) <- c("openpva_scenario", "list")
@@ -84,7 +92,9 @@ run_scenario <- function(scenario) {
     lifecycle_steps = scenario$lifecycle_steps,
     mating_fun = scenario$mating_fun,
     inherit_fun = scenario$inherit_fun,
-    dispersal_fun = scenario$dispersal_fun
+    dispersal_fun = scenario$dispersal_fun,
+    supplement_quota = scenario$supplement_quota,
+    supplement_patch = scenario$supplement_patch
   )
   list(scenario = scenario, sim_output = sim_output)
 }
@@ -295,6 +305,11 @@ read_scenario_yaml <- function(path) {
   lifecycle_steps <- cfg$lifecycle_steps %||% default_lifecycle_steps()
   lifecycle_steps <- unlist(lifecycle_steps)
 
+  management <- cfg$management %||% list()
+  harvest_quota <- if (!is.null(management$harvest_quota)) management$harvest_quota else cfg$harvest_quota
+  supplement_quota <- management$supplement_quota %||% NULL
+  supplement_patch <- management$supplement_patch %||% NULL
+
   scenario_spec(
     name = cfg$name,
     n_runs = cfg$n_runs,
@@ -304,8 +319,10 @@ read_scenario_yaml <- function(path) {
     breeding_fun = .resolve_function(breeding_fun_name),
     fecundity_fun = .resolve_function(fecundity_fun_name),
     K = cfg$K,
-    harvest_quota = cfg$harvest_quota,
-    lifecycle_steps = lifecycle_steps
+    harvest_quota = harvest_quota,
+    lifecycle_steps = lifecycle_steps,
+    supplement_quota = supplement_quota,
+    supplement_patch = supplement_patch
   )
 }
 
@@ -342,6 +359,15 @@ read_scenario_yaml <- function(path) {
   }
   if (!is.function(scenario$dispersal_fun)) {
     stop("dispersal_fun must be a function")
+  }
+  if (!is.null(scenario$supplement_quota)) {
+    if (!is.numeric(scenario$supplement_quota) ||
+        !length(scenario$supplement_quota) %in% c(1L, scenario$n_years)) {
+      stop("supplement_quota must be NULL or numeric of length 1 or n_years", call. = FALSE)
+    }
+  }
+  if (!is.null(scenario$supplement_patch)) {
+    scenario$supplement_patch <- as.integer(scenario$supplement_patch)
   }
   .validate_lifecycle_steps(scenario$lifecycle_steps)
   invisible(scenario)

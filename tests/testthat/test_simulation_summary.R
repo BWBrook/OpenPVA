@@ -1,10 +1,16 @@
-test_that("summarise_extinction computes expected stats", {
-  ext <- tibble::tibble(
-    run = 1:4,
-    went_extinct = c(TRUE, FALSE, TRUE, FALSE),
-    time_to_extinction = c(5L, NA_integer_, 3L, NA_integer_)
+test_that("summarise_extinction computes expected stats from summary", {
+  summary_tbl <- tibble::tibble(
+    run = c(rep(1, 5), rep(2, 5), rep(3, 4), rep(4, 4)),
+    year = c(1:5, 1:5, 1:4, 1:4),
+    n_alive = c(10, 9, 8, 7, 0,
+                10, 9, 8, 7, 6,
+                6, 3, 0, 0,
+                5, 5, 5, 5),
+    n_births = 0L,
+    n_harvested = 0L,
+    survival_scale = 1
   )
-  sim_output <- list(extinction = ext)
+  sim_output <- list(summary = summary_tbl)
   summary <- summarise_extinction(sim_output)
   expect_s3_class(summary, "tbl_df")
   expect_equal(summary$n_runs, 4L)
@@ -47,13 +53,60 @@ test_that("compute_mean_trajectory returns empty tibble for empty summary", {
 })
 
 test_that("summarise_extinction returns NA stats when no extinctions", {
-  ext <- tibble::tibble(
-    run = 1:2,
-    went_extinct = c(FALSE, FALSE),
-    time_to_extinction = c(NA_integer_, NA_integer_)
+  summary_tbl <- tibble::tibble(
+    run = rep(1:2, each = 3),
+    year = rep(1:3, times = 2),
+    n_alive = c(5, 5, 5, 6, 6, 6),
+    n_births = 0L,
+    n_harvested = 0L,
+    survival_scale = 1
   )
-  summary <- summarise_extinction(list(extinction = ext))
+  summary <- summarise_extinction(list(summary = summary_tbl))
   expect_equal(summary$p_extinct, 0)
   expect_true(is.na(summary$mean_time_to_extinction))
   expect_true(is.na(summary$median_time_to_extinction))
+})
+
+test_that("summarise_extinction falls back to extinction table when needed", {
+  ext <- tibble::tibble(
+    run = 1:2,
+    went_extinct = c(TRUE, FALSE),
+    time_to_extinction = c(2L, NA_integer_)
+  )
+  summary <- summarise_extinction(list(extinction = ext))
+  expect_equal(summary$p_extinct, 0.5)
+  expect_equal(summary$mean_time_to_extinction, 2)
+})
+
+test_that("summarise_extinction obeys quasi-extinction threshold", {
+  summary_tbl <- tibble::tibble(
+    run = rep(1:2, each = 4),
+    year = rep(1:4, times = 2),
+    n_alive = c(10, 6, 4, 3, 10, 9, 8, 7),
+    n_births = 0L,
+    n_harvested = 0L,
+    survival_scale = 1
+  )
+  sim_output <- list(summary = summary_tbl)
+  res_true <- summarise_extinction(sim_output, threshold = 0)
+  res_quasi <- summarise_extinction(sim_output, threshold = 5)
+  expect_true(res_quasi$p_extinct >= res_true$p_extinct)
+  expect_equal(res_true$n_runs, res_quasi$n_runs)
+})
+
+test_that("summarise_harvest_yield aggregates per-run yields", {
+  summary_tbl <- tibble::tibble(
+    run = c(1, 1, 2, 2),
+    year = c(1, 2, 1, 2),
+    n_alive = c(10, 9, 8, 7),
+    n_births = 0L,
+    n_harvested = c(1L, 2L, 0L, 1L),
+    survival_scale = 1
+  )
+  sim_output <- list(summary = summary_tbl)
+  harvest <- summarise_harvest_yield(sim_output)
+  expect_equal(nrow(harvest$per_run), 2L)
+  expect_equal(harvest$per_run$total_harvest, c(3, 1))
+  expect_equal(harvest$overall$n_runs, 2L)
+  expect_equal(harvest$overall$mean_total_harvest, mean(c(3, 1)))
 })

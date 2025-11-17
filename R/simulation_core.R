@@ -27,7 +27,13 @@
 #'   returning a new `patch_id` for the individual. Defaults to
 #'   `default_dispersal_fun` (no movement).
 #'
-#' @return List with the final `population` and a `summary` tibble of yearly metrics.
+#' @param supplement_quota Optional supplementation quota (single value or length
+#'   `n_years` vector). Applied only if `"supplementation"` is in `lifecycle_steps`.
+#' @param supplement_patch Optional patch identifier assigned to all
+#'   supplemented individuals (defaults to `NA`).
+#'
+#' @return List with the final `population` and a `summary` tibble of yearly metrics
+#'   (including a `n_supplemented` column).
 #' @export
 run_basic_simulation <- function(
     initial_population,
@@ -41,7 +47,9 @@ run_basic_simulation <- function(
     lifecycle_steps = default_lifecycle_steps(),
     mating_fun = default_mating_fun,
     inherit_fun = NULL,
-    dispersal_fun = default_dispersal_fun) {
+    dispersal_fun = default_dispersal_fun,
+    supplement_quota = NULL,
+    supplement_patch = NULL) {
   lifecycle_steps <- force(lifecycle_steps)
   if (!is.numeric(n_years) || length(n_years) != 1L || n_years < 0) {
     stop("n_years must be a single non-negative numeric value")
@@ -84,6 +92,25 @@ run_basic_simulation <- function(
     }
   }
 
+  if (is.null(supplement_quota)) {
+    supplement_vec <- if (n_years > 0) rep.int(0L, n_years) else integer(0)
+  } else {
+    if (!is.numeric(supplement_quota)) {
+      stop("supplement_quota must be numeric or integer", call. = FALSE)
+    }
+    if (!length(supplement_quota) %in% c(1L, n_years)) {
+      stop("supplement_quota must have length 1 or length equal to n_years", call. = FALSE)
+    }
+    supplement_vec <- as.integer(round(supplement_quota))
+    if (length(supplement_vec) == 1L && n_years > 0) {
+      supplement_vec <- rep.int(supplement_vec, n_years)
+    }
+  }
+
+  if (!is.null(supplement_patch)) {
+    supplement_patch <- as.integer(supplement_patch)
+  }
+
   .validate_lifecycle_steps(lifecycle_steps)
 
   population <- initial_population
@@ -96,6 +123,7 @@ run_basic_simulation <- function(
       n_male_alive = integer(),
       n_births = integer(),
       n_harvested = integer(),
+      n_supplemented = integer(),
       survival_scale = numeric()
     )
     return(list(population = population, summary = summary_tbl))
@@ -106,6 +134,7 @@ run_basic_simulation <- function(
   for (year in seq_len(n_years)) {
     n_births_year <- 0L
     n_harvested_year <- 0L
+    n_supplemented_year <- 0L
     survival_scale_year <- 1
 
     for (step in lifecycle_steps) {
@@ -169,6 +198,17 @@ run_basic_simulation <- function(
         population <- apply_survival(population, survival_fun_year)
       } else if (step == "dispersal") {
         population <- apply_dispersal(population, dispersal_fun)
+      } else if (step == "supplementation") {
+        quota_this_year <- if (length(supplement_vec)) supplement_vec[year] else 0L
+        if (!is.na(quota_this_year) && quota_this_year > 0L) {
+          supplement_result <- apply_supplementation(
+            population = population,
+            n_add = quota_this_year,
+            patch_id = supplement_patch
+          )
+          population <- supplement_result$population
+          n_supplemented_year <- n_supplemented_year + supplement_result$n_added
+        }
       } else if (step == "breeding_births") {
         breeders <- determine_breeding(population, breeding_fun)
         pre_birth_count <- length(population)
@@ -204,6 +244,7 @@ run_basic_simulation <- function(
       n_male_alive = n_male_alive,
       n_births = n_births_year,
       n_harvested = n_harvested_year,
+      n_supplemented = n_supplemented_year,
       survival_scale = survival_scale_year
     )
   }
@@ -215,6 +256,7 @@ run_basic_simulation <- function(
     n_male_alive = vapply(summary_rows, function(x) x$n_male_alive, integer(1)),
     n_births = vapply(summary_rows, function(x) x$n_births, integer(1)),
     n_harvested = vapply(summary_rows, function(x) x$n_harvested, integer(1)),
+    n_supplemented = vapply(summary_rows, function(x) x$n_supplemented, integer(1)),
     survival_scale = vapply(summary_rows, function(x) x$survival_scale, numeric(1))
   )
 
@@ -246,7 +288,7 @@ run_basic_simulation <- function(
 #' @return A list with elements:
 #'   \itemize{
 #'     \item `runs`: list of length `n_runs`, each containing the output of `run_basic_simulation()`.
-#'     \item `summary`: tibble with columns `run`, `year`, `n_alive`, `n_female_alive`, `n_male_alive`, `n_births`, `n_harvested`, `survival_scale`.
+#'     \item `summary`: tibble with columns `run`, `year`, `n_alive`, `n_female_alive`, `n_male_alive`, `n_births`, `n_harvested`, `n_supplemented`, `survival_scale`.
 #'     \item `extinction`: tibble with columns `run`, `went_extinct`, `time_to_extinction`.
 #'   }
 #' @export
@@ -263,7 +305,9 @@ run_basic_simulation_replicates <- function(
     lifecycle_steps = default_lifecycle_steps(),
     mating_fun = default_mating_fun,
     inherit_fun = NULL,
-    dispersal_fun = default_dispersal_fun) {
+    dispersal_fun = default_dispersal_fun,
+    supplement_quota = NULL,
+    supplement_patch = NULL) {
   lifecycle_steps <- force(lifecycle_steps)
   if (!is.numeric(n_runs) || length(n_runs) != 1L || n_runs < 1) {
     stop("n_runs must be a single numeric value greater than or equal to 1")
@@ -291,6 +335,18 @@ run_basic_simulation_replicates <- function(
     K_patches <- as.numeric(K_patches)
   }
 
+  if (!is.null(supplement_quota)) {
+    if (!is.numeric(supplement_quota)) {
+      stop("supplement_quota must be numeric or integer", call. = FALSE)
+    }
+    if (!length(supplement_quota) %in% c(1L, n_years)) {
+      stop("supplement_quota must have length 1 or length equal to n_years", call. = FALSE)
+    }
+  }
+  if (!is.null(supplement_patch)) {
+    supplement_patch <- as.integer(supplement_patch)
+  }
+
   run_results <- vector("list", n_runs)
   run_summaries <- vector("list", n_runs)
 
@@ -308,7 +364,9 @@ run_basic_simulation_replicates <- function(
       lifecycle_steps = lifecycle_steps,
       mating_fun = mating_fun,
       inherit_fun = inherit_fun,
-      dispersal_fun = dispersal_fun
+      dispersal_fun = dispersal_fun,
+      supplement_quota = supplement_quota,
+      supplement_patch = supplement_patch
     )
     run_results[[run]] <- sim_result
     run_summaries[[run]] <- sim_result$summary

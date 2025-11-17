@@ -163,3 +163,81 @@ test_that("make_two_patch_spatial_scenario builds and runs", {
   }
   expect_true(all(vapply(out$sim_output$runs, check_patches, logical(1))))
 })
+
+test_that("read_scenario_yaml handles management block", {
+  lines <- c(
+    "name: 'yaml_mgmt'",
+    "n_runs: 3",
+    "n_years: 4",
+    "initializer:",
+    "  fun: 'initialize_population'",
+    "  args:",
+    "    'n': 10",
+    "survival_fun: 'default_survival_fun'",
+    "breeding_fun: 'default_breeding_fun'",
+    "fecundity_fun: 'default_fecundity_fun'",
+    "K: 50",
+    "lifecycle_steps:",
+    "  - age",
+    "  - survival",
+    "  - supplementation",
+    "  - harvest",
+    "management:",
+    "  harvest_quota: 3",
+    "  supplement_quota: 1",
+    "  supplement_patch: 2"
+  )
+  yaml_text <- paste(lines, collapse = "\n")
+
+  tmp <- tempfile(fileext = ".yaml")
+  writeLines(yaml_text, tmp)
+  on.exit(unlink(tmp), add = TRUE)
+
+  sc <- read_scenario_yaml(tmp)
+  expect_true(inherits(sc, "openpva_scenario"))
+  expect_equal(sc$harvest_quota, 3)
+  expect_equal(sc$supplement_quota, 1)
+  expect_equal(sc$supplement_patch, 2L)
+  expect_true("supplementation" %in% sc$lifecycle_steps)
+
+  out <- run_scenario(sc)
+  expect_true(any(out$sim_output$summary$n_supplemented > 0L))
+  expect_true(any(out$sim_output$summary$n_harvested >= 0L))
+})
+test_that("read_scenario_yaml handles management block", {
+  yaml_text <- "name: 'yaml_mgmt'\n"
+  yaml_text <- paste0(yaml_text, "n_runs: 3\n")
+  yaml_text <- paste0(yaml_text, "n_years: 4\n")
+  yaml_text <- paste0(yaml_text, "initializer:\n")
+  yaml_text <- paste0(yaml_text, "  fun: 'initialize_population'\n")
+  yaml_text <- paste0(yaml_text, "  args:\n")
+  yaml_text <- paste0(yaml_text, "    n: 10\n")
+  yaml_text <- paste0(yaml_text, "survival_fun: 'default_survival_fun'\n")
+  yaml_text <- paste0(yaml_text, "breeding_fun: 'default_breeding_fun'\n")
+  yaml_text <- paste0(yaml_text, "fecundity_fun: 'default_fecundity_fun'\n")
+  yaml_text <- paste0(yaml_text, "K: 50\n")
+  yaml_text <- paste0(yaml_text, "lifecycle_steps:\n")
+  yaml_text <- paste0(yaml_text, "  - age\n")
+  yaml_text <- paste0(yaml_text, "  - survival\n")
+  yaml_text <- paste0(yaml_text, "  - supplementation\n")
+  yaml_text <- paste0(yaml_text, "  - harvest\n")
+  yaml_text <- paste0(yaml_text, "management:\n")
+  yaml_text <- paste0(yaml_text, "  harvest_quota: 3\n")
+  yaml_text <- paste0(yaml_text, "  supplement_quota: 1\n")
+  yaml_text <- paste0(yaml_text, "  supplement_patch: 2\n")
+
+  tmp <- tempfile(fileext = ".yaml")
+  writeLines(yaml_text, tmp)
+  on.exit(unlink(tmp), add = TRUE)
+
+  sc <- read_scenario_yaml(tmp)
+  expect_true(inherits(sc, "openpva_scenario"))
+  expect_equal(sc$harvest_quota, 3)
+  expect_equal(sc$supplement_quota, 1)
+  expect_equal(sc$supplement_patch, 2L)
+  expect_true("supplementation" %in% sc$lifecycle_steps)
+
+  out <- run_scenario(sc)
+  expect_true(any(out$sim_output$summary$n_supplemented > 0L))
+  expect_true(any(out$sim_output$summary$n_harvested >= 0L))
+})

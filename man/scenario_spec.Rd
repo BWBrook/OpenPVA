@@ -18,7 +18,9 @@ scenario_spec(
   lifecycle_steps = default_lifecycle_steps(),
   mating_fun = default_mating_fun,
   inherit_fun = NULL,
-  dispersal_fun = default_dispersal_fun
+  dispersal_fun = default_dispersal_fun,
+  supplement_quota = NULL,
+  supplement_patch = NULL
 )
 }
 \arguments{
@@ -51,6 +53,12 @@ disables inheritance.}
 
 \item{dispersal_fun}{Function controlling movement between patches (defaults to
 `default_dispersal_fun`).}
+
+\item{supplement_quota}{Optional numeric scalar or vector (length `n_years`)
+giving supplementation quotas for the "supplementation" lifecycle step.}
+
+\item{supplement_patch}{Optional patch identifier assigned to all added
+individuals (defaults to `NA`).}
 }
 \value{
 An object of class `openpva_scenario`.
