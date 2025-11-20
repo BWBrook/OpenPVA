@@ -154,6 +154,30 @@ harvest_comparison <- OpenPVA::compare_scenarios(
 harvest_comparison
 ```
 
+## Custom age-structured survival from a table
+
+```{r}
+surv_table <- OpenPVA::make_default_survival_table()
+surv_table$p_surv[surv_table$age_min >= 5] <- 0.5
+
+surv_table <- OpenPVA::validate_survival_table(surv_table)
+surv_fun_custom <- OpenPVA::build_survival_fun_from_table(surv_table)
+
+sc_custom_surv <- OpenPVA::scenario_spec(
+  name = "custom_survival_yaml_demo",
+  n_runs = 30,
+  n_years = 50,
+  init_fun = function() OpenPVA::initialize_population(80),
+  survival_fun = surv_fun_custom,
+  breeding_fun = OpenPVA::default_breeding_fun,
+  fecundity_fun = OpenPVA::default_fecundity_fun,
+  K = 100
+)
+
+out_custom <- OpenPVA::run_scenario(sc_custom_surv)
+OpenPVA::summarise_extinction(out_custom$sim_output)
+```
+
 ## Rescue via supplementation
 
 ```{r}

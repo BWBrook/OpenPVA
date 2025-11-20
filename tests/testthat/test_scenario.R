@@ -211,7 +211,7 @@ test_that("read_scenario_yaml handles management block", {
   yaml_text <- paste0(yaml_text, "initializer:\n")
   yaml_text <- paste0(yaml_text, "  fun: 'initialize_population'\n")
   yaml_text <- paste0(yaml_text, "  args:\n")
-  yaml_text <- paste0(yaml_text, "    n: 10\n")
+  yaml_text <- paste0(yaml_text, "    \"n\": 10\n")
   yaml_text <- paste0(yaml_text, "survival_fun: 'default_survival_fun'\n")
   yaml_text <- paste0(yaml_text, "breeding_fun: 'default_breeding_fun'\n")
   yaml_text <- paste0(yaml_text, "fecundity_fun: 'default_fecundity_fun'\n")
