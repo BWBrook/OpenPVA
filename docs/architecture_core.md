@@ -147,6 +147,10 @@ Management-facing helpers expose extinction probabilities (including quasi-extin
 
 Supplementation/translocation is modelled as an optional "supplementation" lifecycle step that adds individuals via `apply_supplementation()`, with per-year quotas threaded through controllers and scenarios for basic rescue experiments.
 
+Environmental variation and catastrophes on survival are supported via simple year-level multipliers: a lognormal environmental factor with mean 1 on the original scale (`env_surv_sd`) and an optional Bernoulli catastrophe with a survival multiplier (`cat_surv_prob`, `cat_surv_mult`).
+
+Baseline survival, breeding eligibility, and fecundity can be expressed as tables (in R or YAML) and compiled into lifecycle functions via the demography spec builders, providing a transparent, declarative way to set vital-rate schedules.
+
 Each of these modules should follow the same core interface: operate on a population, return a modified population, and avoid side effects.
 
 We will progressively build these modules in phases. Early development focuses on **demography**, with genetics and spatial structure layered in afterwards.

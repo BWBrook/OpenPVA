@@ -7,7 +7,19 @@
 read_scenario_yaml(path)
 }
 \arguments{
-\item{path}{Path to a YAML file.}
+\item{path}{Path to a YAML file.
+
+The YAML may optionally include a `demography` block with nested
+`survival$table`, `breeding$table`, and `fecundity$table`, each listing rows
+matching the corresponding validation helpers (e.g. columns `age_min`,
+`age_max`, `sex`, and `p_surv`/`can_breed`/`lambda`). When present, these
+tables are compiled into functions via
+`build_survival_fun_from_table()`, `build_breeding_fun_from_table()`, and
+`build_fecundity_fun_from_table()`, overriding any function-name fields at
+the top level.
+
+Survival environmental variation and catastrophes can be set via top-level
+keys `env_surv_sd`, `cat_surv_prob`, and `cat_surv_mult`.}
 }
 \value{
 An `openpva_scenario` object.

@@ -20,7 +20,10 @@ scenario_spec(
   inherit_fun = NULL,
   dispersal_fun = default_dispersal_fun,
   supplement_quota = NULL,
-  supplement_patch = NULL
+  supplement_patch = NULL,
+  env_surv_sd = 0,
+  cat_surv_prob = 0,
+  cat_surv_mult = 1
 )
 }
 \arguments{
@@ -59,6 +62,16 @@ giving supplementation quotas for the "supplementation" lifecycle step.}
 
 \item{supplement_patch}{Optional patch identifier assigned to all added
 individuals (defaults to `NA`).}
+
+\item{env_surv_sd}{Standard deviation of a lognormal year-level multiplier on
+survival (environmental variation). Set to 0 to disable.}
+
+\item{cat_surv_prob}{Per-year probability of a catastrophic survival event
+(Bernoulli). Set to 0 to disable.}
+
+\item{cat_surv_mult}{Multiplicative factor applied to survival probabilities
+in catastrophe years. Typical values lie within (0, 1]; set to 1 to make
+catastrophes neutral even if they occur.}
 }
 \value{
 An object of class `openpva_scenario`.

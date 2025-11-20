@@ -22,6 +22,13 @@
 #'   giving supplementation quotas for the "supplementation" lifecycle step.
 #' @param supplement_patch Optional patch identifier assigned to all added
 #'   individuals (defaults to `NA`).
+#' @param env_surv_sd Standard deviation of a lognormal year-level multiplier on
+#'   survival (environmental variation). Set to 0 to disable.
+#' @param cat_surv_prob Per-year probability of a catastrophic survival event
+#'   (Bernoulli). Set to 0 to disable.
+#' @param cat_surv_mult Multiplicative factor applied to survival probabilities
+#'   in catastrophe years. Typical values lie within (0, 1]; set to 1 to make
+#'   catastrophes neutral even if they occur.
 #'
 #' @return An object of class `openpva_scenario`.
 #' @export
@@ -41,7 +48,13 @@ scenario_spec <- function(
     inherit_fun = NULL,
     dispersal_fun = default_dispersal_fun,
     supplement_quota = NULL,
-    supplement_patch = NULL) {
+    supplement_patch = NULL,
+    env_surv_sd = 0,
+    cat_surv_prob = 0,
+    cat_surv_mult = 1) {
+  env_surv_sd <- as.numeric(env_surv_sd)
+  cat_surv_prob <- as.numeric(cat_surv_prob)
+  cat_surv_mult <- as.numeric(cat_surv_mult)
   scenario <- list(
     name = name,
     n_runs = n_runs,
@@ -58,7 +71,10 @@ scenario_spec <- function(
     inherit_fun = inherit_fun,
     dispersal_fun = dispersal_fun,
     supplement_quota = supplement_quota,
-    supplement_patch = supplement_patch
+    supplement_patch = supplement_patch,
+    env_surv_sd = env_surv_sd,
+    cat_surv_prob = cat_surv_prob,
+    cat_surv_mult = cat_surv_mult
   )
   .validate_scenario(scenario)
   class(scenario) <- c("openpva_scenario", "list")
@@ -94,7 +110,10 @@ run_scenario <- function(scenario) {
     inherit_fun = scenario$inherit_fun,
     dispersal_fun = scenario$dispersal_fun,
     supplement_quota = scenario$supplement_quota,
-    supplement_patch = scenario$supplement_patch
+    supplement_patch = scenario$supplement_patch,
+    env_surv_sd = scenario$env_surv_sd,
+    cat_surv_prob = scenario$cat_surv_prob,
+    cat_surv_mult = scenario$cat_surv_mult
   )
   list(scenario = scenario, sim_output = sim_output)
 }
@@ -275,6 +294,18 @@ print.openpva_scenario <- function(x, ...) {
 #'
 #' @param path Path to a YAML file.
 #'
+#' The YAML may optionally include a `demography` block with nested
+#' `survival$table`, `breeding$table`, and `fecundity$table`, each listing rows
+#' matching the corresponding validation helpers (e.g. columns `age_min`,
+#' `age_max`, `sex`, and `p_surv`/`can_breed`/`lambda`). When present, these
+#' tables are compiled into functions via
+#' `build_survival_fun_from_table()`, `build_breeding_fun_from_table()`, and
+#' `build_fecundity_fun_from_table()`, overriding any function-name fields at
+#' the top level.
+#'
+#' Survival environmental variation and catastrophes can be set via top-level
+#' keys `env_surv_sd`, `cat_surv_prob`, and `cat_surv_mult`.
+#'
 #' @return An `openpva_scenario` object.
 #' @export
 read_scenario_yaml <- function(path) {
@@ -293,14 +324,21 @@ read_scenario_yaml <- function(path) {
   init_fun <- function() {
     f <- .resolve_function(init_spec$fun)
     args <- init_spec$args
-    if (is.null(args)) args <- list()
-    if (!is.list(args)) stop("initializer$args must be a named list")
+    if (is.null(args)) {
+      args <- list()
+    } else {
+      if (!is.list(args)) stop("initializer$args must be a named list")
+      args <- as.list(args)
+    }
     do.call(f, args)
   }
 
   survival_fun_name <- cfg$survival_fun %||% "default_survival_fun"
   breeding_fun_name <- cfg$breeding_fun %||% "default_breeding_fun"
   fecundity_fun_name <- cfg$fecundity_fun %||% "default_fecundity_fun"
+  survival_fun <- .resolve_function(survival_fun_name)
+  breeding_fun <- .resolve_function(breeding_fun_name)
+  fecundity_fun <- .resolve_function(fecundity_fun_name)
 
   lifecycle_steps <- cfg$lifecycle_steps %||% default_lifecycle_steps()
   lifecycle_steps <- unlist(lifecycle_steps)
@@ -310,19 +348,66 @@ read_scenario_yaml <- function(path) {
   supplement_quota <- management$supplement_quota %||% NULL
   supplement_patch <- management$supplement_patch %||% NULL
 
+  demography <- cfg$demography %||% NULL
+
+  to_df <- function(tbl) {
+    if (is.null(tbl)) return(NULL)
+    if (is.data.frame(tbl)) return(tbl)
+    if (is.list(tbl)) return(dplyr::bind_rows(tbl))
+    stop("Demography tables must be data frames or lists", call. = FALSE)
+  }
+
+  if (!is.null(demography$survival$table)) {
+    surv_tbl <- to_df(demography$survival$table)
+    surv_tbl <- validate_survival_table(surv_tbl)
+    survival_fun <- build_survival_fun_from_table(surv_tbl)
+  }
+  if (!is.null(demography$breeding$table)) {
+    breed_tbl <- to_df(demography$breeding$table)
+    breed_tbl <- validate_breeding_table(breed_tbl)
+    breeding_fun <- build_breeding_fun_from_table(breed_tbl)
+  }
+  if (!is.null(demography$fecundity$table)) {
+    fec_tbl <- to_df(demography$fecundity$table)
+    fec_tbl <- validate_fecundity_table(fec_tbl)
+    fecundity_fun <- build_fecundity_fun_from_table(fec_tbl)
+  }
+
+  env_surv_sd <- cfg$env_surv_sd %||% 0
+  cat_surv_prob <- cfg$cat_surv_prob %||% 0
+  cat_surv_mult <- cfg$cat_surv_mult %||% 1
+
+  env_surv_sd <- as.numeric(env_surv_sd)
+  if (length(env_surv_sd) != 1L || is.na(env_surv_sd) || env_surv_sd < 0) {
+    stop("env_surv_sd must be a non-negative numeric value", call. = FALSE)
+  }
+  cat_surv_prob <- as.numeric(cat_surv_prob)
+  if (length(cat_surv_prob) != 1L || is.na(cat_surv_prob) ||
+      cat_surv_prob < 0 || cat_surv_prob > 1) {
+    stop("cat_surv_prob must be within [0, 1]", call. = FALSE)
+  }
+  cat_surv_mult <- as.numeric(cat_surv_mult)
+  if (length(cat_surv_mult) != 1L || is.na(cat_surv_mult) || cat_surv_mult < 0) {
+    stop("cat_surv_mult must be a numeric value >= 0", call. = FALSE)
+  }
+
   scenario_spec(
     name = cfg$name,
     n_runs = cfg$n_runs,
     n_years = cfg$n_years,
     init_fun = init_fun,
-    survival_fun = .resolve_function(survival_fun_name),
-    breeding_fun = .resolve_function(breeding_fun_name),
-    fecundity_fun = .resolve_function(fecundity_fun_name),
+    survival_fun = survival_fun,
+    breeding_fun = breeding_fun,
+    fecundity_fun = fecundity_fun,
     K = cfg$K,
+    K_patches = cfg$K_patches %||% NULL,
     harvest_quota = harvest_quota,
     lifecycle_steps = lifecycle_steps,
     supplement_quota = supplement_quota,
-    supplement_patch = supplement_patch
+    supplement_patch = supplement_patch,
+    env_surv_sd = env_surv_sd,
+    cat_surv_prob = cat_surv_prob,
+    cat_surv_mult = cat_surv_mult
   )
 }
 
@@ -368,6 +453,19 @@ read_scenario_yaml <- function(path) {
   }
   if (!is.null(scenario$supplement_patch)) {
     scenario$supplement_patch <- as.integer(scenario$supplement_patch)
+  }
+  env_surv_sd <- as.numeric(scenario$env_surv_sd %||% 0)
+  if (length(env_surv_sd) != 1L || is.na(env_surv_sd) || env_surv_sd < 0) {
+    stop("env_surv_sd must be a non-negative numeric value", call. = FALSE)
+  }
+  cat_surv_prob <- as.numeric(scenario$cat_surv_prob %||% 0)
+  if (length(cat_surv_prob) != 1L || is.na(cat_surv_prob) ||
+      cat_surv_prob < 0 || cat_surv_prob > 1) {
+    stop("cat_surv_prob must be within [0, 1]", call. = FALSE)
+  }
+  cat_surv_mult <- as.numeric(scenario$cat_surv_mult %||% 1)
+  if (length(cat_surv_mult) != 1L || is.na(cat_surv_mult) || cat_surv_mult < 0) {
+    stop("cat_surv_mult must be a numeric value >= 0", call. = FALSE)
   }
   .validate_lifecycle_steps(scenario$lifecycle_steps)
   invisible(scenario)

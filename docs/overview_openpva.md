@@ -108,3 +108,7 @@ When modifying or extending OpenPVA:
   - And may not be expert programmers.
 
 The goal is not just to “get a model running”, but to build an **extensible framework** that others can trust, inspect, and evolve.
+
+Year-level environmental variation and simple survival catastrophes are available as opt-in parameters (`env_surv_sd`, `cat_surv_prob`, `cat_surv_mult`) that scale survival probabilities without changing existing module interfaces.
+
+Users can define baseline demography via age/sex tables for survival, breeding eligibility, and fecundity (in R or YAML); these tables are validated and compiled into functions, keeping assumptions explicit and reproducible.

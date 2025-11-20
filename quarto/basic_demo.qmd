@@ -178,7 +178,101 @@ out_custom <- OpenPVA::run_scenario(sc_custom_surv)
 OpenPVA::summarise_extinction(out_custom$sim_output)
 ```
 
+## Custom breeding and fecundity from tables
+
+```{r}
+breed_tbl <- OpenPVA::make_default_breeding_table()
+breed_tbl$can_breed[breed_tbl$sex == "F" & breed_tbl$age_min >= 4] <- TRUE
+breed_tbl$age_min[breed_tbl$sex == "F" & breed_tbl$age_min >= 4] <- 5
+
+breed_tbl <- OpenPVA::validate_breeding_table(breed_tbl)
+breeding_fun_custom <- OpenPVA::build_breeding_fun_from_table(breed_tbl)
+
+fec_tbl <- data.frame(
+  age_min = c(0, 5),
+  age_max = c(4, Inf),
+  sex = c("F", "F"),
+  lambda = c(1, 2)
+)
+fec_tbl <- OpenPVA::validate_fecundity_table(fec_tbl)
+fecundity_fun_custom <- OpenPVA::build_fecundity_fun_from_table(fec_tbl)
+
+sc_repro_custom <- OpenPVA::scenario_spec(
+  name = "custom_reproduction_demo",
+  n_runs = 20,
+  n_years = 40,
+  init_fun = function() OpenPVA::initialize_population(80),
+  survival_fun = OpenPVA::default_survival_fun,
+  breeding_fun = breeding_fun_custom,
+  fecundity_fun = fecundity_fun_custom,
+  K = 100
+)
+
+out_repro <- OpenPVA::run_scenario(sc_repro_custom)
+OpenPVA::summarise_extinction(out_repro$sim_output)
+```
+
+## Environmental variation and catastrophes on survival
+
+```{r}
+sc_no_cat <- OpenPVA::scenario_spec(
+  name = "no_cat",
+  n_runs = 50,
+  n_years = 50,
+  init_fun = function() OpenPVA::initialize_population(80),
+  survival_fun = OpenPVA::default_survival_fun,
+  breeding_fun = OpenPVA::default_breeding_fun,
+  fecundity_fun = OpenPVA::default_fecundity_fun,
+  K = 100,
+  lifecycle_steps = c("age", "survival"),
+  env_surv_sd = 0,
+  cat_surv_prob = 0,
+  cat_surv_mult = 1
+)
+
+sc_cat <- OpenPVA::scenario_spec(
+  name = "cat",
+  n_runs = 50,
+  n_years = 50,
+  init_fun = function() OpenPVA::initialize_population(80),
+  survival_fun = OpenPVA::default_survival_fun,
+  breeding_fun = OpenPVA::default_breeding_fun,
+  fecundity_fun = OpenPVA::default_fecundity_fun,
+  K = 100,
+  lifecycle_steps = c("age", "survival"),
+  env_surv_sd = 0,
+  cat_surv_prob = 0.2,
+  cat_surv_mult = 0.3
+)
+
+scenarios_env <- list(no_cat = sc_no_cat, cat = sc_cat)
+
+comp_env <- OpenPVA::compare_scenarios(
+  scenarios_env,
+  extinction_threshold = 0
+)
+comp_env
+```
+
 ## Rescue via supplementation
+
+## Running a scenario with YAML demography
+
+```{r}
+yaml_path <- system.file(
+  "extdata",
+  "demo_demography.yaml",
+  package = "OpenPVA"
+)
+
+sc_demo <- OpenPVA::read_scenario_yaml(yaml_path)
+out_demo <- OpenPVA::run_scenario(sc_demo)
+
+OpenPVA::summarise_extinction(out_demo$sim_output)
+OpenPVA::summarise_harvest_yield(out_demo$sim_output)$overall
+
+head(out_demo$sim_output$summary)
+```
 
 ```{r}
 supp_steps <- c("age", "survival", "supplementation", "harvest")

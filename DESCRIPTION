@@ -32,6 +32,7 @@ Collate:
     'genetics_core.R'
     'lifecycle_age.R'
     'demography_survival_spec.R'
+    'demography_reproduction_spec.R'
     'lifecycle_survival.R'
     'lifecycle_breeding.R'
     'lifecycle_reproduction.R'

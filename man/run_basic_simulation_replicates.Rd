@@ -19,7 +19,10 @@ run_basic_simulation_replicates(
   inherit_fun = NULL,
   dispersal_fun = default_dispersal_fun,
   supplement_quota = NULL,
-  supplement_patch = NULL
+  supplement_patch = NULL,
+  env_surv_sd = 0,
+  cat_surv_prob = 0,
+  cat_surv_mult = 1
 )
 }
 \arguments{
@@ -50,12 +53,22 @@ Provide either `K` or `K_patches`, not both.}
 \item{inherit_fun}{Optional inheritance function applied to newborns.}
 
 \item{dispersal_fun}{Function applied during the `"dispersal"` lifecycle step.}
+
+\item{env_surv_sd}{Standard deviation of a lognormal year-level multiplier on
+survival (environmental variation). Set to 0 to disable.}
+
+\item{cat_surv_prob}{Per-year probability of a catastrophic survival event
+(Bernoulli). Set to 0 to disable.}
+
+\item{cat_surv_mult}{Multiplicative factor applied to survival probabilities
+in catastrophe years. Typical values lie within (0, 1]; set to 1 to make
+catastrophes neutral even if they occur.}
 }
 \value{
 A list with elements:
   \itemize{
     \item `runs`: list of length `n_runs`, each containing the output of `run_basic_simulation()`.
-    \item `summary`: tibble with columns `run`, `year`, `n_alive`, `n_female_alive`, `n_male_alive`, `n_births`, `n_harvested`, `n_supplemented`, `survival_scale`.
+    \item `summary`: tibble with columns `run`, `year`, `n_alive`, `n_female_alive`, `n_male_alive`, `n_births`, `n_harvested`, `n_supplemented`, `survival_scale`, `env_surv_mult`, `cat_surv_mult`, `catastrophe`.
     \item `extinction`: tibble with columns `run`, `went_extinct`, `time_to_extinction`.
   }
 }

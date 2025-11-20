@@ -31,9 +31,17 @@
 #'   `n_years` vector). Applied only if `"supplementation"` is in `lifecycle_steps`.
 #' @param supplement_patch Optional patch identifier assigned to all
 #'   supplemented individuals (defaults to `NA`).
+#' @param env_surv_sd Standard deviation of a lognormal year-level multiplier on
+#'   survival (environmental variation). Set to 0 to disable.
+#' @param cat_surv_prob Per-year probability of a catastrophic survival event
+#'   (Bernoulli). Set to 0 to disable.
+#' @param cat_surv_mult Multiplicative factor applied to survival probabilities
+#'   in catastrophe years. Typical values lie within (0, 1]; set to 1 to make
+#'   catastrophes neutral even if they occur.
 #'
 #' @return List with the final `population` and a `summary` tibble of yearly metrics
-#'   (including a `n_supplemented` column).
+#'   (including `n_supplemented`, `env_surv_mult`, `cat_surv_mult`, and
+#'   `catastrophe` flags).
 #' @export
 run_basic_simulation <- function(
     initial_population,
@@ -49,7 +57,10 @@ run_basic_simulation <- function(
     inherit_fun = NULL,
     dispersal_fun = default_dispersal_fun,
     supplement_quota = NULL,
-    supplement_patch = NULL) {
+    supplement_patch = NULL,
+    env_surv_sd = 0,
+    cat_surv_prob = 0,
+    cat_surv_mult = 1) {
   lifecycle_steps <- force(lifecycle_steps)
   if (!is.numeric(n_years) || length(n_years) != 1L || n_years < 0) {
     stop("n_years must be a single non-negative numeric value")
@@ -111,6 +122,20 @@ run_basic_simulation <- function(
     supplement_patch <- as.integer(supplement_patch)
   }
 
+  env_surv_sd <- as.numeric(env_surv_sd)
+  if (length(env_surv_sd) != 1L || is.na(env_surv_sd) || env_surv_sd < 0) {
+    stop("env_surv_sd must be a single non-negative numeric value", call. = FALSE)
+  }
+  cat_surv_prob <- as.numeric(cat_surv_prob)
+  if (length(cat_surv_prob) != 1L || is.na(cat_surv_prob) ||
+      cat_surv_prob < 0 || cat_surv_prob > 1) {
+    stop("cat_surv_prob must be within [0, 1]", call. = FALSE)
+  }
+  cat_surv_mult <- as.numeric(cat_surv_mult)
+  if (length(cat_surv_mult) != 1L || is.na(cat_surv_mult) || cat_surv_mult < 0) {
+    stop("cat_surv_mult must be a single numeric value >= 0", call. = FALSE)
+  }
+
   .validate_lifecycle_steps(lifecycle_steps)
 
   population <- initial_population
@@ -124,7 +149,10 @@ run_basic_simulation <- function(
       n_births = integer(),
       n_harvested = integer(),
       n_supplemented = integer(),
-      survival_scale = numeric()
+      survival_scale = numeric(),
+      env_surv_mult = numeric(),
+      cat_surv_mult = numeric(),
+      catastrophe = logical()
     )
     return(list(population = population, summary = summary_tbl))
   }
@@ -136,6 +164,22 @@ run_basic_simulation <- function(
     n_harvested_year <- 0L
     n_supplemented_year <- 0L
     survival_scale_year <- 1
+
+    env_surv_mult_year <- if (env_surv_sd > 0) {
+      mu <- -0.5 * env_surv_sd^2
+      stats::rnorm(1L, mean = mu, sd = env_surv_sd) |> base::exp()
+    } else {
+      1
+    }
+
+    cat_event_year <- FALSE
+    cat_surv_mult_year <- 1
+    if (cat_surv_prob > 0 && cat_surv_mult < 1) {
+      if (stats::runif(1L) < cat_surv_prob) {
+        cat_event_year <- TRUE
+        cat_surv_mult_year <- cat_surv_mult
+      }
+    }
 
     for (step in lifecycle_steps) {
       if (step == "age") {
@@ -179,7 +223,7 @@ run_basic_simulation <- function(
                 scale <- patch_scales[pid_int]
               }
             }
-            p_scaled <- p * scale
+            p_scaled <- p * scale * env_surv_mult_year * cat_surv_mult_year
             if (p_scaled < 0) p_scaled <- 0
             if (p_scaled > 1) p_scaled <- 1
             p_scaled
@@ -189,7 +233,7 @@ run_basic_simulation <- function(
           survival_scale_year <- compute_survival_scale(n_alive_pre, K)
           survival_fun_year <- function(ind) {
             p <- survival_fun(ind)
-            p_scaled <- p * survival_scale_year
+            p_scaled <- p * survival_scale_year * env_surv_mult_year * cat_surv_mult_year
             if (p_scaled < 0) p_scaled <- 0
             if (p_scaled > 1) p_scaled <- 1
             p_scaled
@@ -245,7 +289,10 @@ run_basic_simulation <- function(
       n_births = n_births_year,
       n_harvested = n_harvested_year,
       n_supplemented = n_supplemented_year,
-      survival_scale = survival_scale_year
+      survival_scale = survival_scale_year,
+      env_surv_mult = env_surv_mult_year,
+      cat_surv_mult = cat_surv_mult_year,
+      catastrophe = cat_event_year
     )
   }
 
@@ -257,7 +304,10 @@ run_basic_simulation <- function(
     n_births = vapply(summary_rows, function(x) x$n_births, integer(1)),
     n_harvested = vapply(summary_rows, function(x) x$n_harvested, integer(1)),
     n_supplemented = vapply(summary_rows, function(x) x$n_supplemented, integer(1)),
-    survival_scale = vapply(summary_rows, function(x) x$survival_scale, numeric(1))
+    survival_scale = vapply(summary_rows, function(x) x$survival_scale, numeric(1)),
+    env_surv_mult = vapply(summary_rows, function(x) x$env_surv_mult, numeric(1)),
+    cat_surv_mult = vapply(summary_rows, function(x) x$cat_surv_mult, numeric(1)),
+    catastrophe = vapply(summary_rows, function(x) x$catastrophe, logical(1))
   )
 
   list(population = population, summary = summary_tbl)
@@ -284,11 +334,18 @@ run_basic_simulation <- function(
 #' @param mating_fun Function used for mate selection within each run.
 #' @param inherit_fun Optional inheritance function applied to newborns.
 #' @param dispersal_fun Function applied during the `"dispersal"` lifecycle step.
+#' @param env_surv_sd Standard deviation of a lognormal year-level multiplier on
+#'   survival (environmental variation). Set to 0 to disable.
+#' @param cat_surv_prob Per-year probability of a catastrophic survival event
+#'   (Bernoulli). Set to 0 to disable.
+#' @param cat_surv_mult Multiplicative factor applied to survival probabilities
+#'   in catastrophe years. Typical values lie within (0, 1]; set to 1 to make
+#'   catastrophes neutral even if they occur.
 #' 
 #' @return A list with elements:
 #'   \itemize{
 #'     \item `runs`: list of length `n_runs`, each containing the output of `run_basic_simulation()`.
-#'     \item `summary`: tibble with columns `run`, `year`, `n_alive`, `n_female_alive`, `n_male_alive`, `n_births`, `n_harvested`, `n_supplemented`, `survival_scale`.
+#'     \item `summary`: tibble with columns `run`, `year`, `n_alive`, `n_female_alive`, `n_male_alive`, `n_births`, `n_harvested`, `n_supplemented`, `survival_scale`, `env_surv_mult`, `cat_surv_mult`, `catastrophe`.
 #'     \item `extinction`: tibble with columns `run`, `went_extinct`, `time_to_extinction`.
 #'   }
 #' @export
@@ -307,7 +364,10 @@ run_basic_simulation_replicates <- function(
     inherit_fun = NULL,
     dispersal_fun = default_dispersal_fun,
     supplement_quota = NULL,
-    supplement_patch = NULL) {
+    supplement_patch = NULL,
+    env_surv_sd = 0,
+    cat_surv_prob = 0,
+    cat_surv_mult = 1) {
   lifecycle_steps <- force(lifecycle_steps)
   if (!is.numeric(n_runs) || length(n_runs) != 1L || n_runs < 1) {
     stop("n_runs must be a single numeric value greater than or equal to 1")
@@ -347,6 +407,20 @@ run_basic_simulation_replicates <- function(
     supplement_patch <- as.integer(supplement_patch)
   }
 
+  env_surv_sd <- as.numeric(env_surv_sd)
+  if (length(env_surv_sd) != 1L || is.na(env_surv_sd) || env_surv_sd < 0) {
+    stop("env_surv_sd must be a single non-negative numeric value", call. = FALSE)
+  }
+  cat_surv_prob <- as.numeric(cat_surv_prob)
+  if (length(cat_surv_prob) != 1L || is.na(cat_surv_prob) ||
+      cat_surv_prob < 0 || cat_surv_prob > 1) {
+    stop("cat_surv_prob must be within [0, 1]", call. = FALSE)
+  }
+  cat_surv_mult <- as.numeric(cat_surv_mult)
+  if (length(cat_surv_mult) != 1L || is.na(cat_surv_mult) || cat_surv_mult < 0) {
+    stop("cat_surv_mult must be a single numeric value >= 0", call. = FALSE)
+  }
+
   run_results <- vector("list", n_runs)
   run_summaries <- vector("list", n_runs)
 
@@ -366,7 +440,10 @@ run_basic_simulation_replicates <- function(
       inherit_fun = inherit_fun,
       dispersal_fun = dispersal_fun,
       supplement_quota = supplement_quota,
-      supplement_patch = supplement_patch
+      supplement_patch = supplement_patch,
+      env_surv_sd = env_surv_sd,
+      cat_surv_prob = cat_surv_prob,
+      cat_surv_mult = cat_surv_mult
     )
     run_results[[run]] <- sim_result
     run_summaries[[run]] <- sim_result$summary
