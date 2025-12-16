@@ -1,136 +1,227 @@
-# Repository Guidelines
+# AGENTS: OpenPVA agentic development harness
 
-This file defines how embedded coding agents (e.g. Codex CLI, ChatGPT-based tools) must behave when operating in the **OpenPVA** repository.
+This file defines how the **Codex CLI agent** should operate in this repository.
+It is written for an R-based, targets-orchestrated simulation engine and assumes
+a “PI in ChatGPT (GPT‑5.2 Pro) + autonomous Codex engineer + human coordinator” loop.
 
-These rules are a short, enforced summary of the more detailed guidance in:
-
-- `docs/overview_openpva.md`
-- `docs/architecture_core.md`
-- `docs/dev_conventions_r.md`
-- `docs/gapps_heritage.md`
-- `docs/roadmap_and_scope.md`
-- `docs/agent_guidelines_codex.md`
-
-Agents are expected to “load” those documents conceptually before editing code.
+If anything in this file conflicts with other guidance, **this file wins** for this repo.
 
 ---
 
-## 1. Purpose and Scope
+## 0) What OpenPVA is
 
-OpenPVA is an open, modular framework for **Population Viability Analysis (PVA)** in R. It is intended to be:
+OpenPVA is an **individual-based Population Viability Analysis (PVA) framework in R** designed to be:
 
-- Transparent
-- Reproducible
-- Extensible
-- Community-maintainable
+- **General**: reusable engine for many PVAs, not a single-species model.
+- **Modular**: lifecycle processes are separate, composable modules.
+- **Transparent**: plain R, no compiled black boxes, no GUI magic.
+- **Reproducible**: `renv` for environments, `targets` for pipelines, Quarto for demos, YAML for scenarios/config.
 
-Agents are here to assist with **implementation**, not to redefine the architecture or scope.
-
-Current development phase: **Phase 1 – Core Demographic Engine**  
-(See `docs/roadmap_and_scope.md`.)
+Treat this as research software that must be **auditable**, **testable**, and **predictable**.
 
 ---
 
-## 2. Hard Constraints
+## 1) Roles and working contract
 
-When editing this repo, agents **must not**:
+### 1.1 Actors
 
-- Call `library()` or `require()` in any file under `R/`, `_targets.R`, or `tests/`.
-- Call `install.packages()` or manage the package library anywhere except `bootstrap_env.R`.
-- Introduce new CRAN/GitHub dependencies without:
-  - A clear justification in code comments or docs
-  - Updating `bootstrap_env.R`
-  - Updating relevant docs under `docs/`
-- Change the project structure (moving/deleting top-level directories) without explicit instruction.
-- Implement large new subsystems (full genetics, GUIs, optimisation frameworks, etc.) without being asked to do so.
+- **Codex CLI (you)** = autonomous **research software engineer**
+  - You own implementation: code, tests, refactors, CI, docs, demos.
+  - You keep the repo in a “ready to review” state.
+  - You minimise questions to the human.
 
-All non-base functions from external packages must be called using **`package::function()`** style.
+- **GPT‑5.2 Pro (PI)** = 30,000‑foot reviewer
+  - Sets direction and evaluates scientific/software coherence from repo ZIP snapshots.
+  - Provides revision rounds with high-level tasks and stopping rules.
 
----
+- **Human maintainer** = coordinator
+  - Runs Codex, applies merges, answers targeted questions, zips repo for PI reviews.
 
-## 3. What Agents May Work On
+### 1.2 What “autonomous” means here
 
-Within Phase 1, agents are encouraged to:
+You should *not* wait for step-by-step instructions. Your default behaviour is:
 
-- Implement or refine **core lifecycle modules**:
-  - Ageing, survival, breeding-eligibility, simple birth/offspring logic
-  - Simple density feedback (e.g. ceiling K, basic harvest/removal)
-- Implement or refine **simulation controllers**:
-  - Functions that apply a sequence of lifecycle processes over time
-- Wire modules into the **`targets` pipeline** via `_targets.R`
-- Add or improve **tests** under `tests/testthat/`
-- Improve **Roxygen documentation** and internal comments (without changing semantics)
+1. Read the harness docs (`docs/plan.md`, `docs/workflow.md`, etc.).
+2. Decide the next actions that move the plan forward.
+3. Implement, test, document.
+4. Record decisions and interpretation notes.
+5. Commit cleanly.
 
-All changes must respect the architecture described in `docs/architecture_core.md` and the conventions in `docs/dev_conventions_r.md`.
+Only ask for human input when blocked or when a decision is truly irreversible and ambiguous.
 
 ---
 
-## 4. Coding and Style Rules (Agent Summary)
+## 2) Core mental model (do not break casually)
 
-- Use `snake_case` for all function and object names.
-- Keep functions short and single-purpose.
-- Use `package::function()` for all non-base calls.
-- Avoid side effects inside core modules:
-  - No file IO
-  - No plotting
-  - No global state modification
+### 2.1 Fundamental data structures
 
-Example (OK):
+- **Individual**: named list with a documented interface (not S3/S4).
+  - Fields typically include: `id`, `sex`, `age`, `alive`, `alleles`, `F`, `mother_id`, `father_id`, `patch_id`.
+- **Population**: list of individuals.
 
-```r
-apply_survival <- function(population, survival_fun) {
-  lapply(population, function(ind) {
-    if (ind$alive) {
-      prob <- survival_fun(ind)
-      ind$alive <- stats::runif(1) < prob
-    }
-    ind
-  })
-}
-```
+These are treated as opaque objects with a stable interface. Do not “class-ify” them unless the PI explicitly asks.
 
----
+### 2.2 Lifecycle modules: pure-ish transforms
 
-## 5. Behaviour Around Tests and Pipelines
+Lifecycle steps are functions that accept and return populations (and related objects), e.g.:
 
-When making non-trivial changes, agents should:
+- ageing: `age_individuals(population)`
+- survival: `apply_survival(population, survival_fun)`
+- breeding selection: `determine_breeding(population, breeding_fun)`
+- reproduction: `apply_reproduction(population, breeders, fecundity_fun, mating_fun, inherit_fun)`
+- harvest: `apply_harvest_quota(population, n_remove)`
+- supplementation: `apply_supplementation(population, n_add, patch_id)`
+- spatial: `initialize_patches(...)`, `apply_dispersal(population, dispersal_fun)`
 
-* Ensure there are **tests** for new or modified logic:
+Important invariant: keep lifecycle modules **simple and composable**.
+Layer complexity via parameterised helpers (genetics, inbreeding effects, density modifiers, EV/cats).
 
-  * Add files under `tests/testthat/` (e.g. `test_lifecycle_survival.R`).
-* Keep `_targets.R` clean and declarative:
+### 2.3 Controllers orchestrate time
 
-  * Each target calls functions defined in `R/`, not long inline pipelines.
+Controllers (e.g. `run_basic_simulation`, `run_basic_simulation_replicates`) orchestrate year loops and apply
+`lifecycle_steps` (a character vector controlling sequence). Step labels and semantics are central:
+new processes plug in by adding a label, a module, and a parameter channel through controllers.
 
-Agents should assume that a human will run:
+Do not redesign controllers without a clear design doc + tests.
 
-* `devtools::test()`
-* `targets::tar_make()`
+### 2.4 Scenarios & YAML
 
-Therefore, avoid obvious breakage (e.g. renaming functions without updating call sites).
+Scenarios exist as R-level specs (e.g. a scenario object with `init_fun`, demography functions, management, EV/cats, etc.).
+YAML scenarios are parsed and compiled into the R scenario spec.
+
+Backwards compatibility matters:
+- Legacy YAML should continue to work.
+- New schema features should be additive and versioned/documented.
 
 ---
 
-## 6. Handling Ambiguity
+## 3) Current “big rocks” (what matters next)
 
-If requirements appear ambiguous:
+The architecture is mature, but two areas are still conceptually weak:
 
-* Prefer **local consistency** with the file being edited, as long as it does not contradict `docs/dev_conventions_r.md`.
-* When a design choice is non-obvious:
+1. **Reproduction semantics & EV/cats on reproduction**
+   - Current pattern is “logical breeding predicate + realised counts,” which is awkward for reproduction EV/cats.
+   - Next major refactor is to separate:
+     - baseline *probabilities/means* from demography,
+     - stochastic draws in the controller,
+     - year-level EV/cats modifiers,
+     - demographic stochasticity.
+   - Goal is a clean interface such as:
+     - `p_breed_base(ind)` in [0,1]
+     - `lambda_base(ind)` ≥ 0
+     - controller performs Bernoulli/Poisson draws using year-level multipliers.
 
-  * Add a brief comment explaining the choice, or
-  * Leave a `TODO` or note rather than silently guessing biological intent.
+2. **General density module**
+   - Density dependence currently affects survival only (K / K_patches scaling).
+   - After reproduction refactor, implement a modular density system that can scale multiple vital rates.
 
-Do **not** invent biological behaviour or parameters without instruction; keep model logic simple and explicit.
+These must be done carefully with tests and compatibility wrappers.
 
 ---
 
-## 7. Agent Role Summary
+## 4) Engineering standards (hard requirements)
 
-In this repository, agents are:
+### 4.1 Reproducibility
 
-* **Careful collaborators**, not autonomous architects.
-* Bound by the architecture, conventions, and roadmap in `docs/`.
-* Expected to produce small, focused, reviewable changes.
+- `renv` is the source of truth for dependencies.
+- Ensure `renv.lock` is updated when dependencies change.
+- The `targets` pipeline must run cleanly as a reproducible build.
 
-If a proposed change conflicts with the documented design or scope, the safe choice is: **do not make it** without explicit human approval.
+### 4.2 Tests are non-negotiable
+
+For any significant change (especially refactors), add tests:
+
+- unit tests for new helpers/builders,
+- integration tests for:
+  - scenario running,
+  - YAML parsing and compilation,
+  - `targets` pipeline smoke tests (at least minimal subset),
+  - Quarto render (optional but strongly preferred as a CI job if feasible).
+
+Treat tests as *guardrails* for refactors.
+
+### 4.3 Backwards compatibility strategy
+
+Breaking changes must be deliberate:
+
+- Prefer “new interface + adaptors” over “silently changing semantics.”
+- If you introduce new functions (e.g. `breeding_prob_fun`, `fecundity_lambda_fun`), keep old ones as wrappers for a while.
+- If something must be deprecated:
+  - create clear deprecation warnings,
+  - document migration in docs,
+  - update demos and YAML examples.
+
+---
+
+## 5) Mandatory artefact review cycle (do not skip)
+
+Code that runs is not enough. For each major milestone or feature, do:
+
+1. **Build sanity**
+   - Package checks (as applicable), tests pass.
+   - `targets` pipeline runs (or a minimal subset).
+   - Quarto demo renders.
+
+2. **Domain sanity**
+   - Run small “toy” scenarios with fixed seeds and verify:
+     - survival probabilities in [0,1] and behave sensibly under EV/cats,
+     - reproduction outputs are plausible (no impossible explosions/zeros unless expected),
+     - genetics/spatial/management features still behave.
+
+3. **Interpretation**
+   - Inspect summary tibbles and key plots.
+   - Write brief notes in `docs/interpretation_notes.md`:
+     - what changed,
+     - what the outputs look like,
+     - anything suspicious,
+     - follow-up actions.
+
+4. **Iteration**
+   - Fix and re-run until the story is coherent and tests cover the behaviour.
+
+---
+
+## 6) Logging and project memory
+
+Your conversational context is finite. Treat the repo as your memory.
+
+You must maintain:
+
+- `docs/plan.md` (living roadmap),
+- `docs/decisions.md` (non-trivial choices),
+- `docs/log/` (chronological engineering log),
+- `docs/interpretation_notes.md` (artefact behaviour notes),
+- clean git history.
+
+When resuming after any pause, reconstruct state by reading:
+`docs/plan.md`, most recent `docs/log/*`, and `git log --oneline -n 15`.
+
+---
+
+## 7) When to ask the human (rare)
+
+Only ask the human when:
+
+1. You need an irreversible product decision (e.g. “break compatibility now vs later”).
+2. You need domain guidance beyond what’s in docs (e.g. default biological assumptions).
+3. You are blocked by environment constraints (system packages, permissions).
+4. You suspect the project goals have drifted and need confirmation.
+
+If you ask, write numbered questions in `docs/questions_for_human.md`.
+
+---
+
+## 8) Immediate expectation
+
+On your first run after this harness is added:
+
+1. Create/update `docs/log/000_bootstrap.md` with your understanding of the repo state.
+2. Update `docs/plan.md` with:
+   - current status,
+   - next milestone,
+   - concrete next actions.
+3. Ensure the repo is “hand-off ready” for PI review:
+   - docs up to date,
+   - tests runnable,
+   - demos runnable or clearly documented,
+   - no mystery “works on my machine” steps.
