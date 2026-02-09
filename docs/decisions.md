@@ -373,4 +373,20 @@
     caused the lint stage to fail even after dependency restore succeeded.
   - Conditional install keeps CI resilient while preserving existing lockfile
     behavior for core runtime dependencies.
+- **Status**: superseded by DEC-023
+
+## DEC-023 — CI `Suggests` bootstrap policy for check consistency
+- **Date**: 2026-02-09
+- **Decision**:
+  - In both `ci-fast` and `ci-heavy-validation`, parse `DESCRIPTION` `Suggests`
+    and conditionally install any missing suggested packages after
+    `renv::restore()`.
+  - Keep lint/test/check steps dependent on this bootstrap rather than relying
+    on full `Suggests` coverage in `renv.lock`.
+- **Rationale**:
+  - Eliminates repeated CI failures from missing suggested packages (for
+    example `lintr`, `quarto`) while keeping restore deterministic for core
+    dependency set.
+  - Provides a single scalable mechanism for future additions to `Suggests`
+    without recurring workflow churn.
 - **Status**: active

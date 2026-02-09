@@ -40,10 +40,19 @@ jobs:
           Rscript -e "options(renv.config.pak.enabled = FALSE);
           renv::restore(prompt = FALSE)"
 
-      - name: Ensure lint dependency
+      - name: Ensure suggested packages
         run: >-
-          Rscript -e "if (!requireNamespace('lintr', quietly = TRUE))
-          install.packages('lintr', repos = 'https://cloud.r-project.org')"
+          Rscript -e "desc <- read.dcf('DESCRIPTION');
+          suggests <- trimws(unlist(strsplit(desc[1, 'Suggests'], ',')));
+          suggests <- gsub('\\s*\\(.*\\)$', '', suggests);
+          suggests <- suggests[nzchar(suggests)];
+          missing <- suggests[!vapply(suggests, requireNamespace, FUN.VALUE = logical(1), quietly = TRUE)];
+          if (length(missing) > 0) {
+          message('Installing missing Suggests: ', paste(missing, collapse = ', '));
+          install.packages(missing, repos = 'https://cloud.r-project.org')
+          } else {
+          message('All Suggests already installed.')
+          }"
 
       - name: Lint package
         run: Rscript -e "lints <- lintr::lint_package(); print(lints); if (length(lints) > 0) quit(status = 1)"
