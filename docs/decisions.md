@@ -390,3 +390,16 @@
   - Provides a single scalable mechanism for future additions to `Suggests`
     without recurring workflow churn.
 - **Status**: active
+
+## DEC-024 — `targets` heavy smoke should not pre-invalidate fresh stores
+- **Date**: 2026-02-09
+- **Decision**:
+  - In `ci-heavy-validation`, run heavy smoke as:
+    - `targets::tar_make(..., names = c("sim_basic"))`
+  - Do not call `targets::tar_invalidate()` before `tar_make()` in CI smoke.
+- **Rationale**:
+  - In fresh CI stores with no local metadata, `tar_invalidate()` can error
+    (`names must be a character`) before the first pipeline run.
+  - The smoke objective is to verify minimal pipeline execution, which is
+    satisfied by direct `tar_make()` on selected targets.
+- **Status**: active

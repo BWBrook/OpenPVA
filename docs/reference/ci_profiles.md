@@ -80,7 +80,7 @@ RENV_CONFIG_AUTOLOADER_ENABLED=FALSE Rscript -e "options(renv.config.pak.enabled
 Rscript -e "desc <- read.dcf('DESCRIPTION'); suggests <- trimws(unlist(strsplit(desc[1, 'Suggests'], ','))); suggests <- gsub('[[:space:]]*[(].*[)]$', '', suggests); suggests <- suggests[nzchar(suggests)]; missing <- suggests[!vapply(suggests, requireNamespace, FUN.VALUE = logical(1), quietly = TRUE)]; if (length(missing) > 0) install.packages(missing, repos = 'https://cloud.r-project.org')"
 Rscript -e "devtools::test(filter = 'rng_seed|output_schema_contract|scenario_yaml_demography|spatial_patches|reproducibility_snapshots')"
 Rscript -e "devtools::test()"
-Rscript -e "targets::tar_invalidate(names = c('sim_basic')); targets::tar_make(script = '_targets.R', store = '_targets', names = c('sim_basic'))"
+Rscript -e "targets::tar_make(script = '_targets.R', store = '_targets', names = c('sim_basic'))"
 quarto render quarto
 R CMD build --no-build-vignettes .
 R CMD check --no-manual --as-cran OpenPVA_*.tar.gz
