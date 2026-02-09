@@ -44,7 +44,7 @@ jobs:
         run: >-
           Rscript -e "desc <- read.dcf('DESCRIPTION');
           suggests <- trimws(unlist(strsplit(desc[1, 'Suggests'], ',')));
-          suggests <- gsub('\\s*\\(.*\\)$', '', suggests);
+          suggests <- gsub('[[:space:]]*[(].*[)]$', '', suggests);
           suggests <- suggests[nzchar(suggests)];
           missing <- suggests[!vapply(suggests, requireNamespace, FUN.VALUE = logical(1), quietly = TRUE)];
           if (length(missing) > 0) {

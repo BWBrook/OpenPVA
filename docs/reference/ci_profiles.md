@@ -64,7 +64,7 @@ Fast profile equivalent:
 sudo apt-get update
 sudo apt-get install -y libcurl4-openssl-dev libfontconfig1-dev libfreetype6-dev libgit2-dev libglpk-dev libx11-dev pandoc
 RENV_CONFIG_AUTOLOADER_ENABLED=FALSE Rscript -e "options(renv.config.pak.enabled = FALSE); renv::restore(prompt = FALSE)"
-Rscript -e "desc <- read.dcf('DESCRIPTION'); suggests <- trimws(unlist(strsplit(desc[1, 'Suggests'], ','))); suggests <- gsub('\\s*\\(.*\\)$', '', suggests); suggests <- suggests[nzchar(suggests)]; missing <- suggests[!vapply(suggests, requireNamespace, FUN.VALUE = logical(1), quietly = TRUE)]; if (length(missing) > 0) install.packages(missing, repos = 'https://cloud.r-project.org')"
+Rscript -e "desc <- read.dcf('DESCRIPTION'); suggests <- trimws(unlist(strsplit(desc[1, 'Suggests'], ','))); suggests <- gsub('[[:space:]]*[(].*[)]$', '', suggests); suggests <- suggests[nzchar(suggests)]; missing <- suggests[!vapply(suggests, requireNamespace, FUN.VALUE = logical(1), quietly = TRUE)]; if (length(missing) > 0) install.packages(missing, repos = 'https://cloud.r-project.org')"
 Rscript -e "lints <- lintr::lint_package(); print(lints); if (length(lints) > 0) quit(status = 1)"
 Rscript -e "devtools::test()"
 R CMD build --no-build-vignettes .
@@ -77,7 +77,7 @@ Heavy profile equivalent:
 sudo apt-get update
 sudo apt-get install -y libcurl4-openssl-dev libfontconfig1-dev libfreetype6-dev libgit2-dev libglpk-dev libx11-dev pandoc
 RENV_CONFIG_AUTOLOADER_ENABLED=FALSE Rscript -e "options(renv.config.pak.enabled = FALSE); renv::restore(prompt = FALSE)"
-Rscript -e "desc <- read.dcf('DESCRIPTION'); suggests <- trimws(unlist(strsplit(desc[1, 'Suggests'], ','))); suggests <- gsub('\\s*\\(.*\\)$', '', suggests); suggests <- suggests[nzchar(suggests)]; missing <- suggests[!vapply(suggests, requireNamespace, FUN.VALUE = logical(1), quietly = TRUE)]; if (length(missing) > 0) install.packages(missing, repos = 'https://cloud.r-project.org')"
+Rscript -e "desc <- read.dcf('DESCRIPTION'); suggests <- trimws(unlist(strsplit(desc[1, 'Suggests'], ','))); suggests <- gsub('[[:space:]]*[(].*[)]$', '', suggests); suggests <- suggests[nzchar(suggests)]; missing <- suggests[!vapply(suggests, requireNamespace, FUN.VALUE = logical(1), quietly = TRUE)]; if (length(missing) > 0) install.packages(missing, repos = 'https://cloud.r-project.org')"
 Rscript -e "devtools::test(filter = 'rng_seed|output_schema_contract|scenario_yaml_demography|spatial_patches|reproducibility_snapshots')"
 Rscript -e "devtools::test()"
 Rscript -e "targets::tar_invalidate(names = c('sim_basic')); targets::tar_make(script = '_targets.R', store = '_targets', names = c('sim_basic'))"
