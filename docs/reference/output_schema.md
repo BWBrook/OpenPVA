@@ -127,6 +127,38 @@ Returns a tibble with one row per OAT parameter and required columns:
 - `pct_change_low`
 - `pct_change_high`
 
+### `score_hindcast_fit(observed, simulated, weights = NULL)`
+
+Returns a one-row tibble with required columns:
+
+- `n_targets`
+- `rmse`
+- `mae`
+- `bias`
+- `mape`
+
+### `generate_calibration_candidates(parameter_space, method = c("grid", "random"), n_candidates = 50, seed = NULL)`
+
+Returns a tibble with required columns:
+
+- `candidate_id`
+- one column per named parameter in `parameter_space`.
+
+### `run_calibration_search(scenario, candidates, observed_targets, simulate_targets_fun = NULL, seed = NULL)`
+
+Returns a list with required fields:
+
+- `scores`: tibble containing candidate parameters plus calibration diagnostics:
+  - `objective_score`
+  - `rmse`
+  - `mae`
+  - `bias`
+  - `mape`
+  - `sim_<target_name>` columns
+  - `error_<target_name>` columns
+- `best_fit`: one-row tibble representing the minimum `objective_score`.
+- `observed_targets`: one-row tibble with observed target values used.
+
 ## Summary helpers
 
 ### `summarise_extinction(sim_output, threshold = 0)`

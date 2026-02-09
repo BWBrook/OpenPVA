@@ -245,3 +245,55 @@ test_that("sensitivity diagnostic output schemas are stable", {
     )
   )
 })
+
+test_that("calibration scaffold output schemas are stable", {
+  observed <- c(mean_final_n_alive = 20, p_extinction = 0.1)
+  simulated <- c(mean_final_n_alive = 18, p_extinction = 0.2)
+  fit <- score_hindcast_fit(observed, simulated)
+  expect_s3_class(fit, "tbl_df")
+  expect_required_columns(fit, c("n_targets", "rmse", "mae", "bias", "mape"))
+
+  parameter_space <- list(
+    harvest_quota = list(lower = 0, upper = 4, integer = TRUE, n_grid = 3),
+    cat_surv_prob = list(lower = 0, upper = 0.2, n_grid = 2)
+  )
+  candidates <- generate_calibration_candidates(parameter_space, method = "grid")
+  expect_s3_class(candidates, "tbl_df")
+  expect_required_columns(candidates, c("candidate_id", "harvest_quota", "cat_surv_prob"))
+
+  sc <- scenario_spec(
+    name = "calibration_schema_contract",
+    n_runs = 4,
+    n_years = 5,
+    init_fun = function() initialize_population(22),
+    seed = 909L
+  )
+  target_fun <- function(sim_output) {
+    c(
+      p_extinction = summarise_extinction(sim_output, threshold = 0)$p_extinct,
+      mean_final_n_alive = summarise_final_abundance(sim_output)$overall$mean_final_n_alive
+    )
+  }
+  observed_targets <- target_fun(run_scenario(sc)$sim_output)
+
+  cal <- run_calibration_search(
+    scenario = sc,
+    candidates = dplyr::slice(candidates, 1:3),
+    observed_targets = observed_targets,
+    simulate_targets_fun = target_fun,
+    seed = 909L
+  )
+  expect_true(is.list(cal))
+  expect_true(all(c("scores", "best_fit", "observed_targets") %in% names(cal)))
+  expect_s3_class(cal$scores, "tbl_df")
+  expect_s3_class(cal$best_fit, "tbl_df")
+  expect_s3_class(cal$observed_targets, "tbl_df")
+  expect_required_columns(
+    cal$scores,
+    c(
+      "candidate_id", "objective_score", "rmse", "mae", "bias", "mape",
+      "sim_p_extinction", "sim_mean_final_n_alive",
+      "error_p_extinction", "error_mean_final_n_alive"
+    )
+  )
+})

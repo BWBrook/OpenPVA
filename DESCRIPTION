@@ -44,5 +44,6 @@ Collate:
     'simulation_plots.R'
     'scenario.R'
     'uncertainty_ensemble.R'
+    'calibration_scaffold.R'
     'sensitivity_diagnostics.R'
     'management.R'

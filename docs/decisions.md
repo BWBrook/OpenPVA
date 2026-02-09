@@ -523,3 +523,28 @@
   - Preserves auditability by enforcing explicit input specs and stable output
     tables.
 - **Status**: active
+
+## DEC-030 — Hindcast/calibration scaffold boundaries and objective contract
+- **Date**: 2026-02-09
+- **Decision**:
+  - Add bounded calibration APIs:
+    - `score_hindcast_fit()`
+    - `generate_calibration_candidates()`
+    - `run_calibration_search()`
+  - Use transparent objective metrics (`rmse`, `mae`, `bias`, `mape`) with
+    `objective_score = rmse` for ranking by default.
+  - Restrict candidate generation to explicit bounded methods:
+    - deterministic grid,
+    - seeded bounded random draws.
+  - Keep calibration outputs explicit and auditable:
+    - per-candidate scores,
+    - one-row best-fit summary,
+    - recorded observed targets.
+  - Keep this tranche scaffold-level:
+    - no Bayesian inference, no production auto-tuning loops.
+- **Rationale**:
+  - Provides reproducible calibration support while preserving model
+    transparency and avoiding overclaiming inferential rigor in the 2B scope.
+  - Keeps tuning behavior inspectable via explicit parameter bounds and
+    objective traces.
+- **Status**: active

@@ -97,6 +97,9 @@ release notes.
   - `summarise_ensemble_outputs()`
   - `summarise_sensitivity_prcc()`
   - `summarise_sensitivity_oat()`
+  - `score_hindcast_fit()`
+  - `generate_calibration_candidates()`
+  - `run_calibration_search()`
 
 ## Internal API rule
 

@@ -7,6 +7,33 @@ For each major change, create an entry.
 
 ---
 
+### [2026-02-09] WP-2B.5 hindcast/calibration scaffold
+
+- **Change summary**:
+  - Added calibration scaffold APIs:
+    - `score_hindcast_fit()`
+    - `generate_calibration_candidates()`
+    - `run_calibration_search()`
+  - Added calibration reference note:
+    `docs/reference/calibration_scaffold.md`.
+  - Extended output/public API docs and schema-contract tests for calibration
+    outputs.
+- **Artefacts inspected**:
+  - `artefacts/WP-2B.5/hindcast_scores.csv`
+  - `artefacts/WP-2B.5/calibration_candidates.csv`
+  - `artefacts/WP-2B.5/calibration_best_fit.md`
+- **Observed behaviour**:
+  - Candidate generation was deterministic under fixed seeds and produced
+    bounded parameter sets.
+  - Calibration search produced stable objective rankings and recoverable
+    best-fit candidates under seeded toy fixtures.
+  - Objective/error tables remained interpretable with explicit per-target
+    residual columns.
+- **Follow-up tasks**:
+  - [ ] Execute `WP-2B.6` performance/docs integration.
+
+---
+
 ### [2026-02-09] WP-2B.4 sensitivity diagnostics (PRCC + OAT elasticity)
 
 - **Change summary**:
@@ -31,7 +58,7 @@ For each major change, create an entry.
   - Diagnostic tables and plots were reproducible under fixed seeds and
     remained within expected numeric domains.
 - **Follow-up tasks**:
-  - [ ] Execute `WP-2B.5` hindcast/calibration scaffold.
+  - [x] Execute `WP-2B.5` hindcast/calibration scaffold.
 
 ---
 
