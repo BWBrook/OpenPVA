@@ -6,37 +6,283 @@
 ---
 
 ## DEC-001 — Compatibility strategy for reproduction refactor
-- **Date**:
+- **Date**: 2026-02-08
 - **Decision**:
+  - Adopt probability/mean semantics for reproduction:
+    - `breeding_prob_fun(ind)` returns baseline `p_breed_base` in `[0, 1]`.
+    - `fecundity_lambda_fun(ind)` returns baseline `lambda_base >= 0`.
+  - Controller (not lifecycle table helpers) owns stochastic realization:
+    - Bernoulli draw for breeding realization.
+    - Poisson draw for offspring count conditional on breeding.
+  - Year-level reproduction EV/cat modifiers are applied in-controller before stochastic draws.
+  - Backward compatibility path (required during transition):
+    - Existing `breeding_fun` / `fecundity_fun` interfaces remain supported via explicit adapters.
+    - Legacy YAML continues to run through migration/adaptation layers.
+    - Deprecation warnings are allowed only after new interfaces are fully documented and tested.
+  - Breaking-change definition for this refactor:
+    - Removing legacy function channels without wrappers is breaking.
+    - Changing output columns or meaning without schema docs + migration path is breaking.
+    - Reordering lifecycle semantics in a way that changes existing scenario behavior without opt-in is breaking.
 - **Rationale**:
+  - Separating baseline rates from stochastic draws is required for clean EV/cat layering and clearer interpretation.
+  - Adapter-first migration preserves existing scenarios and allows phased rollout with measurable regression protection.
 - **Status**: active
 
 ## DEC-002 — Breeding table semantics (eligibility vs probability)
-- **Date**:
-- **Decision**: (e.g. breeding table returns probabilities in [0,1], or retains eligibility and uses a separate p_breed layer)
-- **Rationale**:
-- **Status**: active
+- **Date**: 2026-02-08
+- **Decision**: Resolved by DEC-001. Breeding interfaces move to explicit baseline probability semantics (`p_breed_base` in `[0,1]`), with optional eligibility represented as a multiplicative/guard layer in adapters/builders.
+- **Rationale**: Unifies EV/cat handling and avoids mixing structural eligibility with realized stochastic outcomes.
+- **Status**: superseded by DEC-001
 
 ## DEC-003 — Reproduction EV model choice
-- **Date**:
-- **Decision**: (e.g. logit-normal on p_breed, lognormal on lambda; or alternate)
-- **Rationale**:
+- **Date**: 2026-02-08
+- **Decision**: Reproduction EV/cat modifiers are year-level controller inputs applied to baseline `p_breed_base` and `lambda_base` prior to stochastic draws. Concrete distributional forms (e.g., logit-normal/lognormal) are implementation details to be parameterized in WP-0.5.4/WP-0.5.5, not hard-coded in this decision.
+- **Rationale**: Locks architecture and compatibility now while leaving numeric EV-family choice configurable during implementation.
 - **Status**: active
 
 ## DEC-004 — YAML schema versioning and deprecation policy
-- **Date**:
+- **Date**: 2026-02-08
 - **Decision**:
+  - Adopt `schema_version: 1` as the initial YAML schema contract.
+  - Treat missing `schema_version` as legacy schema 0 and migrate in-memory to v1 on read.
+  - Reject unknown future schema versions with explicit errors.
+  - Keep schema evolution additive; preserve legacy support via migration where feasible.
 - **Rationale**:
-- **Status**: active
+  - Prevent silent schema drift while maintaining backward compatibility for existing scenario files.
+  - Make parsing/validation failures explicit and actionable for users.
+- **Status**: superseded by DEC-011
 
 ## DEC-005 — Density module interface
-- **Date**:
-- **Decision**: (e.g. density modifiers list with survival/breeding/fecundity scalers; global vs patch-specific state)
+- **Date**: 2026-02-08
+- **Decision**:
+  - Introduce channel-specific density modifiers for:
+    - survival probability,
+    - breeding probability,
+    - fecundity lambda.
+  - Lock composition order:
+    - baseline rate -> density modifier -> year EV/cat modifier -> bounds clamp -> stochastic draw.
+  - Support global and patch-level density state in initial implementation.
+  - Preserve legacy compatibility:
+    - `K` maps to global ceiling scaling on survival channel.
+    - `K_patches` maps to patch-level ceiling scaling on survival channel.
+  - Keep density channels opt-in beyond survival compatibility adapters.
 - **Rationale**:
+  - Aligns density semantics with the existing reproduction refactor model where
+    baseline rates and stochastic realization are separated.
+  - Extends density effects beyond survival without breaking legacy scenarios.
+  - Creates a stable contract for upcoming R-level and YAML-level density work.
 - **Status**: active
 
 ## DEC-006 — Release policy
-- **Date**:
-- **Decision**: (semver rules, when to tag versions, what’s “API stable”)
+- **Date**: 2026-02-08
+- **Decision**:
+  - Adopt semantic versioning from `1.0.0` onward.
+  - Version increment rules:
+    - `MAJOR` (x.0.0): breaking changes to documented stable public API,
+      YAML schema contract, or output schema contract.
+    - `MINOR` (1.x.0): backward-compatible features and additive schema fields.
+    - `PATCH` (1.0.x): backward-compatible bug fixes, test/doc improvements,
+      and non-semantic internal refactors.
+  - Stable vs experimental API status is documented in
+    `docs/reference/public_api.md` and is part of the release contract.
+  - Deprecation policy:
+    - Deprecations must be documented in `NEWS.md` and user docs.
+    - Removed functionality must have at least one prior release with explicit
+      deprecation guidance, except for security/integrity emergencies.
+    - Planned removals are deferred to the next `MAJOR` unless explicitly
+      declared otherwise.
+  - Release evidence policy:
+    - Each release candidate must include an artefact bundle and checklist
+      updates (`artefacts/release_<...>/`, `docs/release_checklist.md`).
 - **Rationale**:
+  - Provides predictable expectations for users relying on the package in
+    research workflows.
+  - Aligns API/schema stability promises with reproducible release evidence.
+- **Status**: active
+
+## DEC-007 — Public repository metadata policy
+- **Date**: 2026-02-08
+- **Decision**: Keep `DESCRIPTION` `URL` and `BugReports` fields unset until the canonical public repository URL is live and returns 200. Use local/remote git configuration as internal provenance until then.
+- **Rationale**: Current remote points to a repository path that returns 404 in `R CMD check --as-cran` URL validation, creating avoidable NOTES and ambiguous user-facing metadata.
+- **Status**: active
+
+## DEC-008 — Deterministic RNG contract for replicated runs
+- **Date**: 2026-02-08
+- **Decision**:
+  - Add optional integer `seed` to `run_basic_simulation_replicates()`.
+  - Thread `seed` through `scenario_spec()`/`run_scenario()` and YAML (`read_scenario_yaml()` top-level `seed`).
+  - Seeded runs must restore caller RNG state on exit.
+- **Rationale**:
+  - Reproducible simulation outputs are required for stable demos, regression tests, and review artefacts.
+  - Restoring caller RNG state prevents side effects when seeded runs are embedded in larger workflows.
+- **Status**: active
+
+## DEC-009 — Reproduction API naming and adapter strategy (0.5.2/0.5.3)
+- **Date**: 2026-02-08
+- **Decision**:
+  - Adopt exported naming:
+    - `validate_breeding_prob_table()`
+    - `build_breeding_prob_fun_from_table()`
+    - `validate_fecundity_lambda_table()`
+    - `build_fecundity_lambda_fun_from_table()`
+  - Provide explicit adapters:
+    - `as_breeding_fun()`, `as_breeding_prob_fun()`
+    - `as_fecundity_fun()`, `as_fecundity_lambda_fun()`
+  - Keep legacy builders as wrappers:
+    - `build_breeding_fun_from_table()`
+    - `build_fecundity_fun_from_table()`
+- **Rationale**:
+  - Clear naming distinguishes baseline rate functions from legacy realized/eligibility interfaces.
+  - Adapter-first strategy enforces backward compatibility during staged controller/YAML refactors.
+- **Status**: active
+
+## DEC-010 — Controller reproduction EV/cat parameterization (WP-0.5.4)
+- **Date**: 2026-02-08
+- **Decision**:
+  - In controller reproduction pathway, apply year-level lognormal multipliers to:
+    - breeding probability (`env_repro_p_sd`),
+    - fecundity lambda (`env_repro_lambda_sd`).
+  - Apply catastrophe as Bernoulli year event with shared multiplicative factor:
+    - `cat_repro_prob`,
+    - `cat_repro_mult`.
+  - Expose year-level realized modifiers in summary output:
+    - `env_repro_p_mult`,
+    - `env_repro_lambda_mult`,
+    - `cat_repro_mult`,
+    - `repro_catastrophe`.
+- **Rationale**:
+  - Mirrors existing survival EV/cat style for conceptual consistency.
+  - Keeps parameterization simple while enabling immediate analysis and regression coverage.
+- **Status**: active
+
+## DEC-011 — YAML schema v2 reproduction semantics and compatibility adaptation
+- **Date**: 2026-02-08
+- **Decision**:
+  - Promote `schema_version: 2` as current YAML schema for reproduction semantics.
+  - Keep `schema_version: 1` fully supported.
+  - Parse canonical schema v2 reproduction channels:
+    - `demography.breeding_prob.table`
+    - `demography.fecundity_lambda.table`
+    - `reproduction_ev` block keys:
+      - `env_repro_p_sd`
+      - `env_repro_lambda_sd`
+      - `cat_repro_prob`
+      - `cat_repro_mult`
+  - Preserve compatibility by adapting v1-style reproduction fields where feasible,
+    including:
+    - `demography.breeding.table`
+    - `demography.fecundity.table`
+    - top-level reproduction EV keys.
+  - Use exact-key parsing in demography blocks to avoid partial-name ambiguity
+    (e.g. `breeding` vs `breeding_prob`).
+- **Rationale**:
+  - Locks a clear schema contract for the new reproduction model while preventing
+    silent breakage of legacy YAML inputs.
+  - Exact-key parsing removes a subtle class of parser errors that can arise
+    from partial matching.
+- **Status**: active
+
+## DEC-012 — CI profile split and heavy-validation runtime budget
+- **Date**: 2026-02-09
+- **Decision**:
+  - Split CI into two workflows:
+    - `ci-fast`: PR/push gate for lint + tests + package checks.
+    - `ci-heavy-validation`: scheduled/manual workflow for reproducibility-
+      oriented checks.
+  - Heavy profile includes:
+    - reproducibility/schema-focused tests,
+    - full package test suite,
+    - Quarto render,
+    - tarball build + `R CMD check --as-cran`,
+    - minimal `targets` smoke run focused on `sim_basic`.
+  - Exclude long-running replicate-heavy targets from scheduled heavy CI smoke
+    to maintain predictable runtime while preserving broad model coverage
+    through full test suite and dedicated artefact-cycle runs.
+- **Rationale**:
+  - Fast feedback is required for developer throughput on PRs.
+  - Scheduled heavy validation should detect reproducibility drift without
+    becoming so expensive that it is skipped or unstable.
+  - Keeping heavy targets smoke bounded avoids cache/runtime brittleness while
+    preserving meaningful workflow orchestration coverage.
+- **Status**: active
+
+## DEC-013 — Seeded snapshot regression scope
+- **Date**: 2026-02-09
+- **Decision**:
+  - Add seeded snapshot-style regression checks that snapshot:
+    - a bounded slice of replicate summary/extinction outputs, and
+    - v1->v2 YAML migration shape for reproduction channels.
+  - Keep snapshots intentionally scoped to stable, interpretable subsets rather
+    than full simulation objects.
+- **Rationale**:
+  - Captures behavioral drift that column/type checks alone may miss.
+  - Avoids brittle over-snapshotting that would create noisy false positives
+    from unrelated internal changes.
+- **Status**: active
+
+## DEC-014 — Release automation boundary (non-publishing)
+- **Date**: 2026-02-09
+- **Decision**:
+  - Provide scripted release-evidence generation via
+    `scripts/build_release_evidence.sh`.
+  - Keep automation scope strictly non-publishing:
+    - no git tag creation,
+    - no GitHub release publication,
+    - no CRAN submission actions.
+  - Keep final publish/tag decisions maintainer-controlled.
+- **Rationale**:
+  - Improves reproducibility and auditability of release-candidate evidence
+    while preserving deliberate human control over irreversible publication
+    actions.
+- **Status**: active
+
+## DEC-015 — Mate requirement and mate-limitation controls
+- **Date**: 2026-02-09
+- **Decision**:
+  - Introduce `require_mate` as an additive reproduction control (default
+    `FALSE` for backward compatibility).
+  - Introduce `make_mate_limited_mating_fun(max_mates_per_male)` to support
+    bounded male mate assignments within a reproduction step.
+  - Thread `require_mate` through controller/scenario/YAML interfaces.
+- **Rationale**:
+  - Enables explicit mate-scarcity behavior without breaking legacy scenarios
+    where unmated females may still produce offspring.
+  - Keeps reproduction extension bounded while preserving composability through
+    existing mating hooks.
+- **Status**: active
+
+## DEC-016 — Patch-level final-time genetic diversity summary contract
+- **Date**: 2026-02-09
+- **Decision**:
+  - Add exported helper
+    `summarise_patch_genetic_diversity_final(sim_output, n_patches, alive_only = TRUE)`.
+  - Scope helper to final-time state only (not full time-series trajectories).
+  - Aggregate by patch across runs using:
+    - `mean_n_genotyped`,
+    - `p_patch_genotyped`,
+    - `mean_heterozygosity`,
+    - `mean_Fhat`.
+  - Keep patch IDs explicit and include zero-genotype patches in output.
+- **Rationale**:
+  - Provides immediately useful spatial/genetic diagnostics for management
+    interpretation without introducing broad subsystem complexity.
+  - Final-time scope keeps runtime/contract complexity bounded while preserving
+    comparability across scenarios.
+- **Status**: active
+
+## DEC-017 — Decision-support expansion via additive final-abundance metrics
+- **Date**: 2026-02-09
+- **Decision**:
+  - Add exported helper
+    `summarise_final_abundance(sim_output, floor = 0)` with stable
+    `per_run` + `overall` outputs.
+  - Extend `compare_scenarios()` to include additive final-abundance metrics
+    and optional `final_n_floor` (defaulting to `extinction_threshold`).
+  - Preserve existing `compare_scenarios()` columns to avoid compatibility
+    breakage.
+- **Rationale**:
+  - Management users need both extinction and resilience/floor-risk metrics for
+    trade-off evaluation.
+  - Additive extension avoids disruptive schema changes while increasing
+    decision-support utility.
 - **Status**: active

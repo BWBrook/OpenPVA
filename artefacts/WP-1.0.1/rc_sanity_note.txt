@@ -1,0 +1,13 @@
+OpenPVA 1.0.0 RC sanity note (WP-1.0.1)
+
+- DESCRIPTION version: 1.0.0
+- Public API stability contract documented: docs/reference/public_api.md
+- Semver/release policy documented: docs/decisions.md (DEC-006)
+- NEWS 1.0.0 entry present: NEWS.md
+
+Validation summary:
+- devtools::test(): PASS 437, FAIL 0
+- lintr::lint_package(): no lints
+- R CMD check --no-manual --as-cran: 0 errors, 0 warnings, 3 notes
+- quarto render quarto: succeeded
+- targets smoke (sim_basic): succeeded

@@ -1,0 +1,21 @@
+WP-1.1.1 decision/design validation snapshot
+Generated: 2026-02-08
+
+DEC-005 presence:
+55:## DEC-005 — Density module interface
+
+Density design lock markers:
+3:Status: DECISION LOCKED (WP-1.1.1)
+8:modular channel system that can scale:
+14:The design must preserve backward compatibility for existing scenarios while
+19:Density is represented as channel-specific multiplicative modifiers. For each
+47:Minimum required state for density functions:
+57:- no age-structured density state in initial version,
+58:- additive extensibility for richer state summaries later.
+62:An R-level density spec should support channel-specific functions:
+72:- `K` -> global ceiling scale on survival channel,
+73:- `K_patches` -> patch ceiling scale on survival channel.
+82:- New density channels are opt-in unless explicitly configured.
+91:- additive schema fields for density channels,
+101:  - channel effects on survival/reproduction outputs,
+108:- Age-structured density states.

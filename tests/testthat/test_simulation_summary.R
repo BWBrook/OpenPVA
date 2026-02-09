@@ -110,3 +110,46 @@ test_that("summarise_harvest_yield aggregates per-run yields", {
   expect_equal(harvest$overall$n_runs, 2L)
   expect_equal(harvest$overall$mean_total_harvest, mean(c(3, 1)))
 })
+
+test_that("summarise_final_abundance aggregates per-run and overall metrics", {
+  summary_tbl <- tibble::tibble(
+    run = c(rep(1, 3), rep(2, 3)),
+    year = rep(1:3, times = 2),
+    n_alive = c(10L, 6L, 4L, 8L, 7L, 9L)
+  )
+  sim_output <- list(summary = summary_tbl)
+
+  out <- summarise_final_abundance(sim_output, floor = 5)
+  expect_true(is.list(out))
+  expect_true(all(c("per_run", "overall") %in% names(out)))
+  expect_equal(nrow(out$per_run), 2L)
+  expect_equal(out$per_run$final_n_alive, c(4L, 9L))
+  expect_equal(out$per_run$min_n_alive, c(4L, 7L))
+
+  expect_equal(out$overall$n_runs, 2L)
+  expect_equal(out$overall$floor_threshold, 5)
+  expect_equal(out$overall$mean_final_n_alive, 6.5)
+  expect_equal(out$overall$median_final_n_alive, 6.5)
+  expect_equal(out$overall$p_final_below_floor, 0.5)
+  expect_equal(out$overall$p_any_below_floor, 0.5)
+  expect_equal(out$overall$q05_final_n_alive, 4.25, tolerance = 1e-8)
+  expect_equal(out$overall$q95_final_n_alive, 8.75, tolerance = 1e-8)
+})
+
+test_that("summarise_final_abundance validates inputs", {
+  expect_error(
+    summarise_final_abundance(list(), floor = 0),
+    "sim_output\\$summary is missing"
+  )
+  expect_error(
+    summarise_final_abundance(list(summary = tibble::tibble(run = 1L, year = 1L)), floor = 0),
+    "must contain columns run, year, n_alive"
+  )
+  expect_error(
+    summarise_final_abundance(
+      list(summary = tibble::tibble(run = 1L, year = 1L, n_alive = 1L)),
+      floor = -1
+    ),
+    "floor must be a single non-negative numeric value"
+  )
+})

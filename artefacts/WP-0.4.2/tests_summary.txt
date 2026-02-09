@@ -1,0 +1,2 @@
+tests summary
+71:[ FAIL 0 | WARN 0 | SKIP 0 | PASS 346 ]

@@ -1,0 +1,152 @@
+* using log directory ‘/home/bwbrook/git/OpenPVA/artefacts/WP-0.3.4/..Rcheck’
+* using R version 4.5.2 (2025-10-31)
+* using platform: x86_64-pc-linux-gnu
+* R was compiled by
+    gcc (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0
+    GNU Fortran (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0
+* running under: Ubuntu 24.04.3 LTS
+* using session charset: UTF-8
+* using options ‘--no-manual --as-cran’
+* checking for file ‘./DESCRIPTION’ ... OK
+* this is package ‘OpenPVA’ version ‘0.0.0.9000’
+* package encoding: UTF-8
+* checking CRAN incoming feasibility ... [9s/20s] NOTE
+Maintainer: ‘Barry Brook <bwbrook@users.noreply.github.com>’
+
+New submission
+
+Version contains large components (0.0.0.9000)
+
+License components with restrictions and base license permitting such:
+  MIT + file LICENSE
+File 'LICENSE':
+  MIT License
+  
+  Copyright (c) 2025 Barry Brook
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
+The build time stamp is missing.
+* checking package namespace information ... OK
+* checking package dependencies ... OK
+* checking if this is a source package ... NOTE
+Subdirectory ‘artefacts/WP-0.3.2/OpenPVA.Rcheck/OpenPVA’ seems to contain an installed version of the package.
+* checking if there is a namespace ... OK
+* checking for executable files ... OK
+* checking for hidden files and directories ... NOTE
+Found the following hidden files and directories:
+  _targets/.gitignore
+  .gitignore
+  .lintr
+  .Rprofile
+  renv/.gitignore
+  ..Rcheck
+  .git
+  .github
+  .vscode
+  artefacts/WP-0.3.4/..Rcheck
+These were most likely included in error. See section ‘Package
+structure’ in the ‘Writing R Extensions’ manual.
+
+CRAN-pack does not know about
+  .lintr
+  ..Rcheck
+  .git
+  .github
+  .vscode
+  artefacts/WP-0.3.4/..Rcheck
+* checking for portable file names ... NOTE
+Found the following non-portable file paths:
+  OpenPVA/artefacts/WP-0.3.2/OpenPVA.Rcheck/00_pkg_src/OpenPVA/tests/testthat/test_demography_environment.R
+  OpenPVA/artefacts/WP-0.3.2/OpenPVA.Rcheck/00_pkg_src/OpenPVA/tests/testthat/test_demography_reproduction_spec.R
+  OpenPVA/artefacts/WP-0.3.2/OpenPVA.Rcheck/00_pkg_src/OpenPVA/tests/testthat/test_demography_survival_spec.R
+  OpenPVA/artefacts/WP-0.3.2/OpenPVA.Rcheck/00_pkg_src/OpenPVA/tests/testthat/test_scenario_yaml_demography.R
+  OpenPVA/artefacts/WP-0.3.2/OpenPVA.Rcheck/00_pkg_src/OpenPVA/tests/testthat/test_simulation_summary.R
+  OpenPVA/artefacts/WP-0.3.3/OpenPVA.Rcheck/00_pkg_src/OpenPVA/tests/testthat/test_demography_environment.R
+  OpenPVA/artefacts/WP-0.3.3/OpenPVA.Rcheck/00_pkg_src/OpenPVA/tests/testthat/test_demography_reproduction_spec.R
+  OpenPVA/artefacts/WP-0.3.3/OpenPVA.Rcheck/00_pkg_src/OpenPVA/tests/testthat/test_demography_survival_spec.R
+  OpenPVA/artefacts/WP-0.3.3/OpenPVA.Rcheck/00_pkg_src/OpenPVA/tests/testthat/test_scenario_yaml_demography.R
+  OpenPVA/artefacts/WP-0.3.3/OpenPVA.Rcheck/00_pkg_src/OpenPVA/tests/testthat/test_simulation_summary.R
+
+Tarballs are only required to store paths of up to 100 bytes and cannot
+store those of more than 256 bytes, with restrictions including to 100
+bytes for the final component.
+See section ‘Package structure’ in the ‘Writing R Extensions’ manual.
+* checking for sufficient/correct file permissions ... OK
+* checking whether package ‘OpenPVA’ can be installed ... OK
+* checking installed package size ... OK
+* checking package directory ... OK
+* checking for future file timestamps ... OK
+* checking DESCRIPTION meta-information ... NOTE
+License stub is invalid DCF.
+Checking should be performed on sources prepared by ‘R CMD build’.
+* checking top-level files ... NOTE
+Non-standard files/directories found at top level:
+  ‘_targets’ ‘_targets.R’ ‘AGENTS.md’ ‘artefacts’ ‘bootstrap_env.R’
+  ‘CONTRIBUTING.md’ ‘docs’ ‘OpenPVA_0.0.0.9000.tar.gz’ ‘OpenPVA.png’
+  ‘outputs’ ‘quarto’ ‘renv’ ‘renv.lock’
+* checking for left-over files ... OK
+* checking index information ... OK
+* checking package subdirectories ... WARNING
+Found the following directories with names of check directories:
+  ./..Rcheck
+  ./artefacts/WP-0.3.2/OpenPVA.Rcheck
+  ./artefacts/WP-0.3.3/OpenPVA.Rcheck
+  ./artefacts/WP-0.3.4/..Rcheck
+Most likely, these were included erroneously.
+Found the following directory with the name of a version control directory:
+  ./.git
+These should not be in a package tarball.
+Found the following CITATION files in a non-standard place:
+  artefacts/WP-0.3.2/OpenPVA.Rcheck/00_pkg_src/OpenPVA/inst/CITATION
+  artefacts/WP-0.3.2/OpenPVA.Rcheck/OpenPVA/CITATION
+  artefacts/WP-0.3.3/OpenPVA.Rcheck/00_pkg_src/OpenPVA/inst/CITATION
+  artefacts/WP-0.3.3/OpenPVA.Rcheck/OpenPVA/CITATION
+Most likely ‘inst/CITATION’ should be used instead.
+* checking code files for non-ASCII characters ... OK
+* checking R files for syntax errors ... OK
+* checking whether the package can be loaded ... OK
+* checking whether the package can be loaded with stated dependencies ... OK
+* checking whether the package can be unloaded cleanly ... OK
+* checking whether the namespace can be loaded with stated dependencies ... OK
+* checking whether the namespace can be unloaded cleanly ... OK
+* checking loading without being on the library search path ... OK
+* checking use of S3 registration ... OK
+* checking dependencies in R code ... OK
+* checking S3 generic/method consistency ... OK
+* checking replacement functions ... OK
+* checking foreign function calls ... OK
+* checking R code for possible problems ... OK
+* checking Rd files ... OK
+* checking Rd metadata ... OK
+* checking Rd line widths ... OK
+* checking Rd cross-references ... OK
+* checking for missing documentation entries ... OK
+* checking for code/documentation mismatches ... OK
+* checking Rd \usage sections ... OK
+* checking Rd contents ... OK
+* checking for unstated dependencies in examples ... OK
+* checking examples ... NONE
+* checking for unstated dependencies in ‘tests’ ... OK
+* checking tests ... OK
+  Running ‘testthat.R’
+* checking for non-standard things in the check directory ... OK
+* checking for detritus in the temp directory ... OK
+* DONE
+Status: 1 WARNING, 6 NOTEs

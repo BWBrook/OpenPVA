@@ -191,3 +191,56 @@ test_that("make_markov_dispersal_fun samples destinations by row", {
   bad_tm <- matrix(c(0, 0, 1, 0), nrow = 2, byrow = TRUE)
   expect_error(make_markov_dispersal_fun(bad_tm), "positive sum")
 })
+
+test_that("summarise_patch_genetic_diversity_final aggregates per-patch diversity", {
+  ind <- function(id, patch_id, alleles, alive = TRUE) {
+    x <- create_individual(id = id, sex = "F", age = 3L, patch_id = patch_id)
+    x$alive <- alive
+    x$alleles <- alleles
+    x$F <- if (is.null(alleles)) NA_real_ else .Fhat_from_alleles(alleles)
+    x
+  }
+
+  run1_pop <- list(
+    ind(1L, 1L, rbind(c(1L, 2L), c(2L, 1L))), # H = 1
+    ind(2L, 2L, rbind(c(1L, 1L), c(1L, 1L)))  # H = 0
+  )
+  run2_pop <- list(
+    ind(3L, 1L, rbind(c(1L, 1L), c(1L, 1L))), # H = 0
+    ind(4L, 2L, NULL)
+  )
+
+  sim_output <- list(
+    runs = list(
+      list(population = run1_pop),
+      list(population = run2_pop)
+    )
+  )
+
+  summary <- summarise_patch_genetic_diversity_final(
+    sim_output = sim_output,
+    n_patches = 2,
+    alive_only = TRUE
+  )
+
+  expect_equal(nrow(summary), 2L)
+  expect_true(all(summary$n_runs == 2L))
+  expect_equal(summary$mean_n_genotyped[summary$patch_id == 1L], 1)
+  expect_equal(summary$p_patch_genotyped[summary$patch_id == 2L], 0.5)
+  expect_equal(summary$mean_heterozygosity[summary$patch_id == 1L], 0.5)
+  expect_equal(summary$mean_Fhat[summary$patch_id == 1L], 0.5)
+})
+
+test_that("summarise_patch_genetic_diversity_final validates inputs", {
+  expect_error(
+    summarise_patch_genetic_diversity_final(sim_output = list(), n_patches = 2),
+    "non-empty 'runs'"
+  )
+  expect_error(
+    summarise_patch_genetic_diversity_final(
+      sim_output = list(runs = list(list(population = list()))),
+      n_patches = 0
+    ),
+    "n_patches"
+  )
+})

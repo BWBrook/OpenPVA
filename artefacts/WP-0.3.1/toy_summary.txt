@@ -1,0 +1,3 @@
+toy run summary
+"n_runs","p_extinct","mean_time_to_extinction","median_time_to_extinction"
+5,0,NA,NA

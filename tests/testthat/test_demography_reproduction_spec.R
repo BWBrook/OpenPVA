@@ -75,6 +75,16 @@ test_that("make_default_breeding_table reproduces default_breeding_fun", {
   }
 })
 
+test_that("default probability/lambda tables are valid", {
+  tbl_prob <- make_default_breeding_prob_table()
+  expect_true(all(c("age_min", "age_max", "sex", "p_breed") %in% names(tbl_prob)))
+  expect_error(validate_breeding_prob_table(tbl_prob), NA)
+
+  tbl_lambda <- make_default_fecundity_lambda_table()
+  expect_true(all(c("age_min", "age_max", "sex", "lambda") %in% names(tbl_lambda)))
+  expect_error(validate_fecundity_lambda_table(tbl_lambda), NA)
+})
+
 test_that("build_fecundity_fun_from_table returns expected counts", {
   tbl <- data.frame(
     age_min = c(0, 4),
@@ -145,4 +155,76 @@ test_that("table-built breeding and fecundity plug into reproduction", {
   expect_true(all(vapply(newborns, function(ind) ind$age, integer(1)) == 0L))
   expect_true(all(vapply(newborns, function(ind) ind$mother_id, integer(1)) == 2L))
   expect_true(all(vapply(newborns, function(ind) ind$father_id, integer(1)) == 3L))
+})
+
+test_that("validate_breeding_prob_table enforces [0, 1] probabilities", {
+  tbl_ok <- data.frame(
+    age_min = c(0, 4),
+    age_max = c(3, Inf),
+    sex = c("F", "F"),
+    p_breed = c(0, 0.8)
+  )
+  expect_error(validate_breeding_prob_table(tbl_ok), NA)
+
+  tbl_bad <- tbl_ok
+  tbl_bad$p_breed[2] <- 1.1
+  expect_error(validate_breeding_prob_table(tbl_bad), "p_breed")
+})
+
+test_that("build_breeding_prob_fun_from_table returns expected probabilities", {
+  tbl <- data.frame(
+    age_min = c(0, 3),
+    age_max = c(2, Inf),
+    sex = c("F", "F"),
+    p_breed = c(0.1, 0.7)
+  )
+  pf <- build_breeding_prob_fun_from_table(tbl)
+
+  expect_equal(pf(create_individual(1L, "F", age = 1L)), 0.1)
+  expect_equal(pf(create_individual(2L, "F", age = 5L)), 0.7)
+  expect_equal(pf(create_individual(3L, "M", age = 5L)), 0)
+})
+
+test_that("breeding adapters preserve legacy compatibility", {
+  legacy_bf <- function(ind) ind$sex == "F" && ind$age >= 4
+  prob_fun <- as_breeding_prob_fun(legacy_bf)
+
+  expect_equal(prob_fun(create_individual(1L, "F", age = 3L)), 0)
+  expect_equal(prob_fun(create_individual(2L, "F", age = 4L)), 1)
+
+  elig_fun <- as_breeding_fun(function(ind) 0.25)
+  expect_true(elig_fun(create_individual(3L, "F", age = 5L)))
+})
+
+test_that("validate_fecundity_lambda_table and lambda builder work", {
+  tbl <- data.frame(
+    age_min = c(0, 4),
+    age_max = c(3, Inf),
+    sex = c("F", "F"),
+    lambda = c(0, 2.5)
+  )
+  expect_error(validate_fecundity_lambda_table(tbl), NA)
+
+  lf <- build_fecundity_lambda_fun_from_table(tbl)
+  expect_equal(lf(create_individual(1L, "F", age = 1L)), 0)
+  expect_equal(lf(create_individual(2L, "F", age = 5L)), 2.5)
+  expect_equal(lf(create_individual(3L, "M", age = 5L)), 0)
+})
+
+test_that("fecundity adapters preserve legacy compatibility", {
+  lambda_fun <- function(ind) if (ind$sex == "F") 1.5 else 0
+  legacy_f <- as_fecundity_fun(lambda_fun)
+
+  set.seed(123)
+  draws_f <- replicate(20, legacy_f(create_individual(1L, "F", age = 5L)))
+  draws_m <- replicate(10, legacy_f(create_individual(2L, "M", age = 5L)))
+
+  expect_true(all(draws_f >= 0L))
+  expect_true(any(draws_f > 0L))
+  expect_true(all(draws_m == 0L))
+
+  legacy_fun <- function(ind) if (ind$age >= 4) 2 else 0
+  lambda_from_legacy <- as_fecundity_lambda_fun(legacy_fun)
+  expect_equal(lambda_from_legacy(create_individual(3L, "F", age = 5L)), 2)
+  expect_equal(lambda_from_legacy(create_individual(4L, "F", age = 2L)), 0)
 })

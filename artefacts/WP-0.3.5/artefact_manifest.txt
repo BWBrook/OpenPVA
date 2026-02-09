@@ -1,0 +1,8 @@
+total 24
+drwxrwxr-x 2 bwbrook bwbrook 4096 Feb  8 17:10 .
+drwxrwxr-x 7 bwbrook bwbrook 4096 Feb  8 16:47 ..
+-rw-rw-r-- 1 bwbrook bwbrook    0 Feb  8 17:10 artefact_manifest.txt
+-rw-rw-r-- 1 bwbrook bwbrook   86 Feb  8 17:10 render_post.log
+-rw-rw-r-- 1 bwbrook bwbrook  859 Feb  8 16:48 render_pre.log
+-rw-rw-r-- 1 bwbrook bwbrook 1094 Feb  8 17:10 site_files.txt
+-rw-rw-r-- 1 bwbrook bwbrook  346 Feb  8 17:10 site_root_listing.txt

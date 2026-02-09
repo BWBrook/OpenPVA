@@ -190,3 +190,78 @@ summarise_harvest_yield <- function(sim_output) {
 
   list(per_run = per_run, overall = overall)
 }
+
+#' Summarise final-abundance risk/resilience metrics across replicates
+#'
+#' Computes per-run final abundance and floor-risk metrics from
+#' `run_basic_simulation_replicates()` output.
+#'
+#' @param sim_output A list returned by `run_basic_simulation_replicates()`.
+#' @param floor Non-negative abundance floor used to compute risk probabilities.
+#'   Defaults to `0`.
+#'
+#' @return A list with two tibbles:
+#'   - `per_run`: one row per run with `run`, `final_year`, `final_n_alive`,
+#'     and `min_n_alive`.
+#'   - `overall`: one-row tibble with `n_runs`, `floor_threshold`,
+#'     `mean_final_n_alive`, `median_final_n_alive`, `q05_final_n_alive`,
+#'     `q95_final_n_alive`, `p_final_below_floor`, and `p_any_below_floor`.
+#' @export
+summarise_final_abundance <- function(sim_output, floor = 0) {
+  floor <- as.numeric(floor)
+  if (length(floor) != 1L || is.na(floor) || floor < 0) {
+    stop("floor must be a single non-negative numeric value", call. = FALSE)
+  }
+
+  summary_tbl <- sim_output$summary
+  if (is.null(summary_tbl)) {
+    stop("sim_output$summary is missing", call. = FALSE)
+  }
+  required_cols <- c("run", "year", "n_alive")
+  if (!all(required_cols %in% names(summary_tbl))) {
+    stop("sim_output$summary must contain columns run, year, n_alive", call. = FALSE)
+  }
+
+  if (!nrow(summary_tbl)) {
+    per_run <- tibble::tibble(
+      run = integer(),
+      final_year = integer(),
+      final_n_alive = integer(),
+      min_n_alive = integer()
+    )
+    overall <- tibble::tibble(
+      n_runs = 0L,
+      floor_threshold = floor,
+      mean_final_n_alive = NA_real_,
+      median_final_n_alive = NA_real_,
+      q05_final_n_alive = NA_real_,
+      q95_final_n_alive = NA_real_,
+      p_final_below_floor = NA_real_,
+      p_any_below_floor = NA_real_
+    )
+    return(list(per_run = per_run, overall = overall))
+  }
+
+  per_run <- summary_tbl |>
+    dplyr::group_by(.data$run) |>
+    dplyr::summarise(
+      final_year = max(.data$year),
+      final_n_alive = .data$n_alive[which.max(.data$year)],
+      min_n_alive = min(.data$n_alive),
+      .groups = "drop"
+    )
+
+  overall <- per_run |>
+    dplyr::summarise(
+      n_runs = dplyr::n(),
+      floor_threshold = floor,
+      mean_final_n_alive = mean(.data$final_n_alive),
+      median_final_n_alive = stats::median(.data$final_n_alive),
+      q05_final_n_alive = as.numeric(stats::quantile(.data$final_n_alive, probs = 0.05, names = FALSE)),
+      q95_final_n_alive = as.numeric(stats::quantile(.data$final_n_alive, probs = 0.95, names = FALSE)),
+      p_final_below_floor = mean(.data$final_n_alive <= floor),
+      p_any_below_floor = mean(.data$min_n_alive <= floor)
+    )
+
+  list(per_run = per_run, overall = overall)
+}

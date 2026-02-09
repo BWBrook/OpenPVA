@@ -32,6 +32,33 @@ test_that("scenario_spec creates validated objects", {
   expect_true(all(res$sim_output$summary$n_alive == 2L))
 })
 
+test_that("scenario_spec threads require_mate through run_scenario", {
+  init_fun <- function() {
+    list(
+      create_individual(1L, "F", 5L),
+      create_individual(2L, "F", 5L),
+      create_individual(3L, "M", 5L)
+    )
+  }
+
+  sc <- scenario_spec(
+    name = "require_mate_scenario",
+    n_runs = 1,
+    n_years = 1,
+    init_fun = init_fun,
+    survival_fun = function(ind) 1,
+    breeding_fun = function(ind) TRUE,
+    fecundity_fun = function(ind) 1L,
+    mating_fun = make_mate_limited_mating_fun(max_mates_per_male = 1L),
+    require_mate = TRUE,
+    lifecycle_steps = c("age", "survival", "breeding_births")
+  )
+
+  expect_true(sc$require_mate)
+  out <- run_scenario(sc)
+  expect_equal(out$sim_output$summary$n_births[1], 1L)
+})
+
 test_that("read_scenario_yaml loads YAML configs", {
   yaml_text <- "name: 'yaml_demo'
 n_runs: 2

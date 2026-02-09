@@ -1,0 +1,261 @@
+Building release evidence bundle at: artefacts/release_1.0.0-rc2
++ renv restore
+ℹ Loading metadata database
+✔ Loading metadata database ... done
+
+ 
+✔ All system requirements are already installed.
+  
+ℹ No downloads are needed
+✔ 116 pkgs: kept 83 [39.3s]
++ lint
+n_lints=0
+ℹ No lints found.
++ tests
+ℹ Testing OpenPVA
+✔ | F W  S  OK | Context
+
+⠏ |          0 | demography_environment                                         
+⠋ |          1 | demography_environment                                         
+⠼ |          5 | demography_environment                                         
+⠇ |          9 | demography_environment                                         
+✔ |          9 | demography_environment [1.9s]
+
+⠏ |          0 | demography_reproduction_spec                                   
+⠙ |          2 | demography_reproduction_spec                                   
+⠴ |          6 | demography_reproduction_spec                                   
+⠸ |         14 | demography_reproduction_spec                                   
+⠧ |         18 | demography_reproduction_spec                                   
+⠋ |         31 | demography_reproduction_spec                                   
+⠼ |         45 | demography_reproduction_spec                                   
+✔ |         48 | demography_reproduction_spec [1.1s]
+
+⠏ |          0 | demography_survival_spec                                       
+⠸ |          4 | demography_survival_spec                                       
+⠧ |         18 | demography_survival_spec                                       
+✔ |         19 | demography_survival_spec
+
+⠏ |          0 | density_module                                                 
+⠦ |          7 | density_module                                                 
+⠋ |         11 | density_module                                                 
+⠸ |         14 | density_module                                                 
+⠙ |         22 | density_module                                                 
+⠹ |         23 | density_module                                                 
+✔ |         24 | density_module
+
+⠏ |          0 | genetics_core                                                  
+⠴ |         16 | genetics_core                                                  
+⠙ |         22 | genetics_core                                                  
+⠼ |         35 | genetics_core                                                  
+⠋ |         41 | genetics_core                                                  
+✔ |         43 | genetics_core
+
+⠏ |          0 | init_population                                                
+✔ |         10 | init_population
+
+⠏ |          0 | management                                                     
+⠋ |          1 | management                                                     
+✔ |          4 | management
+
+⠏ |          0 | output_schema_contract                                         
+⠋ |         11 | output_schema_contract                                         
+⠹ |         13 | output_schema_contract                                         
+⠙ |         22 | output_schema_contract                                         
+⠦ |         27 | output_schema_contract                                         
+⠼ |         35 | output_schema_contract                                         
+✔ |         40 | output_schema_contract
+
+⠏ |          0 | reproducibility_snapshots                                      
+⠋ |          1 | reproducibility_snapshots                                      
+✔ |          2 | reproducibility_snapshots
+
+⠏ |          0 | reproduction_controller                                        
+⠴ |          6 | reproduction_controller                                        
+⠼ |         15 | reproduction_controller                                        
+✔ |         20 | reproduction_controller
+
+⠏ |          0 | rng_seed                                                       
+⠋ |          1 | rng_seed                                                       
+⠹ |          3 | rng_seed                                                       
+⠴ |          6 | rng_seed                                                       
+⠋ |         11 | rng_seed                                                       
+⠸ |         14 | rng_seed                                                       
+✔ |         14 | rng_seed [1.1s]
+
+⠏ |          0 | scenario_yaml_demography                                       
+⠧ |          8 | scenario_yaml_demography                                       
+⠏ |         10 | scenario_yaml_demography                                       
+⠦ |         17 | scenario_yaml_demography                                       
+⠋ |         31 | scenario_yaml_demography                                       
+⠧ |         38 | scenario_yaml_demography                                       
+⠼ |         45 | scenario_yaml_demography                                       
+⠼ |         55 | scenario_yaml_demography                                       
+⠦ |         57 | scenario_yaml_demography                                       
+⠙ |         62 | scenario_yaml_demography                                       
+⠧ |         68 | scenario_yaml_demography                                       
+⠙ |         72 | scenario_yaml_demography                                       
+✔ |         75 | scenario_yaml_demography [8.7s]
+
+⠏ |          0 | scenario                                                       
+⠦ |          7 | scenario                                                       
+⠧ |         18 | scenario                                                       
+⠴ |         26 | scenario                                                       
+⠋ |         31 | scenario                                                       
+⠧ |         38 | scenario                                                       
+⠹ |         43 | scenario                                                       
+⠏ |         50 | scenario                                                       
+✔ |         51 | scenario
+
+⠏ |          0 | simulation_core                                                
+⠦ |         17 | simulation_core                                                
+⠴ |         26 | simulation_core                                                
+⠦ |         37 | simulation_core                                                
+⠧ |         48 | simulation_core                                                
+⠧ |         58 | simulation_core                                                
+✔ |         60 | simulation_core
+
+⠏ |          0 | simulation_summary                                             
+⠙ |         12 | simulation_summary                                             
+⠇ |         19 | simulation_summary                                             
+✔ |         24 | simulation_summary
+
+⠏ |          0 | spatial_patches                                                
+⠏ |         10 | spatial_patches                                                
+⠴ |         16 | spatial_patches                                                
+⠸ |         24 | spatial_patches                                                
+✔ |         24 | spatial_patches
+
+⠏ |          0 | supplementation                                                
+⠙ |         12 | supplementation                                                
+✔ |         16 | supplementation
+
+══ Results ═════════════════════════════════════════════════════════════════════
+Duration: 19.0 s
+
+[ FAIL 0 | WARN 0 | SKIP 0 | PASS 483 ]
++ targets smoke
++ sim_basic dispatched
+✔ sim_basic completed [991ms, 8.48 kB]
+✔ ended pipeline [1.9s, 1 completed, 0 skipped]
++ quarto render
+[1/2] index.qmd
+[2/2] about.qmd
+
+WARN: Refusing to remove directory /home/bwbrook/git/OpenPVA/outputs/quarto_site/site_libs since it is not a subdirectory of the main project directory.
+WARN: Quarto did not expect the path configuration being used in this project, and strange behavior may result.
+Output created: ../outputs/quarto_site/index.html
+
++ build source tarball
+* checking for file ‘./DESCRIPTION’ ... OK
+* preparing ‘OpenPVA’:
+* checking DESCRIPTION meta-information ... OK
+* checking for LF line-endings in source and make files and shell scripts
+* checking for empty or unneeded directories
+* building ‘OpenPVA_1.0.0.tar.gz’
+
++ run R CMD check --as-cran
+* using log directory ‘/home/bwbrook/git/OpenPVA/OpenPVA.Rcheck’
+* using R version 4.5.2 (2025-10-31)
+* using platform: x86_64-pc-linux-gnu
+* R was compiled by
+    gcc (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0
+    GNU Fortran (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0
+* running under: Ubuntu 24.04.3 LTS
+* using session charset: UTF-8
+* using options ‘--no-manual --as-cran’
+* checking for file ‘OpenPVA/DESCRIPTION’ ... OK
+* this is package ‘OpenPVA’ version ‘1.0.0’
+* package encoding: UTF-8
+* checking CRAN incoming feasibility ... [11s/21s] NOTE
+Maintainer: ‘Barry Brook <bwbrook@users.noreply.github.com>’
+
+New submission
+
+License components with restrictions and base license permitting such:
+  MIT + file LICENSE
+File 'LICENSE':
+  MIT License
+  
+  Copyright (c) 2025 Barry Brook
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+* checking package namespace information ... OK
+* checking package dependencies ... OK
+* checking if this is a source package ... OK
+* checking if there is a namespace ... OK
+* checking for executable files ... OK
+* checking for hidden files and directories ... OK
+* checking for portable file names ... OK
+* checking for sufficient/correct file permissions ... OK
+* checking whether package ‘OpenPVA’ can be installed ... OK
+* checking installed package size ... OK
+* checking package directory ... OK
+* checking for future file timestamps ... OK
+* checking DESCRIPTION meta-information ... NOTE
+License stub is invalid DCF.
+* checking top-level files ... NOTE
+Non-standard files/directories found at top level:
+  ‘_targets.R’ ‘bootstrap_env.R’ ‘CONTRIBUTING.md’ ‘scripts’
+* checking for left-over files ... OK
+* checking index information ... OK
+* checking package subdirectories ... OK
+* checking code files for non-ASCII characters ... OK
+* checking R files for syntax errors ... OK
+* checking whether the package can be loaded ... OK
+* checking whether the package can be loaded with stated dependencies ... OK
+* checking whether the package can be unloaded cleanly ... OK
+* checking whether the namespace can be loaded with stated dependencies ... OK
+* checking whether the namespace can be unloaded cleanly ... OK
+* checking loading without being on the library search path ... OK
+* checking use of S3 registration ... OK
+* checking dependencies in R code ... OK
+* checking S3 generic/method consistency ... OK
+* checking replacement functions ... OK
+* checking foreign function calls ... OK
+* checking R code for possible problems ... [71s/12s] OK
+* checking Rd files ... OK
+* checking Rd metadata ... OK
+* checking Rd line widths ... OK
+* checking Rd cross-references ... OK
+* checking for missing documentation entries ... OK
+* checking for code/documentation mismatches ... OK
+* checking Rd \usage sections ... OK
+* checking Rd contents ... OK
+* checking for unstated dependencies in examples ... OK
+* checking examples ... NONE
+* checking for unstated dependencies in ‘tests’ ... OK
+* checking tests ...
+  Running ‘testthat.R’ [23s/18s]
+ [28s/18s] OK
+* checking for non-standard things in the check directory ... OK
+* checking for detritus in the temp directory ... OK
+* DONE
+
+Status: 3 NOTEs
+See
+  ‘/home/bwbrook/git/OpenPVA/OpenPVA.Rcheck/00check.log’
+for details.
+
++ generate toy scenario outputs
+Toy extinction summary:
+# A tibble: 1 × 4
+  n_runs p_extinct mean_time_to_extinction median_time_to_extinction
+   <int>     <dbl>                   <dbl>                     <dbl>
+1      5         0                      NA                        NA
+Release evidence bundle complete: artefacts/release_1.0.0-rc2

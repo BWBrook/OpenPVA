@@ -54,6 +54,9 @@ _targets/
 # Quarto renders
 quarto/*.html
 quarto/*_files/
+quarto/*.rmarkdown
+quarto/.quarto/
+quarto/.gitignore
 
 # Quarto rendered outputs
 quarto/rendered/

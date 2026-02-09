@@ -1,0 +1,44 @@
+✔ | F W  S  OK | Context
+
+⠏ |          0 | scenario_yaml_demography                                       
+⠋ |          1 | scenario_yaml_demography                                       
+⠹ |          3 | scenario_yaml_demography                                       
+⠼ |          5 | scenario_yaml_demography                                       
+⠏ |         10 | scenario_yaml_demography                                       
+⠴ |         16 | scenario_yaml_demography                                       
+⠦ |         17 | scenario_yaml_demography                                       
+⠋ |         31 | scenario_yaml_demography                                       
+⠴ |         36 | scenario_yaml_demography                                       
+⠋ |         41 | scenario_yaml_demography                                       
+⠼ |         45 | scenario_yaml_demography                                       
+⠼ |         55 | scenario_yaml_demography                                       
+⠦ |         57 | scenario_yaml_demography                                       
+⠙ |         62 | scenario_yaml_demography                                       
+⠧ |         68 | scenario_yaml_demography                                       
+⠙ |         72 | scenario_yaml_demography                                       
+⠴ |         76 | scenario_yaml_demography                                       
+⠇ |         79 | scenario_yaml_demography                                       
+✔ |         79 | scenario_yaml_demography [11.0s]
+
+⠏ |          0 | scenario                                                       
+⠴ |          6 | scenario                                                       
+⠋ |         11 | scenario                                                       
+⠼ |         25 | scenario                                                       
+⠴ |         26 | scenario                                                       
+⠦ |         37 | scenario                                                       
+⠼ |         45 | scenario                                                       
+⠹ |         53 | scenario                                                       
+✔ |         53 | scenario
+
+⠏ |          0 | simulation_core                                                
+⠦ |         17 | simulation_core                                                
+⠴ |         26 | simulation_core                                                
+⠦ |         37 | simulation_core                                                
+⠙ |         52 | simulation_core                                                
+⠙ |         62 | simulation_core                                                
+✔ |         64 | simulation_core
+
+══ Results ═════════════════════════════════════════════════════════════════════
+Duration: 12.5 s
+
+[ FAIL 0 | WARN 0 | SKIP 0 | PASS 196 ]

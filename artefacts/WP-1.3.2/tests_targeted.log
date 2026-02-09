@@ -1,0 +1,32 @@
+✔ | F W  S  OK | Context
+
+⠏ |          0 | genetics_core                                                  
+⠋ |          1 | genetics_core                                                  
+⠏ |         10 | genetics_core                                                  
+⠦ |         17 | genetics_core                                                  
+⠸ |         24 | genetics_core                                                  
+⠧ |         28 | genetics_core                                                  
+⠸ |         34 | genetics_core                                                  
+⠋ |         41 | genetics_core                                                  
+✔ |         43 | genetics_core
+
+⠏ |          0 | output_schema_contract                                         
+⠋ |          1 | output_schema_contract                                         
+⠙ |         12 | output_schema_contract                                         
+⠙ |         22 | output_schema_contract                                         
+⠦ |         27 | output_schema_contract                                         
+⠇ |         39 | output_schema_contract                                         
+✔ |         40 | output_schema_contract [1.5s]
+
+⠏ |          0 | spatial_patches                                                
+⠦ |          7 | spatial_patches                                                
+⠏ |         10 | spatial_patches                                                
+⠴ |         16 | spatial_patches                                                
+⠼ |         25 | spatial_patches                                                
+⠋ |         31 | spatial_patches                                                
+✔ |         32 | spatial_patches
+
+══ Results ═════════════════════════════════════════════════════════════════════
+Duration: 3.2 s
+
+[ FAIL 0 | WARN 0 | SKIP 0 | PASS 115 ]

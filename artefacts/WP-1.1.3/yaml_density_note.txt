@@ -1,0 +1,5 @@
+WP-1.1.3 YAML density sanity note
+- schema_version: 2 density-block scenario parsed and ran with density_spec active.
+- schema_version: 2 reproduction scenario without density block still runs via legacy top-level K.
+- schema_version: 1 legacy density YAML remains runnable.
+- This confirms additive density YAML support without breaking legacy schema behavior.

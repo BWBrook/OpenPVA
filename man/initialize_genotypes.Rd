@@ -17,5 +17,5 @@ initialize_genotypes(population, n_loci, n_alleles = 2L)
 The population list with `alleles` matrices populated.
 }
 \description{
-Assigns each individual a 2 \u00d7 `n_loci` integer matrix representing two haplotypes.
+Assigns each individual a 2 x `n_loci` integer matrix representing two haplotypes.
 }

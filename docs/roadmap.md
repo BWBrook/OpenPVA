@@ -8,7 +8,7 @@ When the human maintainer says **“Follow the roadmap”**, the Codex CLI agent
 2. Select the **first unchecked** Work Package (WP) in the **Priority Queue** (top-to-bottom, strictly).
 3. Complete that WP **end-to-end** (implementation + tests + docs + artefacts).
 4. Mark the WP checkbox as completed (`[x]`) **in this file** and commit the change alongside the WP’s work.
-5. Repeat until a **Milestone/Review Gate** requires stopping for PI review.
+5. Repeat continuously until the Priority Queue is exhausted or a true blocking ambiguity requires human input.
 
 Priority changes are allowed **only** if:
 - A rationale is recorded in `docs/decisions.md`, and
@@ -45,28 +45,43 @@ A WP is **Done** only when all of the following are true:
 ## 3) Priority Queue (strict order)
 
 ### Line 0.3.x — MVP (buildable, testable, documented baseline)
-- [ ] WP-0.3.1 — Bootstrap smoke-check + fill baseline run logs
-- [ ] WP-0.3.2 — Package metadata hardening + generate man pages
-- [ ] WP-0.3.3 — README quickstart correctness (remove placeholders; runnable snippets)
-- [ ] WP-0.3.4 — CI baseline: R CMD check + tests + lint quality gate
-- [ ] WP-0.3.5 — Quarto demo/site renders successfully (no broken nav; non-conflicting output dir)
+- [x] WP-0.3.1 — Bootstrap smoke-check + fill baseline run logs
+- [x] WP-0.3.2 — Package metadata hardening + generate man pages
+- [x] WP-0.3.3 — README quickstart correctness (remove placeholders; runnable snippets)
+- [x] WP-0.3.4 — CI baseline: R CMD check + tests + lint quality gate
+- [x] WP-0.3.5 — Quarto demo/site renders successfully (no broken nav; non-conflicting output dir)
 
 ### Line 0.4.x — Beta (schema + reproducibility contracts)
-- [ ] WP-0.4.1 — YAML schema contract v1: introduce `schema_version` + validation + migration for legacy YAML
-- [ ] WP-0.4.2 — Output schema contract: document + add regression tests for key returned objects
-- [ ] WP-0.4.3 — Deterministic RNG interface: optional `seed` support for replicates + demos
+- [x] WP-0.4.1 — YAML schema contract v1: introduce `schema_version` + validation + migration for legacy YAML
+- [x] WP-0.4.2 — Output schema contract: document + add regression tests for key returned objects
+- [x] WP-0.4.3 — Deterministic RNG interface: optional `seed` support for replicates + demos
 
 ### Line 0.5.x — Beta (reproduction refactor + reproduction EV)  **[contains large WPs]**
-- [ ] WP-0.5.1 — DECISION: reproduction semantics + compatibility/deprecation policy
-- [ ] WP-0.5.2 — New demography API: breeding probability (`p_breed`) functions + table builder (compat wrappers kept)
-- [ ] WP-0.5.3 — New demography API: fecundity mean (`lambda`) functions + table builder (compat wrappers kept)
-- [ ] WP-0.5.4 — Controller refactor: move reproduction draws into controller + reproduction EV/cat support **[Large]**
-- [ ] WP-0.5.5 — YAML schema v2: reproduction semantics + `reproduction_ev` + migrations + tests **[Large]**
-- [ ] WP-0.5.6 — Docs & demo refresh for reproduction refactor (README + Quarto + interpretation notes)
+- [x] WP-0.5.1 — DECISION: reproduction semantics + compatibility/deprecation policy
+- [x] WP-0.5.2 — New demography API: breeding probability (`p_breed`) functions + table builder (compat wrappers kept)
+- [x] WP-0.5.3 — New demography API: fecundity mean (`lambda`) functions + table builder (compat wrappers kept)
+- [x] WP-0.5.4 — Controller refactor: move reproduction draws into controller + reproduction EV/cat support **[Large]**
+- [x] WP-0.5.5 — YAML schema v2: reproduction semantics + `reproduction_ev` + migrations + tests **[Large]**
+- [x] WP-0.5.6 — Docs & demo refresh for reproduction refactor (README + Quarto + interpretation notes)
 
 ### Line 1.0.0 — General Availability (stabilize + release)
-- [ ] WP-1.0.1 — Stabilize public API + semver/release policy + 1.0.0 versioning
-- [ ] WP-1.0.2 — Release candidate artefact bundle + reproducibility evidence pack
+- [x] WP-1.0.1 — Stabilize public API + semver/release policy + 1.0.0 versioning
+- [x] WP-1.0.2 — Release candidate artefact bundle + reproducibility evidence pack
+
+### Line 1.1.x — Post-1.0 hardening (density generalization)
+- [x] WP-1.1.1 — DECISION: density module semantics + compatibility strategy
+- [x] WP-1.1.2 — R-level density module integration (survival + breeding + fecundity channels)
+- [x] WP-1.1.3 — YAML density support + schema/migration tests
+
+### Line 1.2.x — Post-1.0 hardening (CI/repro)
+- [x] WP-1.2.1 — CI profile split (fast PR + scheduled heavy validation)
+- [x] WP-1.2.2 — Reproducibility gate tightening (seeded snapshots + schema regression checks)
+- [x] WP-1.2.3 — Release automation scaffold (non-publishing)
+
+### Line 1.3.x — Post-1.0 feature expansion
+- [x] WP-1.3.1 — Reproduction feature extension (mating constraints / richer reproduction controls)
+- [x] WP-1.3.2 — Spatial/genetic enhancement increment
+- [x] WP-1.3.3 — Decision-support outputs expansion
 
 ---
 
@@ -632,21 +647,269 @@ A concrete, reviewable release bundle exists: someone can inspect and reproduce 
 
 ---
 
-## 5) Milestone / review gates (when Codex must stop)
+## WP-1.1.1 — DECISION: density module semantics + compatibility strategy
 
-Codex must stop and request a PI review ZIP under any of these conditions:
+**Outcome**  
+Density dependence design is locked with explicit semantics for channel ordering,
+scope (global/patch), and compatibility behavior.
 
-1. **After completing an entire line/milestone**:
-   - After all WPs in **0.3.x**, stop for PI review.
-   - After all WPs in **0.4.x**, stop for PI review.
-   - After completing **WP-0.5.1** (the decision), stop for PI review **before** implementing the refactor.
-   - After all WPs in **0.5.x**, stop for PI review.
-   - After all WPs in **1.0.0**, stop for PI sign-off.
+**Scope**
+- In scope:
+  - Finalize `DEC-005` density semantics and migration strategy.
+  - Replace placeholder density design doc with implementation-ready contract.
+  - Define composition order for each vital-rate channel:
+    - baseline rate -> density modifier -> EV/cat modifier -> stochastic draw.
+- Out of scope:
+  - Full controller implementation (WP-1.1.2).
+  - YAML schema changes (WP-1.1.3).
 
-2. **After any Large WP** (marked **[Large]**), stop for PI review immediately.
+**Acceptance criteria**
+- `docs/decisions.md` contains a complete, active `DEC-005`.
+- `docs/design/density_module.md` is implementation-ready (not placeholder).
+- Design docs explicitly state:
+  - channel set (`survival`, `breeding`, `fecundity`),
+  - state inputs,
+  - bounds/clamping expectations,
+  - compatibility mapping from `K`/`K_patches`.
 
-3. **After any 4 completed WPs**, stop for PI review even if the line is not finished (to limit drift).
+**Artefact evidence**
+- Updated `docs/decisions.md` and `docs/design/density_module.md`
+- `artefacts/WP-1.1.1/` with decision/design validation evidence
 
-4. **If a WP reveals a breaking ambiguity** that cannot be resolved with local repo evidence:
-   - Record the question in `docs/questions_for_human.md`,
-   - Stop and request human/PI input.
+**Stop condition**
+- Stop once design and decision lock are complete and documented.
+
+---
+
+## WP-1.1.2 — R-level density module integration (survival + breeding + fecundity channels)
+
+**Outcome**  
+Controller supports modular density multipliers for survival, breeding
+probability, and fecundity lambda while preserving legacy behavior.
+
+**Scope**
+- In scope:
+  - Implement an R-level density module interface (constructor + validation).
+  - Integrate density channels into controller flow for:
+    - survival,
+    - breeding probability,
+    - fecundity lambda.
+  - Preserve `K`/`K_patches` behavior via adapter/compatibility path.
+  - Add tests for:
+    - channel effects,
+    - compatibility behavior,
+    - deterministic seeded runs with density active.
+- Out of scope:
+  - YAML density schema (WP-1.1.3).
+  - New biological features beyond density channels.
+
+**Acceptance criteria**
+- New density interface exists and is documented.
+- Legacy scenarios using `K`/`K_patches` continue to run with expected behavior.
+- Density channels can scale at least survival and reproduction pathways.
+- Tests cover key edge cases and compatibility pathways.
+
+**Artefact evidence**
+- Updated controller/scenario code and docs
+- New/updated tests
+- `artefacts/WP-1.1.2/` includes a small density demonstration run
+
+**Stop condition**
+- Stop once R-level density integration is stable and regression-protected.
+
+---
+
+## WP-1.1.3 — YAML density support + schema/migration tests
+
+**Outcome**  
+Density module configuration is available via YAML with explicit schema contract
+and migration coverage.
+
+**Scope**
+- In scope:
+  - Extend YAML schema for density module configuration.
+  - Add migrations/adaptation where feasible from legacy `K`/`K_patches`.
+  - Add parser tests for valid/invalid density YAML and migration behavior.
+- Out of scope:
+  - Non-density schema features.
+  - Major new model features.
+
+**Acceptance criteria**
+- YAML parser supports density configuration under the current schema contract
+  (or explicit schema bump if required).
+- Legacy YAML behavior remains available and tested.
+- Reference docs are updated for density YAML fields.
+
+**Artefact evidence**
+- Updated `inst/extdata/` density YAML examples
+- Updated schema docs and tests
+- `artefacts/WP-1.1.3/` with v1/v2+ density evidence runs
+
+**Stop condition**
+- Stop once density YAML support is documented, tested, and backward compatible.
+
+---
+
+## WP-1.2.1 — CI profile split (fast PR + scheduled heavy validation)
+
+**Outcome**  
+CI separates fast gate checks from heavier scheduled validations.
+
+**Scope**
+- In scope:
+  - Fast PR workflow for checks/tests/lint.
+  - Scheduled/optional heavy workflow for minimal targets + Quarto + integration runs.
+- Out of scope:
+  - Feature implementation.
+
+**Acceptance criteria**
+- CI workflows clearly separate fast and heavy profiles.
+- Both profiles are documented and reproducible.
+
+**Artefact evidence**
+- Updated workflow files and CI evidence notes
+- `artefacts/WP-1.2.1/` CI summary
+
+**Stop condition**
+- Stop once profile split is active and documented.
+
+---
+
+## WP-1.2.2 — Reproducibility gate tightening (seeded snapshots + schema regression checks)
+
+**Outcome**  
+Regression gates explicitly enforce deterministic seeded behavior and schema contracts.
+
+**Scope**
+- In scope:
+  - Add seeded snapshot-style regression checks.
+  - Strengthen schema migration regression tests.
+- Out of scope:
+  - New model feature work.
+
+**Acceptance criteria**
+- Deterministic seeded checks are automated and passing.
+- Schema/output regression checks are expanded and documented.
+
+**Artefact evidence**
+- Updated tests/check scripts
+- `artefacts/WP-1.2.2/` regression evidence
+
+**Stop condition**
+- Stop once reproducibility gates are in place and stable.
+
+---
+
+## WP-1.2.3 — Release automation scaffold (non-publishing)
+
+**Outcome**  
+Release evidence generation is scripted and repeatable without automatic publication.
+
+**Scope**
+- In scope:
+  - Script release-candidate evidence generation.
+  - Keep tag/publish final steps maintainer-controlled.
+- Out of scope:
+  - Automated CRAN/GitHub publication.
+
+**Acceptance criteria**
+- A documented script/process reproduces release evidence bundles.
+- Checklist integration is updated.
+
+**Artefact evidence**
+- Automation script(s) + docs
+- `artefacts/WP-1.2.3/` process run evidence
+
+**Stop condition**
+- Stop once non-publishing automation is operational and documented.
+
+---
+
+## WP-1.3.1 — Reproduction feature extension (mating constraints / richer reproduction controls)
+
+**Outcome**  
+Reproduction controls expand while preserving controller-owned stochastic semantics.
+
+**Scope**
+- In scope:
+  - Introduce selected reproduction control features (e.g., mate limitation).
+  - Maintain compatibility and regression coverage.
+- Out of scope:
+  - Density module redesign.
+
+**Acceptance criteria**
+- Feature behavior is documented, tested, and reproducible.
+
+**Artefact evidence**
+- Code/tests/docs updates
+- `artefacts/WP-1.3.1/` scenario evidence
+
+**Stop condition**
+- Stop once selected feature set is stable and documented.
+
+---
+
+## WP-1.3.2 — Spatial/genetic enhancement increment
+
+**Outcome**  
+One focused spatial/genetic capability increment is implemented with tests.
+
+**Scope**
+- In scope:
+  - Implement one bounded spatial/genetic enhancement.
+- Out of scope:
+  - Broad subsystem rewrite.
+
+**Acceptance criteria**
+- Enhancement is covered by unit/integration tests and docs.
+
+**Artefact evidence**
+- Code/tests/docs updates
+- `artefacts/WP-1.3.2/` evidence run(s)
+
+**Stop condition**
+- Stop once enhancement is stable with regression protection.
+
+---
+
+## WP-1.3.3 — Decision-support outputs expansion
+
+**Outcome**  
+Decision-support summaries expand for management comparison workflows.
+
+**Scope**
+- In scope:
+  - Add bounded set of new summary/reporting outputs.
+- Out of scope:
+  - New simulation kernels.
+
+**Acceptance criteria**
+- New outputs are documented and regression-tested.
+- Existing output contracts remain stable or are versioned/documented.
+
+**Artefact evidence**
+- Updated output docs/tests
+- `artefacts/WP-1.3.3/` demonstration outputs
+
+**Stop condition**
+- Stop once outputs are stable, documented, and tested.
+
+---
+
+## 5) Autonomous progression checkpoints
+
+Codex should proceed autonomously through the queue without mandatory external review gates.
+
+1. **Do not pause by milestone count alone**:
+   - Completing a line (0.3.x, 0.4.x, 0.5.x, 1.0.0) does not force a stop.
+   - Completing a **[Large]** WP does not force a stop.
+   - Completing any fixed number of WPs does not force a stop.
+
+2. **Use in-repo evidence as the handoff mechanism**:
+   - Keep `docs/log/`, `docs/plan.md`, `docs/decisions.md`, and `docs/interpretation_notes.md` current.
+   - Maintain WP artefact folders under `artefacts/` as specified by each WP.
+   - No special ZIP-based review packaging is required by this roadmap.
+
+3. **Only pause for real blockers**:
+   - If a WP reveals a breaking ambiguity that cannot be resolved from repo evidence, record it in `docs/questions_for_human.md` and pause for targeted input.
+   - Otherwise, continue to the next unchecked WP in strict order.

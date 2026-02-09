@@ -21,7 +21,7 @@
 
 #' Initialize simple diploid genotypes
 #'
-#' Assigns each individual a 2 \u00d7 `n_loci` integer matrix representing two haplotypes.
+#' Assigns each individual a 2 x `n_loci` integer matrix representing two haplotypes.
 #'
 #' @param population List of individual objects.
 #' @param n_loci Positive integer number of loci.
@@ -65,7 +65,7 @@ initialize_genotypes <- function(population, n_loci, n_alleles = 2L) {
 #' @param n_alleles Optional positive integer for the number of allele states; if `NULL`,
 #'   inferred from parental alleles.
 #'
-#' @return A 2 \u00d7 `n_loci` integer matrix of offspring alleles.
+#' @return A 2 x `n_loci` integer matrix of offspring alleles.
 #' @export
 inherit_genotype_simple <- function(mother, father, mutation_rate = 0, n_alleles = NULL) {
   if (!is.matrix(mother$alleles) || !is.matrix(father$alleles)) {

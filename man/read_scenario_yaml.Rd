@@ -9,17 +9,45 @@ read_scenario_yaml(path)
 \arguments{
 \item{path}{Path to a YAML file.
 
+YAML schema versioning:
+- `schema_version: 2` is the current reproduction-semantics schema.
+- `schema_version: 1` remains supported for backward compatibility.
+- missing `schema_version` is treated as legacy schema 0 and migrated to v1.
+- unknown future versions are rejected with an explicit error.
+
 The YAML may optionally include a `demography` block with nested
-`survival$table`, `breeding$table`, and `fecundity$table`, each listing rows
-matching the corresponding validation helpers (e.g. columns `age_min`,
-`age_max`, `sex`, and `p_surv`/`can_breed`/`lambda`). When present, these
-tables are compiled into functions via
-`build_survival_fun_from_table()`, `build_breeding_fun_from_table()`, and
-`build_fecundity_fun_from_table()`, overriding any function-name fields at
-the top level.
+`survival$table`, `breeding_prob$table`, and `fecundity_lambda$table` in
+schema v2. Schema v1 table keys `breeding$table` and `fecundity$table`
+remain supported and are adapted to the v2 reproduction channels during
+parsing. Table rows must match the corresponding validation helpers (for
+example `age_min`, `age_max`, `sex`, and `p_surv`/`p_breed`/`lambda`).
 
 Survival environmental variation and catastrophes can be set via top-level
-keys `env_surv_sd`, `cat_surv_prob`, and `cat_surv_mult`.}
+keys `env_surv_sd`, `cat_surv_prob`, and `cat_surv_mult`.
+Optional reproduction-controller function keys are `breeding_prob_fun` and
+`fecundity_lambda_fun`.
+
+In schema v2, reproduction environmental variation and catastrophes are
+configured under `reproduction_ev`:
+`reproduction_ev$env_repro_p_sd`, `reproduction_ev$env_repro_lambda_sd`,
+`reproduction_ev$cat_repro_prob`, and `reproduction_ev$cat_repro_mult`.
+Legacy top-level forms of these keys are still accepted and migrated.
+
+Density configuration can be supplied via an optional `density` block:
+- `density.survival`, `density.breeding`, `density.fecundity`
+- each channel supports either:
+  - `fun`: function name/reference,
+  - `model: constant` + `multiplier`,
+  - `model: ceiling` + `K` or `K_patches`.
+- shorthand `density.K` / `density.K_patches` maps to
+  `density.survival` with `model: ceiling`.
+Legacy top-level `K`/`K_patches` remain supported but cannot be combined with
+an explicit `density` block in the same YAML file.
+An optional top-level `seed` can be supplied for deterministic replicate
+outputs.
+An optional top-level `require_mate` logical controls whether unmated
+females can produce offspring (`FALSE`, legacy default) or are skipped
+during reproduction (`TRUE`).}
 }
 \value{
 An `openpva_scenario` object.

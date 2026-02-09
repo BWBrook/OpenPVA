@@ -1,0 +1,4 @@
+"scenario","schema_version","mean_n_alive","total_births"
+"density_v2",2,37.4479166666667,678
+"reproduction_v2",2,36.45,490
+"legacy_v1",1,67.0628,41137

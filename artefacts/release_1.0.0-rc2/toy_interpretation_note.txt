@@ -1,0 +1,4 @@
+Toy scenario sanity check:
+- Seeded run completed with deterministic outputs.
+- Summary and extinction tables were written without missing required columns.
+- No runtime errors observed in toy scenario generation.

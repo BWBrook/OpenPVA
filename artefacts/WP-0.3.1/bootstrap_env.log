@@ -1,0 +1,46 @@
+- The project is out-of-sync -- use `renv::status()` for details.
+- The project is out-of-sync -- use `renv::status()` for details.
+The following package(s) are out of sync [lockfile != library]:
+
+# CRAN -----------------------------------------------------------------------
+- lattice   [0.22-5 != 0.22-7]
+
+See `?renv::status` for advice on resolving these issues.
+
+✔ Updated metadata database: 2.98 MB in 3 files.
+
+ℹ Updating metadata database
+✔ Updating metadata database ... done
+
+ 
+→ Will install 8 packages.
+→ Will download 1 CRAN package (619.36 kB), cached: 7 (1.46 MB).
++ bit        4.6.0   [bld][cmp]
++ bit64      4.6.0-1 [bld][cmp]
++ here       1.0.2   [bld]
++ hms        1.1.4   [bld]
++ progress   1.2.3   [bld]
++ readr      2.1.6   [bld][cmp]
++ tzdb       0.5.0   [bld][cmp]
++ vroom      1.7.0   [bld][cmp][dl] (619.36 kB)
+✔ All system requirements are already installed.
+  
+ℹ Getting 1 pkg (619.36 kB), 7 (1.46 MB) cached
+✔ Got vroom 1.7.0 (source) (619.36 kB)
+✔ Installed here 1.0.2  (166ms)
+✔ Installed bit 4.6.0  (235ms)
+✔ Installed bit64 4.6.0-1  (316ms)
+✔ Installed hms 1.1.4  (346ms)
+✔ Installed progress 1.2.3  (441ms)
+✔ Installed readr 2.1.6  (467ms)
+✔ Installed tzdb 0.5.0  (490ms)
+ℹ Building vroom 1.7.0
+✔ Built vroom 1.7.0 (1m 41.6s)
+✔ Installed vroom 1.7.0  (1.2s)
+✔ 2 pkgs + 24 deps: kept 13, added 8, dld 1 (619.36 kB) [1m 59.5s]
+The following package(s) will be updated in the lockfile:
+
+# CRAN -----------------------------------------------------------------------
+- lattice   [0.22-5 -> 0.22-7]
+
+- Lockfile written to "~/git/OpenPVA/renv.lock".

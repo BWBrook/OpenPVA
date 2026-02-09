@@ -1,0 +1,10 @@
+Determinism proof for WP-0.4.3
+timestamp_utc: 2026-02-08 06:37:34 UTC
+seeded_identical: TRUE
+unseeded_identical: FALSE
+
+md5:
+artefacts/WP-0.4.3/seeded_summary_a.rds be4d28fa7dfce83d7a261b9c3e81417e
+artefacts/WP-0.4.3/seeded_summary_b.rds be4d28fa7dfce83d7a261b9c3e81417e
+artefacts/WP-0.4.3/unseeded_summary_a.rds 601e40943efd5cef43d7e1f10eeb0810
+artefacts/WP-0.4.3/unseeded_summary_b.rds 2d5b6c0c034f7994541d400235de6dea

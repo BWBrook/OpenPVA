@@ -11,10 +11,9 @@ build_breeding_fun_from_table(tbl)
 `can_breed`. See `validate_breeding_table()` for requirements.}
 }
 \value{
-A function with signature `function(ind)` that returns `TRUE` when a
-  given individual is eligible to breed, otherwise `FALSE`.
+A function with signature `function(ind)` returning `TRUE`/`FALSE`.
 }
 \description{
-Converts an age- and sex-specific breeding table into a function compatible
-with `determine_breeding()`.
+Legacy compatibility wrapper that maps `can_breed` to `p_breed` and returns
+logical breeding eligibility.
 }

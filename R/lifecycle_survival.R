@@ -11,7 +11,7 @@ apply_survival <- function(population, survival_fun) {
   lapply(population, function(ind) {
     if (ind$alive) {
       prob <- survival_fun(ind)
-      ind$alive <- runif(1) < prob
+      ind$alive <- stats::runif(1) < prob
     }
     ind
   })

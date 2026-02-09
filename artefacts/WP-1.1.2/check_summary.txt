@@ -1,0 +1,6 @@
+WP-1.1.2 validation summary
+- devtools::test(): PASS 461, FAIL 0
+- lintr::lint_package(): no lints
+- R CMD check --no-manual --as-cran: 0 errors, 0 warnings, 3 NOTEs
+- quarto render quarto: success
+- targets smoke (sim_basic): invocation completed (up-to-date skip)

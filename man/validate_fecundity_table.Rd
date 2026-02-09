@@ -7,14 +7,11 @@
 validate_fecundity_table(tbl)
 }
 \arguments{
-\item{tbl}{Data frame with columns `age_min`, `age_max`, `sex`, and `lambda`
-(mean offspring per breeder).}
+\item{tbl}{Data frame with columns `age_min`, `age_max`, `sex`, and `lambda`.}
 }
 \value{
-Invisibly returns the validated table. Stops with an informative
-  error if the input is invalid.
+Invisibly returns the validated table.
 }
 \description{
-Checks that an age- and sex-specific fecundity table is complete and
-non-overlapping.
+Legacy compatibility wrapper for fecundity tables with `lambda`.
 }

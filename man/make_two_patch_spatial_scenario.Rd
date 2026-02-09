@@ -14,7 +14,8 @@ make_two_patch_spatial_scenario(
   survival_fun = default_survival_fun,
   breeding_fun = default_breeding_fun,
   fecundity_fun = default_fecundity_fun,
-  lifecycle_steps = c("age", "survival", "dispersal", "breeding_births", "harvest")
+  lifecycle_steps = c("age", "survival", "dispersal", "breeding_births", "harvest"),
+  density_spec = NULL
 )
 }
 \arguments{
@@ -37,6 +38,10 @@ make_two_patch_spatial_scenario(
 \item{fecundity_fun}{Function returning offspring counts for breeders.}
 
 \item{lifecycle_steps}{Character vector describing the lifecycle order.}
+
+\item{density_spec}{Optional density module specification from
+[density_spec()]. Defines channel-specific density multipliers for survival,
+breeding probability, and fecundity lambda.}
 }
 \value{
 An `openpva_scenario`.

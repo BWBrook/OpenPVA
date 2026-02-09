@@ -1,0 +1,18 @@
+total 128
+drwxrwxr-x 4 bwbrook bwbrook  4096 Feb  8 16:46 .
+drwxrwxr-x 6 bwbrook bwbrook  4096 Feb  8 16:36 ..
+drwxr-xr-x 5 bwbrook bwbrook  4096 Feb  8 16:43 ..Rcheck
+drwxr-xr-x 6 bwbrook bwbrook  4096 Feb  8 16:45 OpenPVA.Rcheck
+-rw-rw-r-- 1 bwbrook bwbrook     0 Feb  8 16:46 artefact_manifest.txt
+-rw-rw-r-- 1 bwbrook bwbrook   284 Feb  8 16:45 build.log
+-rw-rw-r-- 1 bwbrook bwbrook    14 Feb  8 16:46 check_summary.txt
+-rw-rw-r-- 1 bwbrook bwbrook    55 Feb  8 16:38 document.log
+-rw-rw-r-- 1 bwbrook bwbrook   721 Feb  8 16:37 install_lintr_snapshot.log
+-rw-rw-r-- 1 bwbrook bwbrook    20 Feb  8 16:43 lint.log
+-rw-rw-r-- 1 bwbrook bwbrook 69392 Feb  8 16:37 lint_default.log
+-rw-rw-r-- 1 bwbrook bwbrook    33 Feb  8 16:46 lint_summary.txt
+-rw-rw-r-- 1 bwbrook bwbrook    20 Feb  8 16:39 lint_trailing.log
+-rw-rw-r-- 1 bwbrook bwbrook  4320 Feb  8 16:46 rcmdcheck.log
+-rw-rw-r-- 1 bwbrook bwbrook    57 Feb  8 16:43 restore.log
+-rw-rw-r-- 1 bwbrook bwbrook    57 Feb  8 16:36 restore_lintr.log
+-rw-rw-r-- 1 bwbrook bwbrook     0 Feb  8 16:46 session_info.txt

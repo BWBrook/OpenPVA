@@ -11,12 +11,10 @@ build_fecundity_fun_from_table(tbl)
 `lambda`. See `validate_fecundity_table()` for requirements.}
 }
 \value{
-A function with signature `function(ind)` that returns an integer
-  number of offspring drawn from `stats::rpois(1, lambda)`. If no matching
-  row exists for the individual's sex/age, `lambda` defaults to 0 (no
-  offspring).
+A function with signature `function(ind)` returning non-negative
+  integer offspring counts.
 }
 \description{
-Converts an age- and sex-specific fecundity table into a function compatible
-with `apply_reproduction()`.
+Legacy compatibility wrapper that returns realized counts from a `lambda`
+table via `Poisson(lambda)` draws.
 }

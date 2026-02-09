@@ -1,0 +1,2 @@
+linters: list(trailing_whitespace_linter = lintr::trailing_whitespace_linter())
+exclusions: list("renv", "artefacts", "docs", "man", "_targets", "OpenPVA_0.0.0.9000.tar.gz")

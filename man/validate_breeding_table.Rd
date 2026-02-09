@@ -12,9 +12,8 @@ validate_breeding_table(tbl)
 }
 \value{
 Invisibly returns the validated table with `can_breed` coerced to
-  logical. Stops with an informative error if the input is invalid.
+  logical.
 }
 \description{
-Checks that an age- and sex-specific breeding eligibility table is complete
-and non-overlapping.
+Legacy validation wrapper for breeding eligibility tables with `can_breed`.
 }

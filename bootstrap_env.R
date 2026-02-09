@@ -7,7 +7,7 @@ required_pkgs <- c(
   "pak",
   "targets", "here",
   "dplyr", "tibble", "purrr", "ggplot2", "rlang",
-  "readr", "stringr", "testthat",
+  "readr", "stringr", "testthat", "lintr",
   "yaml"
 )
 

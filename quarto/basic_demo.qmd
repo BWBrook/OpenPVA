@@ -1,9 +1,11 @@
 ---
 title: "OpenPVA basic demo"
 format: html
+execute:
+  enabled: false
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, eval=FALSE}
 target_script <- "../_targets.R"
 target_store <- "../_targets"
 devtools::load_all(quiet = TRUE)
@@ -11,7 +13,9 @@ devtools::load_all(quiet = TRUE)
 
 ## Overview
 
-This walkthrough shows how to run the OpenPVA targets pipeline, inspect replicate outputs, plot mean trajectories, and run a scenario defined in YAML.
+This walkthrough shows how to run the OpenPVA targets pipeline, inspect
+replicate outputs, plot mean trajectories, and run YAML scenarios under both
+schema v1 (legacy-compatible) and schema v2 (explicit reproduction semantics).
 
 ## Set up environment
 
@@ -19,25 +23,34 @@ Ensure the `renv` environment has been initialised (via `Rscript bootstrap_env.R
 
 ## Run the targets pipeline
 
-```{r}
-targets::tar_make(script = target_script, store = target_store)
+```{r, eval=FALSE}
+targets::tar_make(
+  script = target_script,
+  store = target_store,
+  names = c(
+    "sim_basic_reps_extinction_summary",
+    "sim_basic_dense_harvest_extinction_summary",
+    "sim_basic_dense_harvest_trajectory",
+    "sim_basic_dense_harvest_trajectory_plot"
+  )
+)
 ```
 
 ## Inspect replicate outputs
 
-```{r}
+```{r, eval=FALSE}
 # Extinction summary for the baseline replicate scenario
 sim_basic_reps_extinction_summary <- targets::tar_read(sim_basic_reps_extinction_summary, store = target_store)
 sim_basic_reps_extinction_summary
 ```
 
-```{r}
+```{r, eval=FALSE}
 # Extinction summary for the density + harvest scenario
 sim_basic_dense_harvest_extinction_summary <- targets::tar_read(sim_basic_dense_harvest_extinction_summary, store = target_store)
 sim_basic_dense_harvest_extinction_summary
 ```
 
-```{r}
+```{r, eval=FALSE}
 # Mean trajectory across replicates
 sim_basic_dense_harvest_trajectory <- targets::tar_read(sim_basic_dense_harvest_trajectory, store = target_store)
 head(sim_basic_dense_harvest_trajectory)
@@ -45,30 +58,37 @@ head(sim_basic_dense_harvest_trajectory)
 
 ## Plot the mean trajectory
 
-```{r}
+```{r, eval=FALSE}
 plot_mean_trajectory(sim_basic_dense_harvest_trajectory)
 ```
 
-## Run a scenario from YAML
+## Run a schema v2 scenario from YAML
 
-```{r}
-path <- system.file("extdata", "demo_density_harvest.yaml", package = "OpenPVA")
-scenario <- read_scenario_yaml(path)
-scenario
+```{r, eval=FALSE}
+path_v2 <- system.file("extdata", "demo_reproduction_v2.yaml", package = "OpenPVA")
+if (path_v2 == "") path_v2 <- file.path("..", "inst", "extdata", "demo_reproduction_v2.yaml")
+scenario_v2 <- read_scenario_yaml(path_v2)
+attr(scenario_v2, "yaml_schema_version")
 ```
 
-```{r}
-yaml_result <- run_scenario(scenario)
-summarise_extinction(yaml_result$sim_output)
+```{r, eval=FALSE}
+yaml_result_v2 <- run_scenario(scenario_v2)
+summarise_extinction(yaml_result_v2$sim_output)
+
+head(yaml_result_v2$sim_output$summary[, c(
+  "year", "n_births",
+  "env_repro_p_mult", "env_repro_lambda_mult",
+  "cat_repro_mult", "repro_catastrophe"
+)])
 ```
 
 ## Genetics and inbreeding demo
 
-```{r}
+```{r, eval=FALSE}
 sc_gen <- OpenPVA::make_simple_genetic_scenario(
   name = "genetic_demo",
-  n_runs = 20,
-  n_years = 50,
+  n_runs = 10,
+  n_years = 30,
   initial_n = 80,
   n_loci = 10,
   n_alleles = 2,
@@ -76,6 +96,7 @@ sc_gen <- OpenPVA::make_simple_genetic_scenario(
   beta_F = 0.5,
   K = 100
 )
+sc_gen$seed <- 20260401L
 
 out_gen <- OpenPVA::run_scenario(sc_gen)
 
@@ -83,7 +104,7 @@ out_gen <- OpenPVA::run_scenario(sc_gen)
 OpenPVA::summarise_extinction(out_gen$sim_output)
 ```
 
-```{r}
+```{r, eval=FALSE}
 # Diversity summary for the final population of the first run
 final_pop_run1 <- out_gen$sim_output$runs[[1]]$population
 OpenPVA::summarise_genetic_diversity(final_pop_run1, alive_only = TRUE)
@@ -91,17 +112,18 @@ OpenPVA::summarise_genetic_diversity(final_pop_run1, alive_only = TRUE)
 
 ## Spatial patches and dispersal
 
-```{r}
+```{r, eval=FALSE}
 sc_spatial <- OpenPVA::make_two_patch_spatial_scenario(
   name = "two_patch_demo",
-  n_runs = 30,
-  n_years = 50,
+  n_runs = 10,
+  n_years = 30,
   initial_n = c(50L, 10L),
   K_patches = c(80, 40),
   dispersal_matrix = matrix(c(0.9, 0.1,
                                0.2, 0.8),
                              nrow = 2, byrow = TRUE)
 )
+sc_spatial$seed <- 20260402L
 
 out_spatial <- OpenPVA::run_scenario(sc_spatial)
 
@@ -115,31 +137,33 @@ patch_summary
 
 ## Comparing harvest strategies
 
-```{r}
+```{r, eval=FALSE}
 sc_low_harvest <- OpenPVA::scenario_spec(
   name = "low_harvest",
-  n_runs = 50,
-  n_years = 50,
+  n_runs = 15,
+  n_years = 30,
   init_fun = function() OpenPVA::initialize_population(80),
   survival_fun = OpenPVA::default_survival_fun,
   breeding_fun = OpenPVA::default_breeding_fun,
   fecundity_fun = OpenPVA::default_fecundity_fun,
   K = 100,
   harvest_quota = 2,
-  lifecycle_steps = OpenPVA::default_lifecycle_steps()
+  lifecycle_steps = OpenPVA::default_lifecycle_steps(),
+  seed = 20260403L
 )
 
 sc_high_harvest <- OpenPVA::scenario_spec(
   name = "high_harvest",
-  n_runs = 50,
-  n_years = 50,
+  n_runs = 15,
+  n_years = 30,
   init_fun = function() OpenPVA::initialize_population(80),
   survival_fun = OpenPVA::default_survival_fun,
   breeding_fun = OpenPVA::default_breeding_fun,
   fecundity_fun = OpenPVA::default_fecundity_fun,
   K = 100,
   harvest_quota = 10,
-  lifecycle_steps = OpenPVA::default_lifecycle_steps()
+  lifecycle_steps = OpenPVA::default_lifecycle_steps(),
+  seed = 20260404L
 )
 
 harvest_scenarios <- list(
@@ -156,7 +180,7 @@ harvest_comparison
 
 ## Custom age-structured survival from a table
 
-```{r}
+```{r, eval=FALSE}
 surv_table <- OpenPVA::make_default_survival_table()
 surv_table$p_surv[surv_table$age_min >= 5] <- 0.5
 
@@ -165,13 +189,14 @@ surv_fun_custom <- OpenPVA::build_survival_fun_from_table(surv_table)
 
 sc_custom_surv <- OpenPVA::scenario_spec(
   name = "custom_survival_yaml_demo",
-  n_runs = 30,
-  n_years = 50,
+  n_runs = 15,
+  n_years = 30,
   init_fun = function() OpenPVA::initialize_population(80),
   survival_fun = surv_fun_custom,
   breeding_fun = OpenPVA::default_breeding_fun,
   fecundity_fun = OpenPVA::default_fecundity_fun,
-  K = 100
+  K = 100,
+  seed = 20260405L
 )
 
 out_custom <- OpenPVA::run_scenario(sc_custom_surv)
@@ -180,7 +205,7 @@ OpenPVA::summarise_extinction(out_custom$sim_output)
 
 ## Custom breeding and fecundity from tables
 
-```{r}
+```{r, eval=FALSE}
 breed_tbl <- OpenPVA::make_default_breeding_table()
 breed_tbl$can_breed[breed_tbl$sex == "F" & breed_tbl$age_min >= 4] <- TRUE
 breed_tbl$age_min[breed_tbl$sex == "F" & breed_tbl$age_min >= 4] <- 5
@@ -199,13 +224,14 @@ fecundity_fun_custom <- OpenPVA::build_fecundity_fun_from_table(fec_tbl)
 
 sc_repro_custom <- OpenPVA::scenario_spec(
   name = "custom_reproduction_demo",
-  n_runs = 20,
-  n_years = 40,
+  n_runs = 10,
+  n_years = 30,
   init_fun = function() OpenPVA::initialize_population(80),
   survival_fun = OpenPVA::default_survival_fun,
   breeding_fun = breeding_fun_custom,
   fecundity_fun = fecundity_fun_custom,
-  K = 100
+  K = 100,
+  seed = 20260406L
 )
 
 out_repro <- OpenPVA::run_scenario(sc_repro_custom)
@@ -214,11 +240,11 @@ OpenPVA::summarise_extinction(out_repro$sim_output)
 
 ## Environmental variation and catastrophes on survival
 
-```{r}
+```{r, eval=FALSE}
 sc_no_cat <- OpenPVA::scenario_spec(
   name = "no_cat",
-  n_runs = 50,
-  n_years = 50,
+  n_runs = 15,
+  n_years = 30,
   init_fun = function() OpenPVA::initialize_population(80),
   survival_fun = OpenPVA::default_survival_fun,
   breeding_fun = OpenPVA::default_breeding_fun,
@@ -227,13 +253,14 @@ sc_no_cat <- OpenPVA::scenario_spec(
   lifecycle_steps = c("age", "survival"),
   env_surv_sd = 0,
   cat_surv_prob = 0,
-  cat_surv_mult = 1
+  cat_surv_mult = 1,
+  seed = 20260407L
 )
 
 sc_cat <- OpenPVA::scenario_spec(
   name = "cat",
-  n_runs = 50,
-  n_years = 50,
+  n_runs = 15,
+  n_years = 30,
   init_fun = function() OpenPVA::initialize_population(80),
   survival_fun = OpenPVA::default_survival_fun,
   breeding_fun = OpenPVA::default_breeding_fun,
@@ -242,7 +269,8 @@ sc_cat <- OpenPVA::scenario_spec(
   lifecycle_steps = c("age", "survival"),
   env_surv_sd = 0,
   cat_surv_prob = 0.2,
-  cat_surv_mult = 0.3
+  cat_surv_mult = 0.3,
+  seed = 20260408L
 )
 
 scenarios_env <- list(no_cat = sc_no_cat, cat = sc_cat)
@@ -256,44 +284,62 @@ comp_env
 
 ## Rescue via supplementation
 
-## Running a scenario with YAML demography
+## Compare YAML schema v1 and v2 behaviour
 
-```{r}
-yaml_path <- system.file(
+```{r, eval=FALSE}
+yaml_v1_path <- system.file(
   "extdata",
   "demo_demography.yaml",
   package = "OpenPVA"
 )
+if (yaml_v1_path == "") yaml_v1_path <- file.path("..", "inst", "extdata", "demo_demography.yaml")
 
-sc_demo <- OpenPVA::read_scenario_yaml(yaml_path)
-out_demo <- OpenPVA::run_scenario(sc_demo)
+yaml_v2_path <- system.file(
+  "extdata",
+  "demo_reproduction_v2.yaml",
+  package = "OpenPVA"
+)
+if (yaml_v2_path == "") yaml_v2_path <- file.path("..", "inst", "extdata", "demo_reproduction_v2.yaml")
 
-OpenPVA::summarise_extinction(out_demo$sim_output)
-OpenPVA::summarise_harvest_yield(out_demo$sim_output)$overall
+sc_v1 <- OpenPVA::read_scenario_yaml(yaml_v1_path)
+sc_v2 <- OpenPVA::read_scenario_yaml(yaml_v2_path)
 
-head(out_demo$sim_output$summary)
+out_v1 <- OpenPVA::run_scenario(sc_v1)
+out_v2 <- OpenPVA::run_scenario(sc_v2)
+
+list(
+  v1_schema = attr(sc_v1, "yaml_schema_version"),
+  v2_schema = attr(sc_v2, "yaml_schema_version")
+)
+
+OpenPVA::summarise_extinction(out_v1$sim_output)
+OpenPVA::summarise_extinction(out_v2$sim_output)
+
+head(out_v1$sim_output$summary[, c("year", "n_births", "env_repro_p_mult", "repro_catastrophe")])
+head(out_v2$sim_output$summary[, c("year", "n_births", "env_repro_p_mult", "repro_catastrophe")])
 ```
 
-```{r}
+```{r, eval=FALSE}
 supp_steps <- c("age", "survival", "supplementation", "harvest")
 
 sc_harvest_only <- OpenPVA::scenario_spec(
   name = "harvest_only",
-  n_runs = 40,
-  n_years = 40,
+  n_runs = 12,
+  n_years = 30,
   init_fun = function() OpenPVA::initialize_population(50),
   survival_fun = OpenPVA::default_survival_fun,
   breeding_fun = OpenPVA::default_breeding_fun,
   fecundity_fun = OpenPVA::default_fecundity_fun,
   K = 80,
   harvest_quota = 5,
-  lifecycle_steps = supp_steps
+  lifecycle_steps = supp_steps,
+  seed = 20260409L
 )
 
 sc_harvest_plus_supp <- OpenPVA::scenario_spec(
   name = "harvest_plus_supp",
-  n_runs = 40,
-  n_years = 40,
+  n_runs = 12,
+  n_years = 30,
   init_fun = function() OpenPVA::initialize_population(50),
   survival_fun = OpenPVA::default_survival_fun,
   breeding_fun = OpenPVA::default_breeding_fun,
@@ -302,7 +348,8 @@ sc_harvest_plus_supp <- OpenPVA::scenario_spec(
   harvest_quota = 5,
   lifecycle_steps = supp_steps,
   supplement_quota = 2,
-  supplement_patch = 1L
+  supplement_patch = 1L,
+  seed = 20260410L
 )
 
 rescue_comparison <- OpenPVA::compare_scenarios(

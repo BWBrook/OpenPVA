@@ -1,0 +1,4 @@
+"scenario","mean_births","total_births","mean_alive"
+"limited_require_mate_false",2.5,100,6.5
+"limited_require_mate_true",1.2,48,4.7
+"unlimited_require_mate_true",2.525,101,6.525

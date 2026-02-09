@@ -1,0 +1,7 @@
+[1/2] index.qmd
+[2/2] about.qmd
+
+WARN: Refusing to remove directory /home/bwbrook/git/OpenPVA/outputs/quarto_site/site_libs since it is not a subdirectory of the main project directory.
+WARN: Quarto did not expect the path configuration being used in this project, and strange behavior may result.
+Output created: ../outputs/quarto_site/index.html
+

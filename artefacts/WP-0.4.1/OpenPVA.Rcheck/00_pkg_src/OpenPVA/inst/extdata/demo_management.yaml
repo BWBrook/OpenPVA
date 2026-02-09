@@ -1,0 +1,26 @@
+name: "demo_management"
+schema_version: 1
+n_runs: 50
+n_years: 50
+
+initializer:
+  fun: "initialize_population"
+  args:
+    n: 50
+
+survival_fun: "default_survival_fun"
+breeding_fun: "default_breeding_fun"
+fecundity_fun: "default_fecundity_fun"
+
+K: 80
+
+lifecycle_steps:
+  - age
+  - survival
+  - supplementation
+  - harvest
+
+management:
+  harvest_quota: 5
+  supplement_quota: 2
+  supplement_patch: 1

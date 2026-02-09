@@ -1,0 +1,66 @@
+ℹ Testing OpenPVA
+✔ | F W  S  OK | Context
+
+⠏ |          0 | demography_environment                                         
+⠹ |          3 | demography_environment                                         
+⠼ |          5 | demography_environment                                         
+⠇ |          9 | demography_environment                                         
+✔ |          9 | demography_environment [1.4s]
+
+⠏ |          0 | demography_reproduction_spec                                   
+⠙ |          2 | demography_reproduction_spec                                   
+⠋ |         11 | demography_reproduction_spec                                   
+⠙ |         22 | demography_reproduction_spec                                   
+✔ |         27 | demography_reproduction_spec
+
+⠏ |          0 | demography_survival_spec                                       
+⠧ |          8 | demography_survival_spec                                       
+✔ |         19 | demography_survival_spec
+
+⠏ |          0 | genetics_core                                                  
+⠧ |         18 | genetics_core                                                  
+⠏ |         30 | genetics_core                                                  
+⠙ |         42 | genetics_core                                                  
+✔ |         43 | genetics_core
+
+⠏ |          0 | init_population                                                
+✔ |         10 | init_population
+
+⠏ |          0 | management                                                     
+⠋ |          1 | management                                                     
+✔ |          4 | management
+
+⠏ |          0 | scenario_yaml_demography                                       
+⠼ |          5 | scenario_yaml_demography                                       
+⠋ |         21 | scenario_yaml_demography                                       
+✔ |         21 | scenario_yaml_demography [1.3s]
+
+⠏ |          0 | scenario                                                       
+⠏ |         20 | scenario                                                       
+⠼ |         35 | scenario                                                       
+⠸ |         44 | scenario                                                       
+✔ |         51 | scenario
+
+⠏ |          0 | simulation_core                                                
+⠼ |         25 | simulation_core                                                
+⠦ |         37 | simulation_core                                                
+⠦ |         57 | simulation_core                                                
+✔ |         60 | simulation_core
+
+⠏ |          0 | simulation_summary                                             
+⠇ |         19 | simulation_summary                                             
+✔ |         24 | simulation_summary
+
+⠏ |          0 | spatial_patches                                                
+⠸ |         14 | spatial_patches                                                
+⠋ |         21 | spatial_patches                                                
+✔ |         24 | spatial_patches
+
+⠏ |          0 | supplementation                                                
+⠼ |         15 | supplementation                                                
+✔ |         16 | supplementation
+
+══ Results ═════════════════════════════════════════════════════════════════════
+Duration: 5.4 s
+
+[ FAIL 0 | WARN 0 | SKIP 0 | PASS 308 ]

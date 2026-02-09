@@ -1,0 +1,5 @@
+"sex","age","p_breed","legacy_can_breed"
+"F",1,0.05,FALSE
+"F",5,0.8,TRUE
+"M",5,0,FALSE
+"F",99,0.8,TRUE

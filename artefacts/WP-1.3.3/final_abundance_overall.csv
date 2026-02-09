@@ -1,0 +1,2 @@
+"n_runs","floor_threshold","mean_final_n_alive","median_final_n_alive","q05_final_n_alive","q95_final_n_alive","p_final_below_floor","p_any_below_floor"
+6,20,81.3333333333333,80,46.25,124.25,0,0

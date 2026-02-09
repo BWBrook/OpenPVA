@@ -6,3 +6,7 @@
 ^OpenPVA\.png$
 ^\.github$
 ^_targets$
+^artefacts$
+^outputs$
+^\.vscode$
+^\.lintr$

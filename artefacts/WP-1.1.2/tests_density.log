@@ -1,0 +1,21 @@
+ℹ Testing OpenPVA
+✔ | F W  S  OK | Context
+
+⠏ |          0 | density_module                                                 
+⠙ |          2 | density_module                                                 
+⠦ |          7 | density_module                                                 
+⠋ |         11 | density_module                                                 
+⠸ |         14 | density_module                                                 
+⠧ |         18 | density_module                                                 
+⠹ |         23 | density_module                                                 
+✔ |         24 | density_module [1.5s]
+
+⠏ |          0 | spatial_patches                                                
+⠏ |         10 | spatial_patches                                                
+⠴ |         16 | spatial_patches                                                
+✔ |         24 | spatial_patches
+
+══ Results ═════════════════════════════════════════════════════════════════════
+Duration: 1.8 s
+
+[ FAIL 0 | WARN 0 | SKIP 0 | PASS 48 ]

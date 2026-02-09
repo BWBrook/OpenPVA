@@ -1,0 +1,21 @@
+R CMD check summary
+82:* checking S3 generic/method consistency ... OK
+83:* checking replacement functions ... OK
+84:* checking foreign function calls ... OK
+85:* checking R code for possible problems ... OK
+86:* checking Rd files ... OK
+87:* checking Rd metadata ... OK
+88:* checking Rd line widths ... OK
+89:* checking Rd cross-references ... OK
+90:* checking for missing documentation entries ... OK
+91:* checking for code/documentation mismatches ... OK
+92:* checking Rd \usage sections ... OK
+93:* checking Rd contents ... OK
+94:* checking for unstated dependencies in examples ... OK
+95:* checking examples ... NONE
+96:* checking for unstated dependencies in ‘tests’ ... OK
+97:* checking tests ...
+100:* checking for non-standard things in the check directory ... OK
+101:* checking for detritus in the temp directory ... OK
+102:* DONE
+104:Status: 3 NOTEs

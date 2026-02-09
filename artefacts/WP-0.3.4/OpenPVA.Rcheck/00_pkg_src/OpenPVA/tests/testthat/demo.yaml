@@ -1,0 +1,20 @@
+name: 'yaml_mgmt'
+n_runs: 3
+n_years: 4
+initializer:
+  fun: 'initialize_population'
+  args:
+    n: 10
+survival_fun: 'default_survival_fun'
+breeding_fun: 'default_breeding_fun'
+fecundity_fun: 'default_fecundity_fun'
+K: 50
+lifecycle_steps:
+  - age
+  - survival
+  - supplementation
+  - harvest
+management:
+  harvest_quota: 3
+  supplement_quota: 1
+  supplement_patch: 2

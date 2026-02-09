@@ -1,0 +1,9 @@
++ renv restore
+ℹ Loading metadata database
+✔ Loading metadata database ... done
+
+ 
+✔ All system requirements are already installed.
+  
+ℹ No downloads are needed
+✔ 116 pkgs: kept 83 [39.3s]

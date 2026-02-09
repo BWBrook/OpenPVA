@@ -1,0 +1,4 @@
+Density domain sanity note (WP-1.1.2)
+- Density channels reduced abundance and births versus neutral baseline in seeded toy run.
+- Legacy K_patches and equivalent density_spec adapter yielded matching alive counts in seeded comparison.
+- survival_scale remains a legacy diagnostic (NA for patch legacy, 1 for explicit density_spec).

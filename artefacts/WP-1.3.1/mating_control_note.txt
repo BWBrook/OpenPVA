@@ -1,0 +1,4 @@
+Mating control sanity note:
+- With male quota=1 and require_mate=FALSE, births continue for unmated females (legacy behavior).
+- With male quota=1 and require_mate=TRUE, births drop due to mate scarcity.
+- With require_mate=TRUE but unlimited mating, births recover relative to quota-constrained case.

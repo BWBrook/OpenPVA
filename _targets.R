@@ -22,10 +22,13 @@ list(
   # Single-run demonstration
   targets::tar_target(
     sim_basic,
-    run_basic_simulation(
-      initial_population = initialize_population(50),
-      n_years = 20
-    )
+    {
+      set.seed(20260301L)
+      run_basic_simulation(
+        initial_population = initialize_population(50),
+        n_years = 20
+      )
+    }
   ),
 
   # Replicated simulations (baseline and density + harvest scenarios)
@@ -34,7 +37,8 @@ list(
     run_basic_simulation_replicates(
       n_runs = 100,
       n_years = 50,
-      init_fun = function() initialize_population(50)
+      init_fun = function() initialize_population(50),
+      seed = 20260302L
     )
   ),
   targets::tar_target(
@@ -44,7 +48,8 @@ list(
       n_years = 50,
       init_fun = function() initialize_population(100),
       K = 80,
-      harvest_quota = 5
+      harvest_quota = 5,
+      seed = 20260303L
     )
   ),
 
@@ -82,16 +87,20 @@ list(
   # Spatial example: two-patch scenario with dispersal
   targets::tar_target(
     spatial_scenario_two_patch,
-    make_two_patch_spatial_scenario(
-      name = "two_patch_targets",
-      n_runs = 10,
-      n_years = 30,
-      initial_n = c(50L, 10L),
-      K_patches = c(80, 40),
-      dispersal_matrix = matrix(c(0.9, 0.1,
-                                  0.2, 0.8),
-                                nrow = 2, byrow = TRUE)
-    )
+    {
+      sc <- make_two_patch_spatial_scenario(
+        name = "two_patch_targets",
+        n_runs = 10,
+        n_years = 30,
+        initial_n = c(50L, 10L),
+        K_patches = c(80, 40),
+        dispersal_matrix = matrix(c(0.9, 0.1,
+                                    0.2, 0.8),
+                                  nrow = 2, byrow = TRUE)
+      )
+      sc$seed <- 20260304L
+      sc
+    }
   ),
   targets::tar_target(
     spatial_sim_two_patch,

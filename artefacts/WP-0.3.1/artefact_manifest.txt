@@ -1,0 +1,22 @@
+total 188
+drwxrwxr-x 2 bwbrook bwbrook   4096 Feb  8 16:17 .
+drwxrwxr-x 3 bwbrook bwbrook   4096 Feb  8 16:11 ..
+-rw-rw-r-- 1 bwbrook bwbrook   1162 Feb  8 16:17 README.md
+-rw-rw-r-- 1 bwbrook bwbrook      0 Feb  8 16:18 artefact_manifest.txt
+-rw-rw-r-- 1 bwbrook bwbrook   1615 Feb  8 16:13 bootstrap_env.log
+-rw-rw-r-- 1 bwbrook bwbrook    105 Feb  8 16:16 demo_plot_fileinfo.txt
+-rw-rw-r-- 1 bwbrook bwbrook     92 Feb  8 16:16 demo_plot_md5.txt
+-rw-rw-r-- 1 bwbrook bwbrook     47 Feb  8 16:15 runtime_snapshot.txt
+-rw-rw-r-- 1 bwbrook bwbrook    854 Feb  8 16:15 session_info.txt
+-rw-rw-r-- 1 bwbrook bwbrook 109073 Feb  8 16:16 sim_basic_dense_harvest_trajectory.png
+-rw-rw-r-- 1 bwbrook bwbrook     40 Feb  8 16:14 targets_smoke.log
+-rw-rw-r-- 1 bwbrook bwbrook    283 Feb  8 16:16 targets_smoke_forced.log
+-rw-rw-r-- 1 bwbrook bwbrook    282 Feb  8 16:17 targets_summary.txt
+-rw-rw-r-- 1 bwbrook bwbrook     60 Feb  8 16:17 test_summary.txt
+-rw-rw-r-- 1 bwbrook bwbrook   4593 Feb  8 16:13 tests.log
+-rw-rw-r-- 1 bwbrook bwbrook   3450 Feb  8 16:14 tests_devtools.log
+-rw-rw-r-- 1 bwbrook bwbrook     85 Feb  8 16:14 toy_extinction_summary.csv
+-rw-rw-r-- 1 bwbrook bwbrook    570 Feb  8 16:14 toy_mean_trajectory.csv
+-rw-rw-r-- 1 bwbrook bwbrook     29 Feb  8 16:14 toy_run.log
+-rw-rw-r-- 1 bwbrook bwbrook    579 Feb  8 16:14 toy_scenario_outputs.rds
+-rw-rw-r-- 1 bwbrook bwbrook    101 Feb  8 16:17 toy_summary.txt

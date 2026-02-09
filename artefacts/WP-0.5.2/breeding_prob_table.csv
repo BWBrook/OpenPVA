@@ -1,0 +1,4 @@
+"age_min","age_max","sex","p_breed"
+0,2,"F",0.05
+3,Inf,"F",0.8
+0,Inf,"M",0

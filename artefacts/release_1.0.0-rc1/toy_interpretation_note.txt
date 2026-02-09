@@ -1,0 +1,7 @@
+Toy scenario interpretation note
+runs: 8
+years_per_run: 25
+mean_births: 11.4150
+mean_alive_final_year: 39.3750
+p_extinction: 0.3750
+mean_time_to_extinction_observed: 12.6667

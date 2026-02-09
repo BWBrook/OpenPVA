@@ -4,7 +4,11 @@
 \alias{compare_scenarios}
 \title{Compare multiple scenarios on key management metrics}
 \usage{
-compare_scenarios(scenarios, extinction_threshold = 0)
+compare_scenarios(
+  scenarios,
+  extinction_threshold = 0,
+  final_n_floor = extinction_threshold
+)
 }
 \arguments{
 \item{scenarios}{Named list of objects created by `scenario_spec()` or its
@@ -12,11 +16,15 @@ helpers.}
 
 \item{extinction_threshold}{Threshold passed to `summarise_extinction()` to
 compute quasi-extinction probabilities.}
+
+\item{final_n_floor}{Non-negative abundance floor used for final-abundance
+risk metrics. Defaults to `extinction_threshold`.}
 }
 \value{
 A tibble with one row per scenario containing the selected metrics.
 }
 \description{
-Runs each scenario, summarises extinction risk and harvest yield, and
-collates the results into a single tibble for decision support.
+Runs each scenario, summarises extinction risk, harvest yield, and
+final-abundance risk/resilience metrics, then collates the results into a
+single tibble for decision support.
 }

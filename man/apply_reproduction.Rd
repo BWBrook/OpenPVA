@@ -9,6 +9,7 @@ apply_reproduction(
   breeders,
   fecundity_fun = default_fecundity_fun,
   mating_fun = default_mating_fun,
+  require_mate = FALSE,
   inherit_fun = NULL
 )
 }
@@ -20,7 +21,12 @@ apply_reproduction(
 \item{fecundity_fun}{Function returning the number of offspring for a breeder.}
 
 \item{mating_fun}{Function selecting a mate for each breeder. Defaults to
-`default_mating_fun` and may be `NULL` if fathers should not be recorded.}
+`default_mating_fun` and may be `NULL` if fathers should not be recorded.
+Functions may optionally accept a third `context` argument for stateful
+mating controls (for example, male mate quotas).}
+
+\item{require_mate}{Logical; if `TRUE`, breeders without an assigned mate do
+not produce offspring. Defaults to `FALSE` for backward compatibility.}
 
 \item{inherit_fun}{Optional function taking `(mother, father)` and returning an
 allele matrix for the offspring. Defaults to `NULL`, in which case newborns

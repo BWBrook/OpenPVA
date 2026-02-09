@@ -1,0 +1,13 @@
+WP-1.2.1 validation summary (2026-02-09)
+
+Fast profile
+- Lint: PASS (no lints)
+- Tests: PASS (481/481)
+- R CMD check --no-manual: NOTE-only (no errors, no warnings)
+
+Heavy profile
+- Repro/schema regression tests: PASS (129/129)
+- Full tests: PASS (481/481)
+- Targets smoke (`sim_basic`): PASS
+- Quarto render: PASS (known non-blocking path warning)
+- R CMD check --no-manual --as-cran: NOTE-only (no errors, no warnings)

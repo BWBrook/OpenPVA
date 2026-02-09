@@ -1,6 +1,9 @@
 project:
   type: website
-  output-dir: ../docs
+  output-dir: ../outputs/quarto_site
+  render:
+    - index.qmd
+    - about.qmd
 
 website:
   title: "OpenPVA"
@@ -8,15 +11,11 @@ website:
     left:
       - text: Home
         href: index.qmd
-      - text: Tutorials
-        href: tutorials/index.qmd
-      - text: API
-        href: reference/index.qmd
       - text: About
         href: about.qmd
     right:
       - icon: github
-        href: https://github.com/yourorg/OpenPVA
+        href: https://github.com/BWBrook/OpenPVA
 
 format:
   html:

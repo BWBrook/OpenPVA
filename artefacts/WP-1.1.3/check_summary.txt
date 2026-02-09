@@ -1,0 +1,7 @@
+WP-1.1.3 validation summary
+- devtools::test(): PASS 481, FAIL 0
+- scenario_yaml_demography focused tests: PASS 75, FAIL 0
+- lintr::lint_package(): no lints
+- R CMD check --no-manual --as-cran: 0 errors, 0 warnings, 3 NOTEs
+- quarto render quarto: success (existing non-blocking output-path warning)
+- targets smoke (sim_basic): invocation completed (up-to-date skip)

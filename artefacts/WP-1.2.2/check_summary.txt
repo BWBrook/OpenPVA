@@ -1,0 +1,12 @@
+WP-1.2.2 validation summary (2026-02-09)
+
+Reproducibility gates
+- Snapshot regression tests: PASS (2/2)
+- Repro/schema filter suite: PASS (131/131)
+- Full tests: PASS (483/483)
+
+Build/artefacts
+- Lint: PASS (n_lints=0)
+- Targets smoke (`sim_basic`): PASS
+- Quarto render: PASS (known non-blocking path warning)
+- R CMD check --no-manual --as-cran: NOTE-only (no errors, no warnings)

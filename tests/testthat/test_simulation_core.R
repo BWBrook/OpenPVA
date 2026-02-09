@@ -293,3 +293,61 @@ test_that("apply_reproduction leaves father ids NA when no males", {
   expect_true(all(vapply(newborns, function(ind) ind$mother_id %in% c(1L, 2L), logical(1))))
   expect_true(all(vapply(newborns, function(ind) is.na(ind$father_id), logical(1))))
 })
+
+test_that("apply_reproduction can require mates before producing offspring", {
+  population <- list(
+    create_individual(1L, "F", 5L),
+    create_individual(2L, "F", 4L)
+  )
+  breeders <- population
+  fecundity_fun <- function(ind) 1L
+
+  result <- apply_reproduction(
+    population = population,
+    breeders = breeders,
+    fecundity_fun = fecundity_fun,
+    require_mate = TRUE
+  )
+
+  expect_equal(length(result), length(population))
+})
+
+test_that("mate-limited mating function reduces births when mates are required", {
+  initial_population <- list(
+    create_individual(1L, "F", 5L),
+    create_individual(2L, "F", 5L),
+    create_individual(3L, "M", 5L)
+  )
+
+  res_required <- run_basic_simulation(
+    initial_population = initial_population,
+    n_years = 1L,
+    survival_fun = function(ind) 1,
+    breeding_fun = function(ind) TRUE,
+    fecundity_fun = function(ind) 1L,
+    mating_fun = make_mate_limited_mating_fun(max_mates_per_male = 1L),
+    require_mate = TRUE,
+    lifecycle_steps = c("age", "survival", "breeding_births")
+  )
+
+  res_not_required <- run_basic_simulation(
+    initial_population = initial_population,
+    n_years = 1L,
+    survival_fun = function(ind) 1,
+    breeding_fun = function(ind) TRUE,
+    fecundity_fun = function(ind) 1L,
+    mating_fun = make_mate_limited_mating_fun(max_mates_per_male = 1L),
+    require_mate = FALSE,
+    lifecycle_steps = c("age", "survival", "breeding_births")
+  )
+
+  expect_equal(res_required$summary$n_births[1], 1L)
+  expect_equal(res_not_required$summary$n_births[1], 2L)
+})
+
+test_that("make_mate_limited_mating_fun validates quota input", {
+  expect_error(
+    make_mate_limited_mating_fun(max_mates_per_male = 0),
+    "max_mates_per_male"
+  )
+})

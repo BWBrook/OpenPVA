@@ -1,0 +1,14 @@
+The following package(s) will be installed:
+- lazyeval     [0.2.2]
+- lintr        [3.3.0-1]
+- rex          [1.2.1]
+- xmlparsedata [1.0.5]
+These packages will be installed into "~/.cache/R/renv/library/OpenPVA-8a1d7fc0/linux-ubuntu-noble/R-4.5/x86_64-pc-linux-gnu".
+
+# Installing packages --------------------------------------------------------
+- Installing lazyeval ...                       OK [linked from cache]
+- Installing rex ...                            OK [linked from cache]
+- Installing xmlparsedata ...                   OK [linked from cache]
+- Installing lintr ...                          OK [linked from cache]
+Successfully installed 4 packages in 30 milliseconds.
+- The lockfile is already up to date.

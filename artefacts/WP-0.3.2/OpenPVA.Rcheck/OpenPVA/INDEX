@@ -1,0 +1,69 @@
+age_individuals         Age all individuals in the population
+apply_dispersal         Apply dispersal to a population
+apply_harvest_quota     Apply a simple harvest quota
+apply_reproduction      Apply reproduction to a population
+apply_supplementation   Apply supplementation/translocation to a
+                        population
+apply_survival          Apply survival to a population
+build_breeding_fun_from_table
+                        Build a breeding function from a table
+                        specification
+build_fecundity_fun_from_table
+                        Build a fecundity function from a table
+                        specification
+build_survival_fun_from_table
+                        Build a survival function from a table
+                        specification
+compare_scenarios       Compare multiple scenarios on key management
+                        metrics
+compute_mean_trajectory
+                        Compute mean trajectory statistics across runs
+create_individual       Create an individual agent
+default_breeding_fun    Default breeding function
+default_dispersal_fun   Default dispersal function (no movement)
+default_fecundity_fun   Default fecundity function
+default_lifecycle_steps
+                        Default lifecycle steps
+default_mating_fun      Default mating function (random alive male)
+default_survival_fun    Default survival function (age-structured)
+determine_breeding      Determine breeding-eligible individuals
+inherit_genotype_simple
+                        Simple diploid inheritance with optional
+                        mutation
+initialize_genotypes    Initialize simple diploid genotypes
+initialize_patches      Assign individuals to spatial patches
+initialize_population   Initialise a population of individuals
+make_default_breeding_table
+                        Create the default breeding eligibility table
+make_default_survival_table
+                        Create the default age- and sex-specific
+                        survival table
+make_inbreeding_survival_fun
+                        Build an inbreeding-aware survival function
+make_markov_dispersal_fun
+                        Create a Markov dispersal function
+make_simple_genetic_scenario
+                        Construct a simple genetics-enabled scenario
+make_two_patch_spatial_scenario
+                        Construct a simple two-patch spatial scenario
+plot_mean_trajectory    Plot mean population trajectory with variation
+read_scenario_yaml      Read a scenario specification from YAML
+run_basic_simulation    Run a basic demographic simulation
+run_basic_simulation_replicates
+                        Run replicated demographic simulations
+run_scenario            Run a simulation scenario
+scenario_spec           Create a simulation scenario specification
+summarise_extinction    Summarise extinction outcomes across replicates
+summarise_genetic_diversity
+                        Summarise neutral genetic diversity
+summarise_harvest_yield
+                        Summarise harvest yields across replicates
+summarise_patch_occupancy_final
+                        Summarise final-time patch occupancy across
+                        replicates
+validate_breeding_table
+                        Validate a breeding eligibility table
+validate_fecundity_table
+                        Validate a fecundity table
+validate_survival_table
+                        Validate a survival table specification

@@ -1,0 +1,9 @@
+README example run output
+# A tibble: 1 × 4
+  n_runs p_extinct mean_time_to_extinction median_time_to_extinction
+   <int>     <dbl>                   <dbl>                     <dbl>
+1      5         0                      NA                        NA
+# A tibble: 1 × 4
+  n_runs p_extinct mean_time_to_extinction median_time_to_extinction
+   <int>     <dbl>                   <dbl>                     <dbl>
+1     50       0.2                    37.2                      40.5

@@ -12,18 +12,27 @@ scenario_spec(
   survival_fun = default_survival_fun,
   breeding_fun = default_breeding_fun,
   fecundity_fun = default_fecundity_fun,
+  breeding_prob_fun = NULL,
+  fecundity_lambda_fun = NULL,
   K = NULL,
   K_patches = NULL,
   harvest_quota = NULL,
   lifecycle_steps = default_lifecycle_steps(),
   mating_fun = default_mating_fun,
+  require_mate = FALSE,
   inherit_fun = NULL,
   dispersal_fun = default_dispersal_fun,
   supplement_quota = NULL,
   supplement_patch = NULL,
   env_surv_sd = 0,
   cat_surv_prob = 0,
-  cat_surv_mult = 1
+  cat_surv_mult = 1,
+  env_repro_p_sd = 0,
+  env_repro_lambda_sd = 0,
+  cat_repro_prob = 0,
+  cat_repro_mult = 1,
+  seed = NULL,
+  density_spec = NULL
 )
 }
 \arguments{
@@ -41,6 +50,12 @@ scenario_spec(
 
 \item{fecundity_fun}{Function returning offspring counts for breeders.}
 
+\item{breeding_prob_fun}{Optional baseline breeding-probability function
+returning values in `[0, 1]` for controller-level reproduction draws.}
+
+\item{fecundity_lambda_fun}{Optional baseline fecundity-mean function
+returning `lambda >= 0` for controller-level reproduction draws.}
+
 \item{K}{Optional numeric carrying capacity for density scaling.}
 
 \item{K_patches}{Optional numeric vector of patch-specific carrying capacities.}
@@ -50,6 +65,10 @@ scenario_spec(
 \item{lifecycle_steps}{Character vector describing the lifecycle order.}
 
 \item{mating_fun}{Function used for mate selection (defaults to `default_mating_fun`).}
+
+\item{require_mate}{Logical; if `TRUE`, females without a selected mate do
+not produce offspring in reproduction steps. Defaults to `FALSE` for
+backward compatibility.}
 
 \item{inherit_fun}{Optional function for generating offspring genotypes. `NULL`
 disables inheritance.}
@@ -72,6 +91,26 @@ survival (environmental variation). Set to 0 to disable.}
 \item{cat_surv_mult}{Multiplicative factor applied to survival probabilities
 in catastrophe years. Typical values lie within (0, 1]; set to 1 to make
 catastrophes neutral even if they occur.}
+
+\item{env_repro_p_sd}{Standard deviation of a lognormal year-level multiplier
+on breeding probability in the controller reproduction pathway.}
+
+\item{env_repro_lambda_sd}{Standard deviation of a lognormal year-level
+multiplier on fecundity lambda in the controller reproduction pathway.}
+
+\item{cat_repro_prob}{Per-year probability of a reproduction catastrophe in
+the controller reproduction pathway.}
+
+\item{cat_repro_mult}{Multiplicative factor applied to breeding probability
+and fecundity lambda in reproduction catastrophe years.}
+
+\item{seed}{Optional integer random seed forwarded to
+`run_basic_simulation_replicates()`. When set, replicated scenario outputs
+are deterministic and caller RNG state is restored after execution.}
+
+\item{density_spec}{Optional density module specification from
+[density_spec()]. Defines channel-specific density multipliers for survival,
+breeding probability, and fecundity lambda.}
 }
 \value{
 An object of class `openpva_scenario`.

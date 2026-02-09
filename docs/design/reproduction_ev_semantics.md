@@ -1,74 +1,102 @@
-# Design: reproduction semantics + reproduction EV (planned refactor)
+# Design: reproduction semantics + reproduction EV
 
-Status: DRAFT (must be finalised before implementation lands)
+Status: DECISION LOCKED + CONTROLLER PATH IMPLEMENTED (WP-0.5.4)
 
 ## 1) Problem statement
 
-Current reproduction API is oriented around:
-- `breeding_fun(ind)` returning a boolean “eligibility” predicate,
-- `fecundity_fun(ind)` returning a realised integer litter size.
+Legacy reproduction flow currently mixes structural rules and stochastic outcomes:
 
-This pattern makes year-level EV/cats on reproduction awkward and obscures what is baseline demography vs stochastic draw.
+- `breeding_fun(ind)` as boolean eligibility.
+- `fecundity_fun(ind)` as realized integer count.
 
-Goal: cleanly separate
-- baseline probabilities/means (demography),
-- stochastic draws (controller),
-- year-level EV/cats modifiers,
-- demographic stochasticity and mating constraints.
+That coupling makes year-level EV/cat application awkward and weakens auditability.
 
-## 2) Proposed new interfaces
+## 2) Locked semantic model
 
-### 2.1 Breeding probability
-- `breeding_prob_fun(ind)` → p in [0,1]
-  - interpreted as probability a (eligible) female breeds in a normal year.
+Reproduction is split into baseline rates plus controller stochastic realization:
 
-Open question:
-- should the breeding table itself return probabilities,
-  or should “eligibility” remain structural and probability be layered?
+- `breeding_prob_fun(ind)` returns baseline `p_breed_base` in `[0, 1]`.
+- `fecundity_lambda_fun(ind)` returns baseline `lambda_base >= 0`.
 
-### 2.2 Fecundity mean
-- `fecundity_lambda_fun(ind)` → λ ≥ 0
-  - interpreted as mean offspring number conditional on breeding.
+Controller then applies year-level modifiers and performs stochastic draws:
 
-## 3) Controller responsibilities (post-refactor)
+- breeding realization via Bernoulli,
+- offspring realization via Poisson (conditional on breeding).
 
-In each year (and optionally per patch):
-- compute EV/cat multipliers for breeding and lambda,
-- compute effective p and λ per individual,
-- draw:
-  - breeders via Bernoulli,
-  - offspring counts via Poisson,
-- apply mating constraints.
+This split is mandatory for all new reproduction pathways.
 
-## 4) EV/cats choices (to decide)
+## 3) Controller responsibilities
 
-- p_breed EV: logit-normal vs multiplicative vs other
-- λ EV: lognormal vs other
-- catastrophe impacts: multiplicative scalers? year-level overrides?
+For each run-year:
 
-Decision(s) must be recorded in `docs/decisions.md`.
+1. Compute reproduction EV/cat year modifiers.
+2. Compute effective per-individual rates:
+   - `p_breed_eff = clamp01(p_breed_base * m_p_year * m_p_density * ...)`
+   - `lambda_eff = max(0, lambda_base * m_lambda_year * m_lambda_density * ...)`
+3. Draw breeding realizations (Bernoulli).
+4. Resolve mates using configured mating policy.
+5. Draw offspring counts for realized breeders (Poisson).
+6. Generate offspring records and metadata.
 
-## 5) Backwards compatibility plan
+## 4) Compatibility/deprecation contract
 
-Preferred:
-- keep current `breeding_fun` / `fecundity_fun` working via adaptors/wrappers.
-- introduce new names and route new scenarios through the new controller path.
-- add deprecation warnings later only if necessary.
+Compatibility is adapter-first:
 
-## 6) YAML implications
+- Legacy `breeding_fun` and `fecundity_fun` remain accepted during transition.
+- Legacy channels are adapted into the new controller semantics.
+- Legacy YAML must continue to run through versioned migration/adaptation.
 
-Once semantics are stable:
-- extend YAML to express:
-  - breeding probabilities,
-  - fecundity means,
-  - reproduction EV parameters (p_sd, lambda_sd, catastrophe effects),
-  - and any density modifiers if needed.
+Deprecation policy:
 
-## 7) Test plan (mandatory)
+- No hard removal until replacement API/docs/tests are complete.
+- When deprecations begin, emit explicit warnings with migration guidance.
 
-- unit tests for table builders and validators
+Breaking changes (must be explicitly declared):
+
+- removing legacy interface channels without wrappers,
+- changing output schema semantics without contract documentation/tests,
+- changing lifecycle ordering semantics without opt-in and migration notes.
+
+## 5) YAML v2 implications (planned)
+
+YAML v2 should expose explicit baseline reproduction fields and reproduction EV:
+
+- baseline breeding probability channels,
+- baseline fecundity lambda channels,
+- year-level reproduction EV/cat configuration,
+- compatibility migration from v1/legacy.
+
+## 6) Worked example
+
+Assume a female with:
+
+- `p_breed_base = 0.60`
+- `lambda_base = 1.80`
+
+And a given year has:
+
+- breeding EV multiplier `m_p_year = 0.90`
+- fecundity EV multiplier `m_lambda_year = 1.10`
+- no catastrophe
+
+Then:
+
+- `p_breed_eff = 0.60 * 0.90 = 0.54`
+- `lambda_eff = 1.80 * 1.10 = 1.98`
+
+Controller draws:
+
+- breed? `Bernoulli(0.54)`
+- if breeding realized, offspring count `Poisson(1.98)`
+
+This shows baseline demography and yearly stochastic forcing remain separable and auditable.
+
+## 7) Test requirements for implementation WPs
+
+- unit tests for new reproduction API helpers/builders,
+- adapter tests ensuring legacy interfaces preserve behavior envelopes,
 - integration tests:
-  - legacy YAML still runs,
-  - new YAML runs,
-  - deterministic seed runs show expected behaviours,
-  - regression tests on summary columns.
+  - legacy YAML compatibility path,
+  - new YAML path,
+  - deterministic seeded behavior,
+  - output schema regression safety.

@@ -1,30 +1,28 @@
 Package: OpenPVA
 Title: Open, Modular Population Viability Analysis Framework
-Version: 0.0.0.9000
+Version: 1.0.0
 Authors@R: 
-    person("Barry", "Brook", email = "barry.brook@domain.com", role = c("aut", "cre"))
-Description: OpenPVA is a general-purpose, open-source R framework for population viability analysis. It enables transparent, modular modeling of population dynamics under demographic, genetic, environmental, and management scenarios.
-License: MIT
+    person("Barry", "Brook", email = "bwbrook@users.noreply.github.com", role = c("aut", "cre"))
+Author: Barry Brook [aut, cre]
+Maintainer: Barry Brook <bwbrook@users.noreply.github.com>
+Description: A general-purpose, open-source R framework for population viability analysis. It enables transparent, modular modeling of population dynamics under demographic, genetic, environmental, and management scenarios.
+License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
 Depends: R (>= 4.5.0)
 Imports: 
     dplyr, 
     tibble,
-    stats,
-    purrr
+    purrr,
+    ggplot2
 Suggests: 
     testthat,
-    ggplot2,
-    usethis,
-    devtools,
+    lintr,
     targets,
     quarto,
-    shiny,
-    pak,
     yaml
 RoxygenNote: 7.3.3
 Collate:
+    'globals.R'
     'init_population.R'
     'spatial_patches.R'
     'spatial_dispersal.R'
@@ -33,6 +31,7 @@ Collate:
     'lifecycle_age.R'
     'demography_survival_spec.R'
     'demography_reproduction_spec.R'
+    'density_module.R'
     'lifecycle_survival.R'
     'lifecycle_breeding.R'
     'lifecycle_reproduction.R'

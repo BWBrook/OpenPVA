@@ -19,6 +19,10 @@ default_fecundity_fun <- function(ind) {
 #' @param fecundity_fun Function returning the number of offspring for a breeder.
 #' @param mating_fun Function selecting a mate for each breeder. Defaults to
 #'   `default_mating_fun` and may be `NULL` if fathers should not be recorded.
+#'   Functions may optionally accept a third `context` argument for stateful
+#'   mating controls (for example, male mate quotas).
+#' @param require_mate Logical; if `TRUE`, breeders without an assigned mate do
+#'   not produce offspring. Defaults to `FALSE` for backward compatibility.
 #' @param inherit_fun Optional function taking `(mother, father)` and returning an
 #'   allele matrix for the offspring. Defaults to `NULL`, in which case newborns
 #'   inherit no genotype (alleles remain `NULL`).
@@ -30,7 +34,12 @@ apply_reproduction <- function(
     breeders,
     fecundity_fun = default_fecundity_fun,
     mating_fun = default_mating_fun,
+    require_mate = FALSE,
     inherit_fun = NULL) {
+  if (!is.logical(require_mate) || length(require_mate) != 1L || is.na(require_mate)) {
+    stop("require_mate must be a single logical value", call. = FALSE)
+  }
+
   if (!length(population)) {
     max_id <- 0L
   } else {
@@ -38,12 +47,26 @@ apply_reproduction <- function(
   }
 
   newborns <- list()
+  mating_context <- new.env(parent = emptyenv())
+  mating_context$male_matings <- integer()
 
   if (length(breeders)) {
     for (breeder in breeders) {
       mother <- breeder
       mother_id <- mother$id
-      father <- if (is.null(mating_fun)) NULL else mating_fun(population, mother)
+      father <- if (is.null(mating_fun)) {
+        NULL
+      } else {
+        .call_mating_fun(
+          mating_fun = mating_fun,
+          population = population,
+          breeder = mother,
+          context = mating_context
+        )
+      }
+      if (require_mate && is.null(father)) {
+        next
+      }
       father_id <- if (is.null(father)) NA_integer_ else father$id
 
       n_offspring <- fecundity_fun(mother)
@@ -82,4 +105,16 @@ apply_reproduction <- function(
   }
 
   population
+}
+
+.call_mating_fun <- function(mating_fun, population, breeder, context) {
+  formal_names <- names(formals(mating_fun))
+  supports_context <- !is.null(formal_names) &&
+    ("..." %in% formal_names || length(formal_names) >= 3L)
+
+  if (supports_context) {
+    return(mating_fun(population, breeder, context))
+  }
+
+  mating_fun(population, breeder)
 }

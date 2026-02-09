@@ -1,0 +1,14 @@
+WP-1.3.2 validation summary (2026-02-09)
+
+Build/test
+- Lint: PASS (n_lints=0)
+- Targeted tests: PASS (115/115)
+- Full tests: PASS (501/501)
+- Targets smoke (`sim_basic`): PASS
+- Quarto render: PASS (known non-blocking path warning)
+- R CMD check --no-manual --as-cran: NOTE-only (no errors, no warnings)
+
+Feature sanity
+- Final-time patch genetic diversity metrics are produced for each patch,
+  including zero-genotype cases.
+- Seeded demo outputs show plausible per-patch occupancy and heterozygosity.

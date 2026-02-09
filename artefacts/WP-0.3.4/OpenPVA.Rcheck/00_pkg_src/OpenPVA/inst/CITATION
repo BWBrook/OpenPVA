@@ -1,0 +1,11 @@
+citHeader("To cite OpenPVA in publications, use:")
+
+bibentry(
+  bibtype = "Manual",
+  title = "OpenPVA: Open, Modular Population Viability Analysis Framework",
+  author = c(
+    person("Barry", "Brook")
+  ),
+  year = "2026",
+  note = "R package version 0.0.0.9000"
+)

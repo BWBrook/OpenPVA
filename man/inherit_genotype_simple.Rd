@@ -17,7 +17,7 @@ inherit_genotype_simple(mother, father, mutation_rate = 0, n_alleles = NULL)
 inferred from parental alleles.}
 }
 \value{
-A 2 \u00d7 `n_loci` integer matrix of offspring alleles.
+A 2 x `n_loci` integer matrix of offspring alleles.
 }
 \description{
 Samples one haplotype from each parent at every locus and applies optional mutation.

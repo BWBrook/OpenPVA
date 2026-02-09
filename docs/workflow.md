@@ -68,3 +68,14 @@ Fix or explicitly document limitations.
 - `docs/decisions.md` — record non-trivial design choices.
 - `docs/log/*` — chronological record of what you did and why.
 - `docs/questions_for_human.md` — only when blocked.
+
+## 4) CI profile usage
+
+OpenPVA CI is split into two validation profiles:
+
+- `ci-fast`: pull request and `main` push gate (lint + tests + package check).
+- `ci-heavy-validation`: scheduled/manual workflow for heavier reproducibility
+  checks (`targets`, Quarto render, schema/seed regressions, and `--as-cran` check).
+
+Profile definitions and local command equivalents are documented in
+`docs/reference/ci_profiles.md`.

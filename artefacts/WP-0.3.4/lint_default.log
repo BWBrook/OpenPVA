@@ -1,0 +1,807 @@
+R/demography_reproduction_spec.R:205:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 81 characters.
+        "Multiple breeding rows match age ", age_num, " for sex '", sex_chr, "'",
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+R/demography_reproduction_spec.R:259:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 82 characters.
+        "Multiple fecundity rows match age ", age_num, " for sex '", sex_chr, "'",
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+R/demography_survival_spec.R:100:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 94 characters.
+  tbl_sorted <- tbl_validated[order(tbl_validated$sex, tbl_validated$age_min), , drop = FALSE]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+R/demography_survival_spec.R:121:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 95 characters.
+    matches <- tbl_sex[tbl_sex$age_min <= age_num & age_num <= tbl_sex$age_max, , drop = FALSE]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+R/demography_survival_spec.R:127:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 81 characters.
+        "Multiple survival rows match age ", age_num, " for sex '", sex_chr, "'",
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+R/genetics_core.R:14:1: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+.Fhat_from_alleles <- function(alleles) {
+^~~~~~~~~~~~~~~~~~
+R/genetics_core.R:15:3: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+  H <- .heterozygosity_from_alleles(alleles)
+  ^
+R/genetics_core.R:24:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 85 characters.
+#' Assigns each individual a 2 x `n_loci` integer matrix representing two haplotypes.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+R/genetics_core.R:28:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 88 characters.
+#' @param n_alleles Positive integer number of possible allele states (coded 1, 2, ...).
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+R/genetics_core.R:60:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 87 characters.
+#' Samples one haplotype from each parent at every locus and applies optional mutation.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+R/genetics_core.R:65:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 89 characters.
+#' @param n_alleles Optional positive integer for the number of allele states; if `NULL`,
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+R/genetics_core.R:70:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 90 characters.
+inherit_genotype_simple <- function(mother, father, mutation_rate = 0, n_alleles = NULL) {
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+R/genetics_core.R:75:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 81 characters.
+    stop("Parental allele matrices must have matching dimensions", call. = FALSE)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+R/genetics_core.R:82:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 102 characters.
+  if (length(mutation_rate) != 1L || is.na(mutation_rate) || mutation_rate < 0 || mutation_rate > 1) {
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+R/genetics_core.R:108:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 82 characters.
+      offspring[mut_mask] <- sample.int(allele_max, sum(mut_mask), replace = TRUE)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+R/genetics_core.R:117:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 98 characters.
+#' Computes mean heterozygosity and its complement (\eqn{\hat{F}}) for individuals with genotypes.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+R/genetics_core.R:153:3: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+  mean_H <- mean(heterozygosity, na.rm = TRUE)
+  ^~~~~~
+R/genetics_core.R:154:3: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+  mean_F <- mean(1 - heterozygosity, na.rm = TRUE)
+  ^~~~~~
+R/genetics_core.R:155:23: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+  if (is.nan(mean_H)) mean_H <- NA_real_
+                      ^~~~~~
+R/genetics_core.R:156:23: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+  if (is.nan(mean_F)) mean_F <- NA_real_
+                      ^~~~~~
+R/genetics_core.R:168:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 84 characters.
+#' Wraps a baseline survival function with a linear penalty based on an individual's
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+R/genetics_core.R:171:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 89 characters.
+#' @param base_survival_fun Function returning baseline survival probabilities in [0, 1].
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+R/genetics_core.R:172:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 82 characters.
+#' @param beta Non-negative numeric strength parameter (0 = no inbreeding effect).
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+R/genetics_core.R:183:5: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+    F_i <- ind$F
+    ^~~
+R/genetics_core.R:185:7: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+      F_i <- 0
+      ^~~
+R/globals.R:1:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 87 characters.
+# Declare data pronoun used inside dplyr/ggplot2 expressions to keep R CMD check clean.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+R/init_population.R:3:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 104 characters.
+#' Initializes a list representing a single individual with demographic and optional genetic attributes.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
+R/init_population.R:45:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 81 characters.
+#' @param max_age Integer. Maximum age for random age assignment. Defaults to 10.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+R/lifecycle_breeding.R:3:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 85 characters.
+#' Filters the population to return all living females meeting the breeding criteria.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+R/lifecycle_breeding.R:6:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 84 characters.
+#' @param breeding_fun Function that returns TRUE for individuals eligible to breed.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+R/lifecycle_harvest.R:6:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 81 characters.
+#' @param n_remove Numeric or integer scalar giving the desired number to remove.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+R/lifecycle_pipeline.R:13:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 95 characters.
+  allowed <- c("age", "survival", "dispersal", "breeding_births", "harvest", "supplementation")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+R/lifecycle_reproduction.R:19:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 81 characters.
+#' @param fecundity_fun Function returning the number of offspring for a breeder.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+R/lifecycle_reproduction.R:22:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 82 characters.
+#' @param inherit_fun Optional function taking `(mother, father)` and returning an
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+R/lifecycle_reproduction.R:32:18: warning: [object_usage_linter] no visible binding for global variable 'default_mating_fun'
+    mating_fun = default_mating_fun,
+                 ^~~~~~~~~~~~~~~~~~
+R/lifecycle_reproduction.R:46:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 81 characters.
+      father <- if (is.null(mating_fun)) NULL else mating_fun(population, mother)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+R/lifecycle_reproduction.R:61:12: style: [indentation_linter] Indentation should be 14 spaces but is 12 spaces.
+            !is.null(mother$alleles) &&
+           ^~~
+R/lifecycle_reproduction.R:66:9: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+        F_new <- if (is.null(alleles_new)) NA_real_ else .Fhat_from_alleles(alleles_new)
+        ^~~~~
+R/lifecycle_reproduction.R:66:58: warning: [object_usage_linter] no visible global function definition for '.Fhat_from_alleles'
+        F_new <- if (is.null(alleles_new)) NA_real_ else .Fhat_from_alleles(alleles_new)
+                                                         ^~~~~~~~~~~~~~~~~~
+R/lifecycle_reproduction.R:66:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 88 characters.
+        F_new <- if (is.null(alleles_new)) NA_real_ else .Fhat_from_alleles(alleles_new)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+R/lifecycle_reproduction.R:67:46: warning: [object_usage_linter] no visible global function definition for 'create_individual'
+        newborns[[length(newborns) + 1L]] <- create_individual(
+                                             ^~~~~~~~~~~~~~~~~
+R/lifecycle_supplementation.R:10:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 82 characters.
+#' @return A list with `population` (updated) and `n_added` (actual number added).
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+R/lifecycle_supplementation.R:29:23: warning: [object_usage_linter] no visible global function definition for 'create_individual'
+    newcomers[[i]] <- create_individual(
+                      ^~~~~~~~~~~~~~~~~
+R/lifecycle_survival.R:3:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 85 characters.
+#' Updates each individual's `alive` status based on a survival probability function.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+R/lifecycle_survival.R:6:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 88 characters.
+#' @param survival_fun Function that returns a survival probability for each individual.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+R/lifecycle_survival.R:31:3: style: [return_linter] Use implicit return behavior; explicit return() is not needed.
+  return(0.70)
+  ^~~~~~
+R/management.R:23:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 93 characters.
+      stop("All elements of `scenarios` must inherit from 'openpva_scenario'", call. = FALSE)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+R/management.R:25:12: warning: [object_usage_linter] no visible global function definition for 'run_scenario'
+    out <- run_scenario(sc)
+           ^~~~~~~~~~~~
+R/management.R:27:20: warning: [object_usage_linter] no visible global function definition for 'summarise_extinction'
+    ext_summary <- summarise_extinction(sim_output, threshold = extinction_threshold)
+                   ^~~~~~~~~~~~~~~~~~~~
+R/management.R:27:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 85 characters.
+    ext_summary <- summarise_extinction(sim_output, threshold = extinction_threshold)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+R/management.R:28:24: warning: [object_usage_linter] no visible global function definition for 'summarise_harvest_yield'
+    harvest_summary <- summarise_harvest_yield(sim_output)
+                       ^~~~~~~~~~~~~~~~~~~~~~~
+R/management.R:36:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 81 characters.
+      mean_mean_annual_harvest = harvest_summary$overall$mean_mean_annual_harvest
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+R/scenario.R:13:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 82 characters.
+#' @param K_patches Optional numeric vector of patch-specific carrying capacities.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+R/scenario.R:16:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 89 characters.
+#' @param mating_fun Function used for mate selection (defaults to `default_mating_fun`).
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+R/scenario.R:17:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 82 characters.
+#' @param inherit_fun Optional function for generating offspring genotypes. `NULL`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+R/scenario.R:19:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 82 characters.
+#' @param dispersal_fun Function controlling movement between patches (defaults to
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+R/scenario.R:40:20: warning: [object_usage_linter] no visible binding for global variable 'default_survival_fun'
+    survival_fun = default_survival_fun,
+                   ^~~~~~~~~~~~~~~~~~~~
+R/scenario.R:41:20: warning: [object_usage_linter] no visible binding for global variable 'default_breeding_fun'
+    breeding_fun = default_breeding_fun,
+                   ^~~~~~~~~~~~~~~~~~~~
+R/scenario.R:42:21: warning: [object_usage_linter] no visible binding for global variable 'default_fecundity_fun'
+    fecundity_fun = default_fecundity_fun,
+                    ^~~~~~~~~~~~~~~~~~~~~
+R/scenario.R:43:5: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+    K = NULL,
+    ^
+R/scenario.R:44:5: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+    K_patches = NULL,
+    ^~~~~~~~~
+R/scenario.R:46:23: warning: [object_usage_linter] no visible global function definition for 'default_lifecycle_steps'
+    lifecycle_steps = default_lifecycle_steps(),
+                      ^~~~~~~~~~~~~~~~~~~~~~~
+R/scenario.R:47:18: warning: [object_usage_linter] no visible binding for global variable 'default_mating_fun'
+    mating_fun = default_mating_fun,
+                 ^~~~~~~~~~~~~~~~~~
+R/scenario.R:49:21: warning: [object_usage_linter] no visible binding for global variable 'default_dispersal_fun'
+    dispersal_fun = default_dispersal_fun,
+                    ^~~~~~~~~~~~~~~~~~~~~
+R/scenario.R:98:17: warning: [object_usage_linter] no visible global function definition for 'run_basic_simulation_replicates'
+  sim_output <- run_basic_simulation_replicates(
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+R/scenario.R:123:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 81 characters.
+#' Provides a convenience wrapper that initialises genotypes, applies inbreeding-
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+R/scenario.R:147:5: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+    beta_F = 0.5,
+    ^~~~~~
+R/scenario.R:148:5: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+    K = NULL,
+    ^
+R/scenario.R:150:23: warning: [object_usage_linter] no visible global function definition for 'default_lifecycle_steps'
+    lifecycle_steps = default_lifecycle_steps()) {
+                      ^~~~~~~~~~~~~~~~~~~~~~~
+R/scenario.R:163:6: style: [indentation_linter] Indentation should be 8 spaces but is 6 spaces.
+      mutation_rate < 0 || mutation_rate > 1) {
+     ^~~
+R/scenario.R:166:3: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+  beta_F <- as.numeric(beta_F)
+  ^~~~~~
+R/scenario.R:172:12: warning: [object_usage_linter] no visible global function definition for 'initialize_population'
+    pop <- initialize_population(initial_n)
+           ^~~~~~~~~~~~~~~~~~~~~
+R/scenario.R:173:5: warning: [object_usage_linter] no visible global function definition for 'initialize_genotypes'
+    initialize_genotypes(pop, n_loci = n_loci, n_alleles = n_alleles)
+    ^~~~~~~~~~~~~~~~~~~~
+R/scenario.R:175:19: warning: [object_usage_linter] no visible global function definition for 'make_inbreeding_survival_fun'
+  survival_fun <- make_inbreeding_survival_fun(default_survival_fun, beta = beta_F)
+                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+R/scenario.R:175:48: warning: [object_usage_linter] no visible binding for global variable 'default_survival_fun'
+  survival_fun <- make_inbreeding_survival_fun(default_survival_fun, beta = beta_F)
+                                               ^~~~~~~~~~~~~~~~~~~~
+R/scenario.R:175:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 83 characters.
+  survival_fun <- make_inbreeding_survival_fun(default_survival_fun, beta = beta_F)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+R/scenario.R:177:5: warning: [object_usage_linter] no visible global function definition for 'inherit_genotype_simple'
+    inherit_genotype_simple(
+    ^~~~~~~~~~~~~~~~~~~~~~~
+R/scenario.R:191:20: warning: [object_usage_linter] no visible binding for global variable 'default_breeding_fun'
+    breeding_fun = default_breeding_fun,
+                   ^~~~~~~~~~~~~~~~~~~~
+R/scenario.R:192:21: warning: [object_usage_linter] no visible binding for global variable 'default_fecundity_fun'
+    fecundity_fun = default_fecundity_fun,
+                    ^~~~~~~~~~~~~~~~~~~~~
+R/scenario.R:196:18: warning: [object_usage_linter] no visible binding for global variable 'default_mating_fun'
+    mating_fun = default_mating_fun,
+                 ^~~~~~~~~~~~~~~~~~
+R/scenario.R:198:21: warning: [object_usage_linter] no visible binding for global variable 'default_dispersal_fun'
+    dispersal_fun = default_dispersal_fun
+                    ^~~~~~~~~~~~~~~~~~~~~
+R/scenario.R:210:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 85 characters.
+#' @param initial_n Integer vector of length 2 giving starting individuals per patch.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+R/scenario.R:211:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 89 characters.
+#' @param K_patches Numeric vector of length 2 giving patch-specific carrying capacities.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+R/scenario.R:212:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 99 characters.
+#' @param dispersal_matrix 2x2 matrix of movement probabilities (rows origin, columns destination).
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~
+R/scenario.R:217:1: style: [object_length_linter] Variable and function names should not be longer than 30 characters.
+make_two_patch_spatial_scenario <- function(
+^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+R/scenario.R:222:5: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+    K_patches = c(80, 80),
+    ^~~~~~~~~
+R/scenario.R:226:20: warning: [object_usage_linter] no visible binding for global variable 'default_survival_fun'
+    survival_fun = default_survival_fun,
+                   ^~~~~~~~~~~~~~~~~~~~
+R/scenario.R:227:20: warning: [object_usage_linter] no visible binding for global variable 'default_breeding_fun'
+    breeding_fun = default_breeding_fun,
+                   ^~~~~~~~~~~~~~~~~~~~
+R/scenario.R:228:21: warning: [object_usage_linter] no visible binding for global variable 'default_fecundity_fun'
+    fecundity_fun = default_fecundity_fun,
+                    ^~~~~~~~~~~~~~~~~~~~~
+R/scenario.R:229:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 88 characters.
+    lifecycle_steps = c("age", "survival", "dispersal", "breeding_births", "harvest")) {
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+R/scenario.R:238:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 88 characters.
+    stop("initial_n must be a length-2 vector with non-negative entries", call. = FALSE)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+R/scenario.R:246:12: warning: [object_usage_linter] no visible global function definition for 'initialize_population'
+    pop <- initialize_population(n = total_n)
+           ^~~~~~~~~~~~~~~~~~~~~
+R/scenario.R:251:5: warning: [object_usage_linter] no visible global function definition for 'initialize_patches'
+    initialize_patches(pop, patch_ids = patch_ids)
+    ^~~~~~~~~~~~~~~~~~
+R/scenario.R:254:20: warning: [object_usage_linter] no visible global function definition for 'make_markov_dispersal_fun'
+  dispersal_fun <- make_markov_dispersal_fun(dispersal_matrix)
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~
+R/scenario.R:268:18: warning: [object_usage_linter] no visible binding for global variable 'default_mating_fun'
+    mating_fun = default_mating_fun,
+                 ^~~~~~~~~~~~~~~~~~
+R/scenario.R:278:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 81 characters.
+      "<Scenario %s | runs: %d | years: %d | K: %s | harvest: %s | steps: %s>\n",
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+R/scenario.R:313:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 101 characters.
+    stop("Package 'yaml' is required to read scenario YAML files. Please install it.", call. = FALSE)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~
+R/scenario.R:343:47: warning: [object_usage_linter] no visible global function definition for 'default_lifecycle_steps'
+  lifecycle_steps <- cfg$lifecycle_steps %||% default_lifecycle_steps()
+                                              ^~~~~~~~~~~~~~~~~~~~~~~
+R/scenario.R:347:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 106 characters.
+  harvest_quota <- if (!is.null(management$harvest_quota)) management$harvest_quota else cfg$harvest_quota
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
+R/scenario.R:362:17: warning: [object_usage_linter] no visible global function definition for 'validate_survival_table'
+    surv_tbl <- validate_survival_table(surv_tbl)
+                ^~~~~~~~~~~~~~~~~~~~~~~
+R/scenario.R:363:21: warning: [object_usage_linter] no visible global function definition for 'build_survival_fun_from_table'
+    survival_fun <- build_survival_fun_from_table(surv_tbl)
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+R/scenario.R:367:18: warning: [object_usage_linter] no visible global function definition for 'validate_breeding_table'
+    breed_tbl <- validate_breeding_table(breed_tbl)
+                 ^~~~~~~~~~~~~~~~~~~~~~~
+R/scenario.R:368:21: warning: [object_usage_linter] no visible global function definition for 'build_breeding_fun_from_table'
+    breeding_fun <- build_breeding_fun_from_table(breed_tbl)
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+R/scenario.R:372:16: warning: [object_usage_linter] no visible global function definition for 'validate_fecundity_table'
+    fec_tbl <- validate_fecundity_table(fec_tbl)
+               ^~~~~~~~~~~~~~~~~~~~~~~~
+R/scenario.R:373:22: warning: [object_usage_linter] no visible global function definition for 'build_fecundity_fun_from_table'
+    fecundity_fun <- build_fecundity_fun_from_table(fec_tbl)
+                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+R/scenario.R:386:6: style: [indentation_linter] Indentation should be 8 spaces but is 6 spaces.
+      cat_surv_prob < 0 || cat_surv_prob > 1) {
+     ^~~
+R/scenario.R:390:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 81 characters.
+  if (length(cat_surv_mult) != 1L || is.na(cat_surv_mult) || cat_surv_mult < 0) {
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+R/scenario.R:418:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 94 characters.
+  if (!is.character(scenario$name) || length(scenario$name) != 1L || !nzchar(scenario$name)) {
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+R/scenario.R:429:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 85 characters.
+    stop("Specify either K or K_patches in scenario_spec(), not both", call. = FALSE)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+R/scenario.R:433:8: style: [indentation_linter] Indentation should be 10 spaces but is 8 spaces.
+        any(scenario$K_patches <= 0)) {
+       ^~~
+R/scenario.R:438:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 82 characters.
+  if (!is.function(scenario$survival_fun)) stop("survival_fun must be a function")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+R/scenario.R:439:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 82 characters.
+  if (!is.function(scenario$breeding_fun)) stop("breeding_fun must be a function")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+R/scenario.R:440:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 84 characters.
+  if (!is.function(scenario$fecundity_fun)) stop("fecundity_fun must be a function")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+R/scenario.R:450:8: style: [indentation_linter] Indentation should be 10 spaces but is 8 spaces.
+        !length(scenario$supplement_quota) %in% c(1L, scenario$n_years)) {
+       ^~~
+R/scenario.R:451:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 92 characters.
+      stop("supplement_quota must be NULL or numeric of length 1 or n_years", call. = FALSE)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+R/scenario.R:463:6: style: [indentation_linter] Indentation should be 8 spaces but is 6 spaces.
+      cat_surv_prob < 0 || cat_surv_prob > 1) {
+     ^~~
+R/scenario.R:467:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 81 characters.
+  if (length(cat_surv_mult) != 1L || is.na(cat_surv_mult) || cat_surv_mult < 0) {
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+R/scenario.R:470:3: warning: [object_usage_linter] no visible global function definition for '.validate_lifecycle_steps'
+  .validate_lifecycle_steps(scenario$lifecycle_steps)
+  ^~~~~~~~~~~~~~~~~~~~~~~~~
+R/simulation_core.R:5:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 87 characters.
+#' @param initial_population List of individuals (e.g. from `initialize_population()`).
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+R/simulation_core.R:7:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 81 characters.
+#' @param survival_fun Function returning survival probabilities for individuals.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+R/simulation_core.R:11:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 82 characters.
+#' @param K Optional numeric carrying capacity for ceiling-based survival scaling.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+R/simulation_core.R:12:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 82 characters.
+#' @param K_patches Optional numeric vector of patch-specific carrying capacities.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+R/simulation_core.R:16:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 92 characters.
+#' @param harvest_quota Optional harvest quota (single value or length `n_years` vector). If
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+R/simulation_core.R:18:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 91 characters.
+#' @param lifecycle_steps Character vector of lifecycle step labels describing the order in
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
+R/simulation_core.R:19:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 90 characters.
+#'   which processes occur. Allowed values are `"age"`, `"survival"`, `"breeding_births"`,
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+R/simulation_core.R:23:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 82 characters.
+#' @param inherit_fun Optional function taking `(mother, father)` and returning an
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+R/simulation_core.R:24:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 85 characters.
+#'   allele matrix for newborns (e.g. `inherit_genotype_simple`). Defaults to `NULL`,
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+R/simulation_core.R:30:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 81 characters.
+#' @param supplement_quota Optional supplementation quota (single value or length
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+R/simulation_core.R:31:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 84 characters.
+#'   `n_years` vector). Applied only if `"supplementation"` is in `lifecycle_steps`.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+R/simulation_core.R:42:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 84 characters.
+#' @return List with the final `population` and a `summary` tibble of yearly metrics
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+R/simulation_core.R:49:20: warning: [object_usage_linter] no visible binding for global variable 'default_survival_fun'
+    survival_fun = default_survival_fun,
+                   ^~~~~~~~~~~~~~~~~~~~
+R/simulation_core.R:50:20: warning: [object_usage_linter] no visible binding for global variable 'default_breeding_fun'
+    breeding_fun = default_breeding_fun,
+                   ^~~~~~~~~~~~~~~~~~~~
+R/simulation_core.R:51:21: warning: [object_usage_linter] no visible binding for global variable 'default_fecundity_fun'
+    fecundity_fun = default_fecundity_fun,
+                    ^~~~~~~~~~~~~~~~~~~~~
+R/simulation_core.R:52:5: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+    K = NULL,
+    ^
+R/simulation_core.R:53:5: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+    K_patches = NULL,
+    ^~~~~~~~~
+R/simulation_core.R:55:23: warning: [object_usage_linter] no visible global function definition for 'default_lifecycle_steps'
+    lifecycle_steps = default_lifecycle_steps(),
+                      ^~~~~~~~~~~~~~~~~~~~~~~
+R/simulation_core.R:56:18: warning: [object_usage_linter] no visible binding for global variable 'default_mating_fun'
+    mating_fun = default_mating_fun,
+                 ^~~~~~~~~~~~~~~~~~
+R/simulation_core.R:58:21: warning: [object_usage_linter] no visible binding for global variable 'default_dispersal_fun'
+    dispersal_fun = default_dispersal_fun,
+                    ^~~~~~~~~~~~~~~~~~~~~
+R/simulation_core.R:73:5: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+    K <- as.numeric(K)
+    ^
+R/simulation_core.R:82:5: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+    K_patches <- as.numeric(K_patches)
+    ^~~~~~~~~
+R/simulation_core.R:113:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 91 characters.
+      stop("supplement_quota must have length 1 or length equal to n_years", call. = FALSE)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
+R/simulation_core.R:127:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 82 characters.
+    stop("env_surv_sd must be a single non-negative numeric value", call. = FALSE)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+R/simulation_core.R:131:6: style: [indentation_linter] Indentation should be 8 spaces but is 6 spaces.
+      cat_surv_prob < 0 || cat_surv_prob > 1) {
+     ^~~
+R/simulation_core.R:135:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 81 characters.
+  if (length(cat_surv_mult) != 1L || is.na(cat_surv_mult) || cat_surv_mult < 0) {
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+R/simulation_core.R:139:3: warning: [object_usage_linter] no visible global function definition for '.validate_lifecycle_steps'
+  .validate_lifecycle_steps(lifecycle_steps)
+  ^~~~~~~~~~~~~~~~~~~~~~~~~
+R/simulation_core.R:186:23: warning: [object_usage_linter] no visible global function definition for 'age_individuals'
+        population <- age_individuals(population)
+                      ^~~~~~~~~~~~~~~
+R/simulation_core.R:188:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 90 characters.
+        alive_flags_pre <- vapply(population, function(ind) isTRUE(ind$alive), logical(1))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+R/simulation_core.R:203:18: style: [indentation_linter] Indentation should be 20 spaces but is 18 spaces.
+                  pid >= 1L && pid <= length(K_patches) &&
+                 ^~~
+R/simulation_core.R:236:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 89 characters.
+            p_scaled <- p * survival_scale_year * env_surv_mult_year * cat_surv_mult_year
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+R/simulation_core.R:242:23: warning: [object_usage_linter] no visible global function definition for 'apply_survival'
+        population <- apply_survival(population, survival_fun_year)
+                      ^~~~~~~~~~~~~~
+R/simulation_core.R:244:23: warning: [object_usage_linter] no visible global function definition for 'apply_dispersal'
+        population <- apply_dispersal(population, dispersal_fun)
+                      ^~~~~~~~~~~~~~~
+R/simulation_core.R:246:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 83 characters.
+        quota_this_year <- if (length(supplement_vec)) supplement_vec[year] else 0L
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+R/simulation_core.R:248:32: warning: [object_usage_linter] no visible global function definition for 'apply_supplementation'
+          supplement_result <- apply_supplementation(
+                               ^~~~~~~~~~~~~~~~~~~~~
+R/simulation_core.R:257:21: warning: [object_usage_linter] no visible global function definition for 'determine_breeding'
+        breeders <- determine_breeding(population, breeding_fun)
+                    ^~~~~~~~~~~~~~~~~~
+R/simulation_core.R:259:23: warning: [object_usage_linter] no visible global function definition for 'apply_reproduction'
+        population <- apply_reproduction(
+                      ^~~~~~~~~~~~~~~~~~
+R/simulation_core.R:266:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 89 characters.
+        n_births_year <- n_births_year + as.integer(length(population) - pre_birth_count)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+R/simulation_core.R:270:29: warning: [object_usage_linter] no visible global function definition for 'apply_harvest_quota'
+          harvest_result <- apply_harvest_quota(population, quota_this_year)
+                            ^~~~~~~~~~~~~~~~~~~
+R/simulation_core.R:277:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 82 characters.
+    alive_flags <- vapply(population, function(ind) isTRUE(ind$alive), logical(1))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+R/simulation_core.R:302:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 84 characters.
+    n_female_alive = vapply(summary_rows, function(x) x$n_female_alive, integer(1)),
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+R/simulation_core.R:306:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 84 characters.
+    n_supplemented = vapply(summary_rows, function(x) x$n_supplemented, integer(1)),
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+R/simulation_core.R:307:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 84 characters.
+    survival_scale = vapply(summary_rows, function(x) x$survival_scale, numeric(1)),
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+R/simulation_core.R:308:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 82 characters.
+    env_surv_mult = vapply(summary_rows, function(x) x$env_surv_mult, numeric(1)),
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+R/simulation_core.R:309:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 82 characters.
+    cat_surv_mult = vapply(summary_rows, function(x) x$cat_surv_mult, numeric(1)),
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+R/simulation_core.R:323:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 81 characters.
+#' @param init_fun Function with no arguments that returns an initial population.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+R/simulation_core.R:324:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 81 characters.
+#' @param survival_fun Function returning survival probabilities for individuals.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+R/simulation_core.R:328:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 82 characters.
+#' @param K Optional numeric carrying capacity for ceiling-based survival scaling.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+R/simulation_core.R:329:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 92 characters.
+#' @param harvest_quota Optional harvest quota (single value or length `n_years` vector). If
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+R/simulation_core.R:331:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 83 characters.
+#' @param lifecycle_steps Character vector specifying lifecycle order for each run.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+R/simulation_core.R:332:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 82 characters.
+#' @param K_patches Optional numeric vector of patch-specific carrying capacities.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+R/simulation_core.R:336:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 81 characters.
+#' @param dispersal_fun Function applied during the `"dispersal"` lifecycle step.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+R/simulation_core.R:337:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 81 characters.
+#' @param supplement_quota Optional supplementation quota (single value or length
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+R/simulation_core.R:338:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 84 characters.
+#'   `n_years` vector). Applied only if `"supplementation"` is in `lifecycle_steps`.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+R/simulation_core.R:348:3: style: [trailing_whitespace_linter] Remove trailing whitespace.
+#' 
+  ^
+R/simulation_core.R:351:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 101 characters.
+#'     \item `runs`: list of length `n_runs`, each containing the output of `run_basic_simulation()`.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~
+R/simulation_core.R:352:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 215 characters.
+#'     \item `summary`: tibble with columns `run`, `year`, `n_alive`, `n_female_alive`, `n_male_alive`, `n_births`, `n_harvested`, `n_supplemented`, `survival_scale`, `env_surv_mult`, `cat_surv_mult`, `catastrophe`.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+R/simulation_core.R:353:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 91 characters.
+#'     \item `extinction`: tibble with columns `run`, `went_extinct`, `time_to_extinction`.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
+R/simulation_core.R:356:1: style: [object_length_linter] Variable and function names should not be longer than 30 characters.
+run_basic_simulation_replicates <- function(
+^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+R/simulation_core.R:360:20: warning: [object_usage_linter] no visible binding for global variable 'default_survival_fun'
+    survival_fun = default_survival_fun,
+                   ^~~~~~~~~~~~~~~~~~~~
+R/simulation_core.R:361:20: warning: [object_usage_linter] no visible binding for global variable 'default_breeding_fun'
+    breeding_fun = default_breeding_fun,
+                   ^~~~~~~~~~~~~~~~~~~~
+R/simulation_core.R:362:21: warning: [object_usage_linter] no visible binding for global variable 'default_fecundity_fun'
+    fecundity_fun = default_fecundity_fun,
+                    ^~~~~~~~~~~~~~~~~~~~~
+R/simulation_core.R:363:5: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+    K = NULL,
+    ^
+R/simulation_core.R:364:5: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+    K_patches = NULL,
+    ^~~~~~~~~
+R/simulation_core.R:366:23: warning: [object_usage_linter] no visible global function definition for 'default_lifecycle_steps'
+    lifecycle_steps = default_lifecycle_steps(),
+                      ^~~~~~~~~~~~~~~~~~~~~~~
+R/simulation_core.R:367:18: warning: [object_usage_linter] no visible binding for global variable 'default_mating_fun'
+    mating_fun = default_mating_fun,
+                 ^~~~~~~~~~~~~~~~~~
+R/simulation_core.R:369:21: warning: [object_usage_linter] no visible binding for global variable 'default_dispersal_fun'
+    dispersal_fun = default_dispersal_fun,
+                    ^~~~~~~~~~~~~~~~~~~~~
+R/simulation_core.R:399:5: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+    K_patches <- as.numeric(K_patches)
+    ^~~~~~~~~
+R/simulation_core.R:407:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 91 characters.
+      stop("supplement_quota must have length 1 or length equal to n_years", call. = FALSE)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
+R/simulation_core.R:416:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 82 characters.
+    stop("env_surv_sd must be a single non-negative numeric value", call. = FALSE)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+R/simulation_core.R:420:6: style: [indentation_linter] Indentation should be 8 spaces but is 6 spaces.
+      cat_surv_prob < 0 || cat_surv_prob > 1) {
+     ^~~
+R/simulation_core.R:424:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 81 characters.
+  if (length(cat_surv_mult) != 1L || is.na(cat_surv_mult) || cat_surv_mult < 0) {
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+R/simulation_core.R:492:45: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+compute_survival_scale <- function(n_alive, K) {
+                                            ^
+R/simulation_plots.R:13:56: warning: [object_usage_linter] no visible binding for global variable '.data'
+  ggplot2::ggplot(trajectory_summary, ggplot2::aes(x = .data$year, y = .data$mean_n_alive)) +
+                                                       ^~~~~
+R/simulation_plots.R:13:56: warning: [object_usage_linter] no visible binding for global variable '.data'
+  ggplot2::ggplot(trajectory_summary, ggplot2::aes(x = .data$year, y = .data$mean_n_alive)) +
+                                                       ^~~~~
+R/simulation_plots.R:13:56: warning: [object_usage_linter] no visible binding for global variable '.data'
+  ggplot2::ggplot(trajectory_summary, ggplot2::aes(x = .data$year, y = .data$mean_n_alive)) +
+                                                       ^~~~~
+R/simulation_plots.R:13:56: warning: [object_usage_linter] no visible binding for global variable '.data'
+  ggplot2::ggplot(trajectory_summary, ggplot2::aes(x = .data$year, y = .data$mean_n_alive)) +
+                                                       ^~~~~
+R/simulation_plots.R:13:56: warning: [object_usage_linter] no visible binding for global variable '.data'
+  ggplot2::ggplot(trajectory_summary, ggplot2::aes(x = .data$year, y = .data$mean_n_alive)) +
+                                                       ^~~~~
+R/simulation_plots.R:13:56: warning: [object_usage_linter] no visible binding for global variable '.data'
+  ggplot2::ggplot(trajectory_summary, ggplot2::aes(x = .data$year, y = .data$mean_n_alive)) +
+                                                       ^~~~~
+R/simulation_plots.R:13:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 93 characters.
+  ggplot2::ggplot(trajectory_summary, ggplot2::aes(x = .data$year, y = .data$mean_n_alive)) +
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+R/simulation_summary.R:11:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 82 characters.
+#' @return A tibble with columns `n_runs`, `p_extinct`, `mean_time_to_extinction`,
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+R/simulation_summary.R:21:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 102 characters.
+  can_use_summary <- !is.null(summary_tbl) && all(c("run", "year", "n_alive") %in% names(summary_tbl))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+R/simulation_summary.R:27:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 108 characters.
+    stop("sim_output$summary with columns run, year, n_alive is required when threshold > 0", call. = FALSE)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+R/simulation_summary.R:64:1: style: [object_length_linter] Variable and function names should not be longer than 30 characters.
+.summarise_extinction_from_summary <- function(summary_tbl, threshold) {
+^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+R/simulation_summary.R:83:21: warning: [object_usage_linter] no visible binding for global variable '.data'
+    dplyr::group_by(.data$run) |>
+                    ^~~~~
+R/simulation_summary.R:83:21: warning: [object_usage_linter] no visible binding for global variable '.data'
+    dplyr::group_by(.data$run) |>
+                    ^~~~~
+R/simulation_summary.R:87:22: warning: [object_usage_linter] no visible binding for global variable '.data'
+        ext_years <- .data$year[.data$n_alive <= threshold]
+                     ^~~~~
+R/simulation_summary.R:87:22: warning: [object_usage_linter] no visible binding for global variable '.data'
+        ext_years <- .data$year[.data$n_alive <= threshold]
+                     ^~~~~
+R/simulation_summary.R:112:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 86 characters.
+#' Aggregates the combined per-run summaries from `run_basic_simulation_replicates()`.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+R/simulation_summary.R:116:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 86 characters.
+#' @return A tibble with columns `year`, `mean_n_alive`, `sd_n_alive`, and `p_extant`.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+R/simulation_summary.R:132:21: warning: [object_usage_linter] no visible binding for global variable '.data'
+    dplyr::group_by(.data$year) |>
+                    ^~~~~
+R/simulation_summary.R:132:21: warning: [object_usage_linter] no visible binding for global variable '.data'
+    dplyr::group_by(.data$year) |>
+                    ^~~~~
+R/simulation_summary.R:132:21: warning: [object_usage_linter] no visible binding for global variable '.data'
+    dplyr::group_by(.data$year) |>
+                    ^~~~~
+R/simulation_summary.R:132:21: warning: [object_usage_linter] no visible binding for global variable '.data'
+    dplyr::group_by(.data$year) |>
+                    ^~~~~
+R/simulation_summary.R:158:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 90 characters.
+    stop("sim_output$summary must contain columns `run` and `n_harvested`", call. = FALSE)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+R/simulation_summary.R:176:21: warning: [object_usage_linter] no visible binding for global variable '.data'
+    dplyr::group_by(.data$run) |>
+                    ^~~~~
+R/simulation_summary.R:176:21: warning: [object_usage_linter] no visible binding for global variable '.data'
+    dplyr::group_by(.data$run) |>
+                    ^~~~~
+R/simulation_summary.R:176:21: warning: [object_usage_linter] no visible binding for global variable '.data'
+    dplyr::group_by(.data$run) |>
+                    ^~~~~
+R/simulation_summary.R:185:33: warning: [object_usage_linter] no visible binding for global variable '.data'
+      mean_total_harvest = mean(.data$total_harvest),
+                                ^~~~~
+R/simulation_summary.R:185:33: warning: [object_usage_linter] no visible binding for global variable '.data'
+      mean_total_harvest = mean(.data$total_harvest),
+                                ^~~~~
+R/simulation_summary.R:185:33: warning: [object_usage_linter] no visible binding for global variable '.data'
+      mean_total_harvest = mean(.data$total_harvest),
+                                ^~~~~
+R/spatial_dispersal.R:76:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 84 characters.
+    stop("transition_matrix must contain non-negative finite values", call. = FALSE)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+R/spatial_dispersal.R:83:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 81 characters.
+      stop("Each row of transition_matrix must have positive sum", call. = FALSE)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+R/spatial_patches.R:14:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 81 characters.
+#'   `function(population, n_patches)` that returns a vector of patch identifiers
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+R/spatial_patches.R:32:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 84 characters.
+      stop("patch_ids must have length equal to the population size", call. = FALSE)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+R/spatial_patches.R:36:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 100 characters.
+    if (is.null(n_patches) || !is.numeric(n_patches) || length(n_patches) != 1L || n_patches <= 0) {
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+R/spatial_patches.R:37:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 88 characters.
+      stop("n_patches must be a positive integer when patch_ids is NULL", call. = FALSE)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+R/spatial_patches.R:42:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 86 characters.
+      assign_patch_ids <- as.integer(((seq_along(population) - 1L) %% n_patches) + 1L)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+R/spatial_patches.R:49:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 82 characters.
+        stop("assignment_fun must return one patch per individual", call. = FALSE)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+R/spatial_summary.R:17:1: style: [object_length_linter] Variable and function names should not be longer than 30 characters.
+summarise_patch_occupancy_final <- function(sim_output, n_patches, alive_only = TRUE) {
+^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+R/spatial_summary.R:17:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 87 characters.
+summarise_patch_occupancy_final <- function(sim_output, n_patches, alive_only = TRUE) {
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+R/spatial_summary.R:25:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 81 characters.
+  if (!is.logical(alive_only) || length(alive_only) != 1L || is.na(alive_only)) {
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+R/spatial_summary.R:59:21: warning: [object_usage_linter] no visible binding for global variable '.data'
+    dplyr::group_by(.data$patch_id) |>
+                    ^~~~~
+R/spatial_summary.R:59:21: warning: [object_usage_linter] no visible binding for global variable '.data'
+    dplyr::group_by(.data$patch_id) |>
+                    ^~~~~
+R/spatial_summary.R:59:21: warning: [object_usage_linter] no visible binding for global variable '.data'
+    dplyr::group_by(.data$patch_id) |>
+                    ^~~~~
+R/spatial_summary.R:59:21: warning: [object_usage_linter] no visible binding for global variable '.data'
+    dplyr::group_by(.data$patch_id) |>
+                    ^~~~~
+tests/testthat.R:2:4: style: [indentation_linter] Indentation should be 6 spaces but is 4 spaces.
+    requireNamespace("OpenPVA", quietly = TRUE)) {
+   ^~~
+tests/testthat/test_demography_environment.R:68:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 89 characters.
+  diff_mult <- abs(res_env1$summary$env_surv_mult[1] - res_env2$summary$env_surv_mult[1])
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+tests/testthat/test_demography_reproduction_spec.R:61:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 83 characters.
+  expect_true(all(c("age_min", "age_max", "sex", "can_breed") %in% names(tbl_def)))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+tests/testthat/test_demography_reproduction_spec.R:146:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 83 characters.
+  expect_true(all(vapply(newborns, function(ind) ind$mother_id, integer(1)) == 2L))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+tests/testthat/test_demography_reproduction_spec.R:147:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 83 characters.
+  expect_true(all(vapply(newborns, function(ind) ind$father_id, integer(1)) == 3L))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+tests/testthat/test_demography_survival_spec.R:37:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 84 characters.
+  expect_true(all(c("age_min", "age_max", "sex", "p_surv") %in% names(tbl_default)))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+tests/testthat/test_demography_survival_spec.R:63:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 82 characters.
+test_that("build_survival_fun_from_table errors when sex is missing from table", {
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+tests/testthat/test_genetics_core.R:12:3: style: [object_name_linter] Variable and function name style should match snake_case or symbols.
+  Fs <- vapply(pop_g, function(ind) ind$F, numeric(1))
+  ^~
+tests/testthat/test_genetics_core.R:18:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 86 characters.
+test_that("inherit_genotype_simple samples haplotypes and respects mutation bounds", {
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+tests/testthat/test_genetics_core.R:30:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 95 characters.
+  offspring_mut <- inherit_genotype_simple(mother, father, mutation_rate = 0.5, n_alleles = 2L)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+tests/testthat/test_genetics_core.R:182:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 85 characters.
+  expect_true(all(vapply(newborns, function(ind) !is.null(ind$alleles), logical(1))))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+tests/testthat/test_init_population.R:4:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 98 characters.
+  required <- c("id", "sex", "age", "alive", "alleles", "F", "mother_id", "father_id", "patch_id")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+tests/testthat/test_init_population.R:5:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 88 characters.
+  expect_true(all(vapply(pop, function(ind) all(required %in% names(ind)), logical(1))))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+tests/testthat/test_init_population.R:6:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 87 characters.
+  expect_true(all(vapply(pop, function(ind) ind$age >= 0 && ind$age <= 2, logical(1))))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+tests/testthat/test_scenario_yaml_demography.R:94:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 94 characters.
+  expect_true(all(c("env_surv_mult", "cat_surv_mult", "catastrophe") %in% names(summary_tbl)))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+tests/testthat/test_scenario.R:101:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 98 characters.
+  alleles_flag <- vapply(final_pop, function(individual) !is.null(individual$alleles), logical(1))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+tests/testthat/test_scenario.R:136:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 84 characters.
+    all(vapply(run_output$population, function(ind) ind$patch_id, integer(1)) == 2L)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+tests/testthat/test_scenario.R:162:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 106 characters.
+    all(vapply(run_output$population, function(ind) ind$patch_id, integer(1)) %in% c(1L, 2L, NA_integer_))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
+tests/testthat/test_simulation_core.R:17:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 88 characters.
+  expect_true(all(vapply(newborns, function(ind) ind$id > original_max_id, logical(1))))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+tests/testthat/test_simulation_core.R:123:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 100 characters.
+  population <- lapply(1:5, function(id) create_individual(id, ifelse(id %% 2, "F", "M"), age = id))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+tests/testthat/test_simulation_core.R:124:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 86 characters.
+  alive_counts <- sum(vapply(population, function(ind) isTRUE(ind$alive), logical(1)))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~
+tests/testthat/test_simulation_core.R:137:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 95 characters.
+  expect_true(all(vapply(result_all$population, function(ind) !isTRUE(ind$alive), logical(1))))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+tests/testthat/test_simulation_core.R:160:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 87 characters.
+  expect_true(res_no_density$summary$n_alive[1] >= res_with_density$summary$n_alive[1])
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+tests/testthat/test_simulation_core.R:260:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 83 characters.
+  expect_true(all(c("run", "year", "n_alive", "n_births") %in% names(res$summary)))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+tests/testthat/test_simulation_core.R:293:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 92 characters.
+  expect_true(all(vapply(newborns, function(ind) ind$mother_id %in% c(1L, 2L), logical(1))))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+tests/testthat/test_simulation_core.R:294:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 84 characters.
+  expect_true(all(vapply(newborns, function(ind) is.na(ind$father_id), logical(1))))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+tests/testthat/test_simulation_summary.R:52:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 88 characters.
+  expect_true(all(c("year", "mean_n_alive", "sd_n_alive", "p_extant") %in% names(traj)))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+tests/testthat/test_spatial_patches.R:5:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 103 characters.
+  expect_equal(vapply(pop_explicit, function(ind) ind$patch_id, integer(1)), c(1L, 1L, 2L, 2L, 3L, 3L))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+tests/testthat/test_spatial_patches.R:8:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 106 characters.
+  expect_equal(vapply(pop_round_robin, function(ind) ind$patch_id, integer(1)), c(1L, 2L, 1L, 2L, 1L, 2L))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
+tests/testthat/test_spatial_patches.R:10:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 83 characters.
+  assignment_fun <- function(population, n_patches) rep.int(1L, length(population))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+tests/testthat/test_spatial_patches.R:11:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 92 characters.
+  pop_custom <- initialize_patches(base_pop, n_patches = 3, assignment_fun = assignment_fun)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+tests/testthat/test_spatial_patches.R:12:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 84 characters.
+  expect_true(all(vapply(pop_custom, function(ind) ind$patch_id, integer(1)) == 1L))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+tests/testthat/test_supplementation.R:14:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 83 characters.
+  expect_true(all(vapply(new_inds, function(ind) is.na(ind$patch_id), logical(1))))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+tests/testthat/test_supplementation.R:21:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 85 characters.
+test_that("supplementation step increases population and summary tracks additions", {
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+tests/testthat/test_supplementation.R:40:81: style: [line_length_linter] Lines should not be more than 80 characters. This line is 87 characters.
+  patch_counts <- table(vapply(res$population, function(ind) ind$patch_id, integer(1)))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~

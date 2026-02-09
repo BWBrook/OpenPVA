@@ -1,0 +1,1 @@
+31a676fdc37f0a672eca86c5e4587dbe  artefacts/WP-0.3.1/sim_basic_dense_harvest_trajectory.png

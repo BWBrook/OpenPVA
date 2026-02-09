@@ -1,0 +1,7 @@
+WP-0.5.4 reproduction controller demo note
+timestamp_utc: 2026-02-08 07:56:04 UTC
+rows_summary: 160
+mean_env_repro_p_mult: 0.9852
+mean_env_repro_lambda_mult: 0.9696
+catastrophe_fraction: 0.3062
+legacy_yaml_rows: 90

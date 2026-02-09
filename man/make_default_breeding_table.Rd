@@ -11,6 +11,6 @@ A data frame with columns `age_min`, `age_max`, `sex`, and
   `can_breed`.
 }
 \description{
-Returns the baseline breeding schedule used by `default_breeding_fun()` as
-an explicit table.
+Legacy compatibility wrapper that maps default breeding probabilities to
+`can_breed`.
 }

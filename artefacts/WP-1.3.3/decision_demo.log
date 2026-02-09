@@ -1,0 +1,12 @@
+ℹ Loading OpenPVA
+# A tibble: 3 × 14
+  scenario_name     extinction_threshold final_n_floor p_extinction
+  <chr>                            <dbl>         <dbl>        <dbl>
+1 status_quo                          10            20        0    
+2 intensive_harvest                   10            20        0.333
+3 low_capacity                        10            20        0    
+# ℹ 10 more variables: mean_time_to_extinction <dbl>, mean_total_harvest <dbl>,
+#   sd_total_harvest <dbl>, mean_mean_annual_harvest <dbl>,
+#   mean_final_n_alive <dbl>, median_final_n_alive <dbl>,
+#   q05_final_n_alive <dbl>, q95_final_n_alive <dbl>,
+#   p_final_below_floor <dbl>, p_any_below_floor <dbl>

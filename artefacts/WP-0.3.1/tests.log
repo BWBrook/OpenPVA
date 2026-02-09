@@ -1,0 +1,80 @@
+demography_environment: 12
+demography_reproduction_spec: 3.45.678
+demography_survival_spec: 9..abc
+genetics_core: defghijklm
+init_population: no
+management: p
+scenario_yaml_demography: qrst
+scenario: uvwxyzA
+simulation_core: BCDEFGHIJKLMN
+simulation_summary: OPQRSTU
+spatial_patches: VWXYZEE
+supplementation: EEEE
+
+══ Failed ══════════════════════════════════════════════════════════════════════
+── 1. Error ('test_demography_environment.R:2:3'): survival environmental variat
+Error in `initialize_population(n = 50, max_age = 2)`: could not find function "initialize_population"
+
+── 2. Error ('test_demography_environment.R:75:3'): scenario-level catastrophe p
+Error in `scenario_spec(name = "no_cat", n_runs = 10, n_years = 10, init_fun = init_fun, survival_fun = default_survival_fun, breeding_fun = default_breeding_fun, fecundity_fun = default_fecundity_fun, K = NULL, lifecycle_steps = c("age", "survival"), env_surv_sd = 0, cat_surv_prob = 0, cat_surv_mult = 1)`: could not find function "scenario_spec"
+
+── 3. Failure ('test_demography_reproduction_spec.R:9:3'): validate_breeding_tab
+`validate_breeding_table(tbl)` threw an error.
+Message: could not find function "validate_breeding_table"
+Class:   simpleError/error/condition
+Backtrace:
+    ▆
+ 1. └─testthat::expect_error(validate_breeding_table(tbl), NA) at test_demography_reproduction_spec.R:9:3
+ 2.   └─testthat:::quasi_capture(...) at testthat/R/expect-condition.R:133:5
+ 3.     ├─testthat (local) .capture(...) at testthat/R/quasi-label.R:72:3
+ 4.     │ └─base::withCallingHandlers(...) at testthat/R/deprec-condition.R:31:5
+ 5.     └─rlang::eval_bare(quo_get_expr(.quo), quo_get_env(.quo)) at testthat/R/quasi-label.R:72:3
+
+── 4. Error ('test_demography_reproduction_spec.R:31:3'): validate_breeding_tabl
+Error in `validate_breeding_table(tbl_num)`: could not find function "validate_breeding_table"
+
+── 5. Failure ('test_demography_reproduction_spec.R:44:3'): validate_fecundity_t
+`validate_fecundity_table(tbl)` threw an error.
+Message: could not find function "validate_fecundity_table"
+Class:   simpleError/error/condition
+Backtrace:
+    ▆
+ 1. └─testthat::expect_error(validate_fecundity_table(tbl), NA) at test_demography_reproduction_spec.R:44:3
+ 2.   └─testthat:::quasi_capture(...) at testthat/R/expect-condition.R:133:5
+ 3.     ├─testthat (local) .capture(...) at testthat/R/quasi-label.R:72:3
+ 4.     │ └─base::withCallingHandlers(...) at testthat/R/deprec-condition.R:31:5
+ 5.     └─rlang::eval_bare(quo_get_expr(.quo), quo_get_env(.quo)) at testthat/R/quasi-label.R:72:3
+
+── 6. Error ('test_demography_reproduction_spec.R:59:3'): make_default_breeding_
+Error in `make_default_breeding_table()`: could not find function "make_default_breeding_table"
+
+── 7. Error ('test_demography_reproduction_spec.R:86:3'): build_fecundity_fun_fr
+Error in `build_fecundity_fun_from_table(tbl)`: could not find function "build_fecundity_fun_from_table"
+
+── 8. Error ('test_demography_reproduction_spec.R:117:3'): table-built breeding 
+Error in `build_breeding_fun_from_table(tbl_b)`: could not find function "build_breeding_fun_from_table"
+
+── 9. Failure ('test_demography_survival_spec.R:9:3'): validate_survival_table a
+`validate_survival_table(tbl)` threw an error.
+Message: could not find function "validate_survival_table"
+Class:   simpleError/error/condition
+Backtrace:
+    ▆
+ 1. └─testthat::expect_error(validate_survival_table(tbl), NA) at test_demography_survival_spec.R:9:3
+ 2.   └─testthat:::quasi_capture(...) at testthat/R/expect-condition.R:133:5
+ 3.     ├─testthat (local) .capture(...) at testthat/R/quasi-label.R:72:3
+ 4.     │ └─base::withCallingHandlers(...) at testthat/R/deprec-condition.R:31:5
+ 5.     └─rlang::eval_bare(quo_get_expr(.quo), quo_get_env(.quo)) at testthat/R/quasi-label.R:72:3
+
+── 10. Error ('test_demography_survival_spec.R:35:3'): make_default_survival_tab
+Error in `make_default_survival_table()`: could not find function "make_default_survival_table"
+  ... and 57 more
+
+
+Maximum number of 10 failures reached, some test results may be missing.
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+I believe in you!
+Error:
+! Test failures.
+Execution halted

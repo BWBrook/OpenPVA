@@ -1,0 +1,55 @@
+Error: 
+! error in pak subprocess
+Caused by error in `get_remote_types(refs)`:
+! Cannot parse package: @HEAD.
+ℹ See `?pkgdepends::pkg_refs()` for supported package sources.
+---
+Backtrace:
+1. renv::restore(packages = "lintr", prompt = FALSE)
+2. renv:::renv_pak_restore(lockfile = lockfile, packages = packages, exclude = exclu… at restore.R:130:5
+3. pak$pkg_install(pkg = remotes, ask = prompt) at pak.R:203:3
+4. pak:::remote(function(...) get("pkg_install_make_plan", asNamespace("pak"))(...)… at package.R:79:3
+5. err$throw(res$error) at subprocess.R:140:5
+---
+Subprocess backtrace:
+ 1. base::withCallingHandlers(cli_message = function(msg) { …
+ 2. get("pkg_install_make_plan", asNamespace("pak"))(...)
+ 3. pkgdepends::new_pkg_installation_proposal(pkg, config = list(library = lib… at package.R:113:3
+ 4. pkg_installation_proposal$new(refs, config = config, ...)
+ 5. local initialize(...)
+ 6. pkg_plan$new(refs, config = config, library = config$library, …
+ 7. local initialize(...)
+ 8. pkgdepends:::pkgplan_init(self, private, refs, config, library, remote_types, …
+ 9. pkgdepends::parse_pkg_refs(refs)
+10. pkgdepends:::get_remote_types(refs)
+11. base::throw(pkg_error("Cannot parse package{?s}: {.pkg {refs[bad]}}.", …
+12. | base::signalCondition(cond)
+13. global (function (e) …
+Traceback (most recent calls last):
+6: renv::restore(packages = "lintr", prompt = FALSE)
+5: records <- renv_pak_restore(
+     lockfile = lockfile,
+     packages = packages,
+     exclude  = exclude,
+     prompt   = prompt,
+     project  = project
+   ) at restore.R#130
+4: pak$pkg_install(
+     pkg = remotes,
+     ask = prompt
+   ) at pak.R#203
+3: status <- remote(
+     function(...) get("pkg_install_make_plan", asNamespace("pak"))(...),
+     list(
+       pkg = pkg,
+       lib = lib,
+       upgrade = upgrade,
+       ask = ask,
+       start = start,
+       dependencies = dependencies,
+       loaded = loaded_packages(lib)
+     )
+   ) at package.R#79
+2: err$throw(res$error) at subprocess.R#140
+1: base::stop(cond) at errors.R#316
+Execution halted

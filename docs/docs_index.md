@@ -39,6 +39,26 @@ Use it as a starting point when orienting yourself in the project.
 
 ---
 
+## Reference Contracts
+
+- **reference/public_api.md**  
+  Stable vs experimental API contract for the 1.x line.
+
+- **reference/output_schema.md**  
+  Required structure of simulation and summary outputs used for regression tests.
+
+- **reference/yaml_schema_v1.md**  
+  YAML schema contract and migration notes.
+
+- **reference/ci_profiles.md**  
+  CI profile split (`ci-fast` and `ci-heavy-validation`) and local-equivalent
+  command chains.
+
+- **reference/release_automation.md**  
+  Non-publishing release evidence automation workflow and script usage.
+
+---
+
 ## This Index
 
 - **docs_index.md**  

@@ -1,0 +1,13 @@
+total 44
+drwxrwxr-x 3 bwbrook bwbrook 4096 Feb  8 17:16 .
+drwxrwxr-x 8 bwbrook bwbrook 4096 Feb  8 17:13 ..
+drwxr-xr-x 6 bwbrook bwbrook 4096 Feb  8 17:15 OpenPVA.Rcheck
+-rw-rw-r-- 1 bwbrook bwbrook    0 Feb  8 17:16 artefact_manifest.txt
+-rw-rw-r-- 1 bwbrook bwbrook  284 Feb  8 17:14 build.log
+-rw-rw-r-- 1 bwbrook bwbrook   43 Feb  8 17:16 check_summary.txt
+-rw-rw-r-- 1 bwbrook bwbrook   87 Feb  8 17:13 document.log
+-rw-rw-r-- 1 bwbrook bwbrook   42 Feb  8 17:14 migration_evidence.txt
+-rw-rw-r-- 1 bwbrook bwbrook 4331 Feb  8 17:15 rcmdcheck.log
+-rw-rw-r-- 1 bwbrook bwbrook    0 Feb  8 17:16 session_info.txt
+-rw-rw-r-- 1 bwbrook bwbrook 3706 Feb  8 17:14 tests.log
+-rw-rw-r-- 1 bwbrook bwbrook   56 Feb  8 17:16 tests_summary.txt

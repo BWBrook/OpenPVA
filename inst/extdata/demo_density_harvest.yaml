@@ -1,6 +1,8 @@
 name: "demo_density_harvest"
+schema_version: 1
 n_runs: 50
 n_years: 50
+seed: 20260302
 
 initializer:
   fun: "initialize_population"

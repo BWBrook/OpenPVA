@@ -1,0 +1,122 @@
++ tests
+ℹ Testing OpenPVA
+✔ | F W  S  OK | Context
+
+⠏ |          0 | demography_environment                                         
+⠋ |          1 | demography_environment                                         
+⠼ |          5 | demography_environment                                         
+⠇ |          9 | demography_environment                                         
+✔ |          9 | demography_environment [1.9s]
+
+⠏ |          0 | demography_reproduction_spec                                   
+⠙ |          2 | demography_reproduction_spec                                   
+⠴ |          6 | demography_reproduction_spec                                   
+⠸ |         14 | demography_reproduction_spec                                   
+⠧ |         18 | demography_reproduction_spec                                   
+⠋ |         31 | demography_reproduction_spec                                   
+⠼ |         45 | demography_reproduction_spec                                   
+✔ |         48 | demography_reproduction_spec [1.1s]
+
+⠏ |          0 | demography_survival_spec                                       
+⠸ |          4 | demography_survival_spec                                       
+⠧ |         18 | demography_survival_spec                                       
+✔ |         19 | demography_survival_spec
+
+⠏ |          0 | density_module                                                 
+⠦ |          7 | density_module                                                 
+⠋ |         11 | density_module                                                 
+⠸ |         14 | density_module                                                 
+⠙ |         22 | density_module                                                 
+⠹ |         23 | density_module                                                 
+✔ |         24 | density_module
+
+⠏ |          0 | genetics_core                                                  
+⠴ |         16 | genetics_core                                                  
+⠙ |         22 | genetics_core                                                  
+⠼ |         35 | genetics_core                                                  
+⠋ |         41 | genetics_core                                                  
+✔ |         43 | genetics_core
+
+⠏ |          0 | init_population                                                
+✔ |         10 | init_population
+
+⠏ |          0 | management                                                     
+⠋ |          1 | management                                                     
+✔ |          4 | management
+
+⠏ |          0 | output_schema_contract                                         
+⠋ |         11 | output_schema_contract                                         
+⠹ |         13 | output_schema_contract                                         
+⠙ |         22 | output_schema_contract                                         
+⠦ |         27 | output_schema_contract                                         
+⠼ |         35 | output_schema_contract                                         
+✔ |         40 | output_schema_contract
+
+⠏ |          0 | reproducibility_snapshots                                      
+⠋ |          1 | reproducibility_snapshots                                      
+✔ |          2 | reproducibility_snapshots
+
+⠏ |          0 | reproduction_controller                                        
+⠴ |          6 | reproduction_controller                                        
+⠼ |         15 | reproduction_controller                                        
+✔ |         20 | reproduction_controller
+
+⠏ |          0 | rng_seed                                                       
+⠋ |          1 | rng_seed                                                       
+⠹ |          3 | rng_seed                                                       
+⠴ |          6 | rng_seed                                                       
+⠋ |         11 | rng_seed                                                       
+⠸ |         14 | rng_seed                                                       
+✔ |         14 | rng_seed [1.1s]
+
+⠏ |          0 | scenario_yaml_demography                                       
+⠧ |          8 | scenario_yaml_demography                                       
+⠏ |         10 | scenario_yaml_demography                                       
+⠦ |         17 | scenario_yaml_demography                                       
+⠋ |         31 | scenario_yaml_demography                                       
+⠧ |         38 | scenario_yaml_demography                                       
+⠼ |         45 | scenario_yaml_demography                                       
+⠼ |         55 | scenario_yaml_demography                                       
+⠦ |         57 | scenario_yaml_demography                                       
+⠙ |         62 | scenario_yaml_demography                                       
+⠧ |         68 | scenario_yaml_demography                                       
+⠙ |         72 | scenario_yaml_demography                                       
+✔ |         75 | scenario_yaml_demography [8.7s]
+
+⠏ |          0 | scenario                                                       
+⠦ |          7 | scenario                                                       
+⠧ |         18 | scenario                                                       
+⠴ |         26 | scenario                                                       
+⠋ |         31 | scenario                                                       
+⠧ |         38 | scenario                                                       
+⠹ |         43 | scenario                                                       
+⠏ |         50 | scenario                                                       
+✔ |         51 | scenario
+
+⠏ |          0 | simulation_core                                                
+⠦ |         17 | simulation_core                                                
+⠴ |         26 | simulation_core                                                
+⠦ |         37 | simulation_core                                                
+⠧ |         48 | simulation_core                                                
+⠧ |         58 | simulation_core                                                
+✔ |         60 | simulation_core
+
+⠏ |          0 | simulation_summary                                             
+⠙ |         12 | simulation_summary                                             
+⠇ |         19 | simulation_summary                                             
+✔ |         24 | simulation_summary
+
+⠏ |          0 | spatial_patches                                                
+⠏ |         10 | spatial_patches                                                
+⠴ |         16 | spatial_patches                                                
+⠸ |         24 | spatial_patches                                                
+✔ |         24 | spatial_patches
+
+⠏ |          0 | supplementation                                                
+⠙ |         12 | supplementation                                                
+✔ |         16 | supplementation
+
+══ Results ═════════════════════════════════════════════════════════════════════
+Duration: 19.0 s
+
+[ FAIL 0 | WARN 0 | SKIP 0 | PASS 483 ]

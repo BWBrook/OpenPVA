@@ -1,0 +1,8 @@
+v1_schema_attr: 1
+v2_schema_attr: 2
+v1_rows: 1500
+v2_rows: 60
+v1_mean_births: 7.9060
+v2_mean_births: 8.1667
+v1_repro_cat_fraction: 0.0000
+v2_repro_cat_fraction: 0.0500

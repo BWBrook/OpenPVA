@@ -1,0 +1,1 @@
+-rw-rw-r-- 1 bwbrook bwbrook 107K Feb  8 16:16 artefacts/WP-0.3.1/sim_basic_dense_harvest_trajectory.png

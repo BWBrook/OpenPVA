@@ -1,0 +1,4 @@
+"scenario_name","extinction_threshold","final_n_floor","p_extinction","mean_time_to_extinction","mean_total_harvest","sd_total_harvest","mean_mean_annual_harvest","mean_final_n_alive","median_final_n_alive","q05_final_n_alive","q95_final_n_alive","p_final_below_floor","p_any_below_floor"
+"status_quo",10,20,0,NA,12,0,1,81.3333333333333,80,46.25,124.25,0,0
+"intensive_harvest",10,20,0.333333333333333,10,35.3333333333333,1.63299316185545,2.94444444444444,50,47.5,3.25,110,0.333333333333333,0.333333333333333
+"low_capacity",10,20,0,NA,12,0,1,69.8333333333333,73,52.75,78,0,0
