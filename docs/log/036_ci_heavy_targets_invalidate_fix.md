@@ -32,8 +32,9 @@
 - Reproduced failure locally on a fresh temporary targets store.
 - Verified direct `tar_make(... names = c('sim_basic'))` succeeds in a clean
   store.
-- Re-ran heavy workflow after patch and monitored for progression past
-  `targets heavy smoke`.
+- Re-ran heavy workflow after patch and verified full success:
+  - `https://github.com/BWBrook/OpenPVA/actions/runs/21814222587`
+  - `targets heavy smoke`, `Quarto render`, and heavy `R CMD check` all passed.
 
 ## Follow-up
 1. Keep heavy smoke focused on execution of a bounded target subset.
