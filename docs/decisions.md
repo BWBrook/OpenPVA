@@ -548,3 +548,23 @@
   - Keeps tuning behavior inspectable via explicit parameter bounds and
     objective traces.
 - **Status**: active
+
+## DEC-031 — Ensemble parallelism policy for deterministic uncertainty workflows
+- **Date**: 2026-02-09
+- **Decision**:
+  - Extend `run_scenario_ensemble()` with bounded parallel controls:
+    - `parallel` (logical),
+    - `n_cores` (positive integer).
+  - Implement parallel draws via `parallel::mclapply()` on non-Windows
+    platforms only.
+  - Preserve deterministic behavior under fixed seeds by deriving explicit
+    draw-level seeds and applying them to each draw scenario before execution.
+  - Add CI-heavy uncertainty smoke coverage that exercises:
+    - serial/parallel ensemble consistency,
+    - PRCC sensitivity helper,
+    - calibration scaffold helper path.
+- **Rationale**:
+  - Provides practical runtime improvement for uncertainty ensembles while
+    maintaining reproducibility contracts central to OpenPVA.
+  - Keeps parallel behavior bounded, explicit, and testable.
+- **Status**: active

@@ -97,7 +97,7 @@ A WP is **Done** only when all of the following are true:
 - [x] WP-2B.3 — YAML schema v3 uncertainty block + migration tests
 - [x] WP-2B.4 — Sensitivity diagnostics (PRCC + OAT elasticity)
 - [x] WP-2B.5 — Hindcast/calibration scaffold (bounded, transparent)
-- [ ] WP-2B.6 — Performance hardening + uncertainty docs/Quarto integration
+- [x] WP-2B.6 — Performance hardening + uncertainty docs/Quarto integration
 
 ---
 

@@ -69,6 +69,9 @@ sample_uncertainty_parameters <- function(uncertainty_spec, n_draws, seed = NULL
 #' @param n_draws Number of uncertainty draws (positive integer).
 #' @param seed Optional integer seed controlling draw sampling and all stochastic
 #'   simulation paths. Caller RNG state is restored on exit.
+#' @param parallel Logical; if `TRUE`, evaluates draw runs with
+#'   [parallel::mclapply()] on supported platforms (non-Windows).
+#' @param n_cores Positive integer worker count used when `parallel = TRUE`.
 #'
 #' @return A list of class `openpva_ensemble_output` with elements:
 #'   \itemize{
@@ -81,7 +84,13 @@ sample_uncertainty_parameters <- function(uncertainty_spec, n_draws, seed = NULL
 #'     \item `seed`: normalized seed or `NULL`.
 #'   }
 #' @export
-run_scenario_ensemble <- function(scenario, uncertainty_spec = NULL, n_draws, seed = NULL) {
+run_scenario_ensemble <- function(
+    scenario,
+    uncertainty_spec = NULL,
+    n_draws,
+    seed = NULL,
+    parallel = FALSE,
+    n_cores = 1L) {
   if (!inherits(scenario, "openpva_scenario")) {
     stop("`scenario` must be created by scenario_spec().", call. = FALSE)
   }
@@ -94,6 +103,8 @@ run_scenario_ensemble <- function(scenario, uncertainty_spec = NULL, n_draws, se
   }
   uncertainty_spec <- .validate_uncertainty_spec(uncertainty_spec)
   n_draws <- .normalize_positive_count(n_draws, "n_draws")
+  parallel <- .normalize_flag(parallel, "parallel")
+  n_cores <- .normalize_positive_count(n_cores, "n_cores")
 
   unknown_params <- setdiff(names(uncertainty_spec), names(scenario))
   if (length(unknown_params)) {
@@ -105,40 +116,47 @@ run_scenario_ensemble <- function(scenario, uncertainty_spec = NULL, n_draws, se
   }
 
   seed <- .normalize_optional_seed(seed)
-  if (!is.null(seed)) {
-    had_rng <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-    if (had_rng) {
-      old_rng <- get(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-    }
-    on.exit({
-      if (had_rng) {
-        assign(".Random.seed", old_rng, envir = .GlobalEnv)
-      } else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
-        rm(".Random.seed", envir = .GlobalEnv)
-      }
-    }, add = TRUE)
-    set.seed(seed)
-  }
-
   sampled_parameters <- sample_uncertainty_parameters(
     uncertainty_spec = uncertainty_spec,
     n_draws = n_draws,
-    seed = NULL
+    seed = seed
+  )
+  draw_seeds <- .derive_draw_seeds(
+    seed = seed,
+    scenario_seed = scenario$seed %||% NULL,
+    n_draws = n_draws
   )
 
-  draw_results <- vector("list", n_draws)
-  for (i in seq_len(n_draws)) {
+  run_draw <- function(i) {
     scenario_draw <- scenario
     for (param in names(uncertainty_spec)) {
       scenario_draw[[param]] <- sampled_parameters[[param]][[i]]
     }
+    if (!is.na(draw_seeds[[i]])) {
+      scenario_draw$seed <- draw_seeds[[i]]
+    }
     scenario_draw <- .validate_scenario(scenario_draw)
     out <- run_scenario(scenario_draw)
-    draw_results[[i]] <- list(
+    list(
       draw_id = as.integer(i),
       scenario = out$scenario,
       sim_output = out$sim_output
     )
+  }
+
+  use_parallel <- parallel && n_draws > 1L && n_cores > 1L
+  if (use_parallel) {
+    if (.Platform$OS.type == "windows") {
+      stop("parallel=TRUE is unsupported on Windows in run_scenario_ensemble()", call. = FALSE)
+    }
+    draw_results <- parallel::mclapply(
+      X = seq_len(n_draws),
+      FUN = run_draw,
+      mc.cores = n_cores,
+      mc.set.seed = FALSE
+    )
+  } else {
+    draw_results <- lapply(seq_len(n_draws), run_draw)
   }
 
   structure(
@@ -356,4 +374,25 @@ summarise_ensemble_outputs <- function(
     stop("Non-finite draws encountered in uncertainty sampling", call. = FALSE)
   }
   draws
+}
+
+.normalize_flag <- function(value, label) {
+  if (!is.logical(value) || length(value) != 1L || is.na(value)) {
+    stop(label, " must be a single logical value", call. = FALSE)
+  }
+  as.logical(value)
+}
+
+.derive_draw_seeds <- function(seed, scenario_seed, n_draws) {
+  if (!is.null(seed)) {
+    max_int <- as.integer(.Machine$integer.max)
+    seeds <- (as.integer(seed) + seq_len(n_draws) - 1L) %% max_int
+    seeds[seeds == 0L] <- 1L
+    return(as.integer(seeds))
+  }
+  if (!is.null(scenario_seed)) {
+    scenario_seed <- .normalize_optional_seed(scenario_seed)
+    return(rep.int(scenario_seed, n_draws))
+  }
+  rep.int(as.integer(NA), n_draws)
 }

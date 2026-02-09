@@ -6,7 +6,7 @@ This page documents the R-level uncertainty ensemble interfaces introduced in
 ## Exported functions
 
 - `sample_uncertainty_parameters(uncertainty_spec, n_draws, seed = NULL)`
-- `run_scenario_ensemble(scenario, uncertainty_spec = NULL, n_draws, seed = NULL)`
+- `run_scenario_ensemble(scenario, uncertainty_spec = NULL, n_draws, seed = NULL, parallel = FALSE, n_cores = 1L)`
 - `summarise_ensemble_outputs(ensemble_output, extinction_threshold = 0, final_n_floor = extinction_threshold)`
 
 ## `uncertainty_spec` format
@@ -35,9 +35,12 @@ Each parameter spec supports:
 
 - All three functions accept optional integer `seed`.
 - When a seed is provided, caller RNG state is restored on exit.
-- `run_scenario_ensemble()` uses one seed stream for:
-  - uncertainty parameter draws, and
-  - stochastic simulation outcomes within each draw.
+- `run_scenario_ensemble()` derives deterministic draw-level seeds from the
+  provided `seed` and applies them to each draw scenario.
+- Optional parallel draw evaluation is available via:
+  - `parallel = TRUE`
+  - `n_cores = <positive integer>`
+  - implemented with `parallel::mclapply()` on non-Windows platforms.
 
 ## Example
 
@@ -56,7 +59,14 @@ sc <- scenario_spec(
   harvest_quota = 0
 )
 
-ens <- run_scenario_ensemble(sc, spec, n_draws = 20, seed = 20260211L)
+ens <- run_scenario_ensemble(
+  sc,
+  spec,
+  n_draws = 20,
+  seed = 20260211L,
+  parallel = TRUE,
+  n_cores = 2
+)
 ens_summary <- summarise_ensemble_outputs(ens, extinction_threshold = 0, final_n_floor = 10)
 ```
 

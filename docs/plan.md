@@ -41,7 +41,7 @@ stable core API, documented scenario schema, strong tests, and reproducible demo
   - Demo now includes spatial/genetic interpretation workflow guidance:
     endpoint vs time-series vs connectivity diagnostics.
 - Tests status:
-  - Canonical suite passes via `devtools::test()` (`692` pass, `0` fail).
+  - Canonical suite passes via `devtools::test()` (`697` pass, `0` fail).
   - Regression coverage includes spatial/genetic time-series helpers,
     connectivity diagnostics, deprecation behavior, YAML scenario-pack
     compatibility, output contracts, and seeded snapshot slices.
@@ -50,8 +50,8 @@ stable core API, documented scenario schema, strong tests, and reproducible demo
     and `0` warnings (`3` known notes; see `artefacts/WP-2A.6/00check.log`).
 - Known failing tests / TODOs:
   - No known failing tests in canonical invocation.
-  - Priority Queue has been extended with `Line 2B.x` and now continues from
-    `WP-2B.6` (after completing `WP-2B.1` through `WP-2B.5`).
+  - Priority Queue is currently exhausted through `WP-2B.6`; next execution
+    requires roadmap promotion of additional WPs.
 
 ## 3) Definition of Done for the next “reviewable milestone”
 
@@ -151,8 +151,8 @@ Success criteria:
 ## 6) Current phase and next steps (agent-maintained)
 
 - **Current phase**:
-  - Priority Queue extended to `Line 2B.x`; `WP-2B.1` through `WP-2B.5`
-    completed, active execution startpoint is `WP-2B.6`.
+  - Priority Queue extended to `Line 2B.x`; `WP-2B.1` through `WP-2B.6`
+    completed. Queue is currently exhausted.
 - **Most recent milestone progress**:
   - Completed `WP-0.3.1` through `WP-2A.6`, including:
     - bootstrap baseline and artefact/log scaffolding,
@@ -163,7 +163,6 @@ Success criteria:
     - domain-sanity spatial/genetic scenario pack in `inst/extdata/`,
     - Quarto and reference-doc upgrades for scientific interpretation workflow.
 - **Immediate next steps**:
-  1. Execute `WP-2B.6` (performance hardening + uncertainty docs integration).
-  2. Reconfirm CI-heavy bounded uncertainty smoke path after performance updates.
-  3. Maintain artefact/log/decision discipline through the full `Line 2B.x`
-     queue.
+  1. Promote the next roadmap tranche into `docs/roadmap.md`.
+  2. Continue autonomous execution from the first newly unchecked WP.
+  3. Maintain artefact/log/decision discipline for each promoted WP.

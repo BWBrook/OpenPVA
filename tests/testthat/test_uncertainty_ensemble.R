@@ -192,3 +192,42 @@ test_that("run_scenario_ensemble requires uncertainty from argument or scenario"
   expect_s3_class(out, "openpva_ensemble_output")
   expect_equal(nrow(out$sampled_parameters), 2L)
 })
+
+test_that("run_scenario_ensemble parallel execution matches serial under seed", {
+  testthat::skip_on_os("windows")
+
+  sc <- scenario_spec(
+    name = "ensemble_parallel_match",
+    n_runs = 4,
+    n_years = 7,
+    init_fun = function() initialize_population(25)
+  )
+  spec <- list(
+    harvest_quota = list(dist = "uniform", min = 0, max = 5, integer = TRUE),
+    cat_surv_prob = list(dist = "uniform", min = 0, max = 0.15)
+  )
+
+  serial <- run_scenario_ensemble(
+    scenario = sc,
+    uncertainty_spec = spec,
+    n_draws = 4,
+    seed = 707L,
+    parallel = FALSE
+  )
+  parallel <- run_scenario_ensemble(
+    scenario = sc,
+    uncertainty_spec = spec,
+    n_draws = 4,
+    seed = 707L,
+    parallel = TRUE,
+    n_cores = 2L
+  )
+
+  expect_equal(serial$sampled_parameters, parallel$sampled_parameters)
+  for (i in seq_len(4)) {
+    expect_equal(
+      serial$draw_results[[i]]$sim_output$summary,
+      parallel$draw_results[[i]]$sim_output$summary
+    )
+  }
+})

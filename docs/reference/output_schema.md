@@ -57,7 +57,7 @@ Returns a tibble with required columns:
 - `draw_id` (integer)
 - one column per named uncertainty parameter in `uncertainty_spec`.
 
-### `run_scenario_ensemble(scenario, uncertainty_spec = NULL, n_draws, seed = NULL)`
+### `run_scenario_ensemble(scenario, uncertainty_spec = NULL, n_draws, seed = NULL, parallel = FALSE, n_cores = 1L)`
 
 Returns a list with required fields:
 

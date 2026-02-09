@@ -4,7 +4,14 @@
 \alias{run_scenario_ensemble}
 \title{Run a scenario ensemble under sampled uncertainty draws}
 \usage{
-run_scenario_ensemble(scenario, uncertainty_spec = NULL, n_draws, seed = NULL)
+run_scenario_ensemble(
+  scenario,
+  uncertainty_spec = NULL,
+  n_draws,
+  seed = NULL,
+  parallel = FALSE,
+  n_cores = 1L
+)
 }
 \arguments{
 \item{scenario}{Scenario object created by [scenario_spec()].}
@@ -18,6 +25,11 @@ writable fields on `scenario`. If `NULL`, uses
 
 \item{seed}{Optional integer seed controlling draw sampling and all stochastic
 simulation paths. Caller RNG state is restored on exit.}
+
+\item{parallel}{Logical; if `TRUE`, evaluates draw runs with
+[parallel::mclapply()] on supported platforms (non-Windows).}
+
+\item{n_cores}{Positive integer worker count used when `parallel = TRUE`.}
 }
 \value{
 A list of class `openpva_ensemble_output` with elements:

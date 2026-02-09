@@ -7,6 +7,36 @@ For each major change, create an entry.
 
 ---
 
+### [2026-02-09] WP-2B.6 performance hardening + uncertainty docs integration
+
+- **Change summary**:
+  - Added bounded ensemble parallelism controls to
+    `run_scenario_ensemble()` (`parallel`, `n_cores`) with deterministic
+    draw-seed handling under fixed seeds.
+  - Added CI-heavy uncertainty smoke step covering:
+    - serial/parallel ensemble consistency,
+    - sensitivity helper smoke,
+    - calibration helper smoke.
+  - Extended documentation narrative in:
+    - `docs/reference/uncertainty_api.md`
+    - `docs/reference/ci_profiles.md`
+    - `quarto/basic_demo.qmd` (uncertainty/sensitivity/calibration workflow section).
+- **Artefacts inspected**:
+  - `artefacts/WP-2B.6/performance_profile.md`
+  - `artefacts/WP-2B.6/parallel_repro_comparison.csv`
+  - `artefacts/WP-2B.6/quarto_render_log.txt`
+- **Observed behaviour**:
+  - In local reproducible profiling, parallel ensemble evaluation (`n_cores=2`)
+    showed bounded speedup with matching draw-level summaries to serial mode.
+  - Quarto render completed successfully with known non-blocking output-path
+    warnings (unchanged from prior runs).
+  - CI-style uncertainty smoke command passed locally and confirmed deterministic
+    serial/parallel sampled-parameter identity under fixed seeds.
+- **Follow-up tasks**:
+  - [x] Line 2B queue exhausted; next work requires roadmap promotion.
+
+---
+
 ### [2026-02-09] WP-2B.5 hindcast/calibration scaffold
 
 - **Change summary**:
@@ -30,7 +60,7 @@ For each major change, create an entry.
   - Objective/error tables remained interpretable with explicit per-target
     residual columns.
 - **Follow-up tasks**:
-  - [ ] Execute `WP-2B.6` performance/docs integration.
+  - [x] Execute `WP-2B.6` performance/docs integration.
 
 ---
 

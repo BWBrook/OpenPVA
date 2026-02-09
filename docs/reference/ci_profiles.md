@@ -46,6 +46,10 @@ Checks:
   - `test_spatial_patches.R`
   - `test_reproducibility_snapshots.R`
 - full package tests,
+- bounded uncertainty workflow smoke:
+  - ensemble serial/parallel reproducibility check,
+  - PRCC sensitivity helper smoke,
+  - calibration scaffold smoke,
 - `DESCRIPTION` `Suggests` bootstrap (conditional install of missing packages),
 - `targets` smoke run (forced `sim_basic`),
 - Quarto render,
@@ -80,6 +84,37 @@ RENV_CONFIG_AUTOLOADER_ENABLED=FALSE Rscript -e "options(renv.config.pak.enabled
 Rscript -e "desc <- read.dcf('DESCRIPTION'); suggests <- trimws(unlist(strsplit(desc[1, 'Suggests'], ','))); suggests <- gsub('[[:space:]]*[(].*[)]$', '', suggests); suggests <- suggests[nzchar(suggests)]; missing <- suggests[!vapply(suggests, requireNamespace, FUN.VALUE = logical(1), quietly = TRUE)]; if (length(missing) > 0) install.packages(missing, repos = 'https://cloud.r-project.org')"
 Rscript -e "devtools::test(filter = 'rng_seed|output_schema_contract|scenario_yaml_demography|spatial_patches|reproducibility_snapshots')"
 Rscript -e "devtools::test()"
+Rscript - <<'EOF'
+devtools::load_all(quiet = TRUE)
+sc <- scenario_spec(
+  name = "ci_uncertainty_smoke",
+  n_runs = 4,
+  n_years = 6,
+  init_fun = function() initialize_population(24),
+  seed = 20260408L
+)
+spec <- list(
+  harvest_quota = list(dist = "uniform", min = 0, max = 4, integer = TRUE),
+  cat_surv_prob = list(dist = "uniform", min = 0, max = 0.2)
+)
+ens_serial <- run_scenario_ensemble(sc, spec, n_draws = 6, seed = 20260408L, parallel = FALSE)
+ens_parallel <- run_scenario_ensemble(sc, spec, n_draws = 6, seed = 20260408L, parallel = TRUE, n_cores = 2L)
+stopifnot(identical(ens_serial$sampled_parameters, ens_parallel$sampled_parameters))
+prcc <- summarise_sensitivity_prcc(ens_serial)
+obs <- c(
+  p_extinction = summarise_extinction(run_scenario(sc)$sim_output, threshold = 0)$p_extinct,
+  mean_final_n_alive = summarise_final_abundance(run_scenario(sc)$sim_output)$overall$mean_final_n_alive
+)
+cand <- generate_calibration_candidates(
+  list(
+    harvest_quota = list(lower = 1, upper = 3, integer = TRUE, n_grid = 3),
+    cat_surv_prob = list(lower = 0.05, upper = 0.15, n_grid = 3)
+  ),
+  method = "grid"
+)
+cal <- run_calibration_search(sc, dplyr::slice(cand, 1:4), observed_targets = obs, seed = 20260408L)
+stopifnot(nrow(prcc) > 0, nrow(cal$scores) > 0)
+EOF
 Rscript -e "targets::tar_make(script = '_targets.R', store = '_targets', names = c('sim_basic'))"
 quarto render quarto
 R CMD build --no-build-vignettes .

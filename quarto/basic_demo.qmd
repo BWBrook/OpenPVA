@@ -262,6 +262,70 @@ harvest_comparison <- OpenPVA::compare_scenarios(
 harvest_comparison
 ```
 
+## Uncertainty, sensitivity, and calibration workflow
+
+```{r, eval=FALSE}
+path_v3 <- file.path("..", "artefacts", "WP-2B.3", "yaml_uncertainty_examples", "v3_uncertainty_params.yaml")
+sc_unc <- OpenPVA::read_scenario_yaml(path_v3)
+
+ens_unc <- OpenPVA::run_scenario_ensemble(
+  scenario = sc_unc,
+  n_draws = 24,
+  seed = 20260407L,
+  parallel = TRUE,
+  n_cores = 2
+)
+ens_summary <- OpenPVA::summarise_ensemble_outputs(ens_unc, final_n_floor = 10)
+head(ens_summary$per_draw)
+```
+
+```{r, eval=FALSE}
+prcc_tbl <- OpenPVA::summarise_sensitivity_prcc(
+  ensemble_data = ens_unc,
+  response_col = "p_extinction"
+)
+prcc_tbl
+
+oat_tbl <- OpenPVA::summarise_sensitivity_oat(
+  scenario = sc_unc,
+  oat_spec = list(
+    harvest_quota = list(baseline = 2, delta = 1, lower = 0, upper = 6),
+    cat_surv_prob = list(baseline = 0.08, delta = 0.03, lower = 0, upper = 0.5)
+  ),
+  metric_fun = function(sim_output) {
+    OpenPVA::summarise_final_abundance(sim_output)$overall$mean_final_n_alive
+  },
+  metric_name = "mean_final_n_alive",
+  seed = 20260407L
+)
+oat_tbl
+```
+
+```{r, eval=FALSE}
+obs_targets <- c(
+  p_extinction = 0.2,
+  mean_final_n_alive = 35
+)
+
+candidates <- OpenPVA::generate_calibration_candidates(
+  parameter_space = list(
+    harvest_quota = list(lower = 1, upper = 4, integer = TRUE, n_grid = 4),
+    cat_surv_prob = list(lower = 0.04, upper = 0.12, n_grid = 5)
+  ),
+  method = "grid"
+)
+
+calibration <- OpenPVA::run_calibration_search(
+  scenario = sc_unc,
+  candidates = candidates,
+  observed_targets = obs_targets,
+  seed = 20260407L
+)
+
+head(calibration$scores)
+calibration$best_fit
+```
+
 ## Custom age-structured survival from a table
 
 ```{r, eval=FALSE}
