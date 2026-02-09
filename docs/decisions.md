@@ -361,3 +361,16 @@
   - Aligns CI runtime environment with declared package/system requirements,
     reducing restore/check flakiness and follow-on runtime link errors.
 - **Status**: active
+
+## DEC-022 — CI lint-tool bootstrap outside renv lock
+- **Date**: 2026-02-09
+- **Decision**:
+  - In `ci-fast`, add explicit lint-tool bootstrap:
+    - install `lintr` from CRAN when `requireNamespace("lintr")` is false.
+  - Keep this bootstrap step after `renv::restore()` and before lint execution.
+- **Rationale**:
+  - `renv.lock` currently does not guarantee `lintr` availability in CI, which
+    caused the lint stage to fail even after dependency restore succeeded.
+  - Conditional install keeps CI resilient while preserving existing lockfile
+    behavior for core runtime dependencies.
+- **Status**: active

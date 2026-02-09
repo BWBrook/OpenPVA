@@ -16,6 +16,7 @@ Checks:
 
 - Ubuntu system requirements install (`apt`) for R package runtime/link deps,
 - dependency restore (`renv::restore()`),
+- lint dependency bootstrap (`lintr`, if not already present in library),
 - lint (`lintr::lint_package()`),
 - tests (`devtools::test()`),
 - source build (`R CMD build --no-build-vignettes .`),
@@ -62,6 +63,7 @@ Fast profile equivalent:
 sudo apt-get update
 sudo apt-get install -y libcurl4-openssl-dev libfontconfig1-dev libfreetype6-dev libgit2-dev libglpk-dev libx11-dev pandoc
 RENV_CONFIG_AUTOLOADER_ENABLED=FALSE Rscript -e "options(renv.config.pak.enabled = FALSE); renv::restore(prompt = FALSE)"
+Rscript -e "if (!requireNamespace('lintr', quietly = TRUE)) install.packages('lintr', repos = 'https://cloud.r-project.org')"
 Rscript -e "lints <- lintr::lint_package(); print(lints); if (length(lints) > 0) quit(status = 1)"
 Rscript -e "devtools::test()"
 R CMD build --no-build-vignettes .
