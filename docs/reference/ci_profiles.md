@@ -57,7 +57,7 @@ Purpose:
 Fast profile equivalent:
 
 ```bash
-Rscript -e "renv::restore(prompt = FALSE)"
+RENV_CONFIG_AUTOLOADER_ENABLED=FALSE Rscript -e "options(renv.config.pak.enabled = FALSE); renv::restore(prompt = FALSE)"
 Rscript -e "lints <- lintr::lint_package(); print(lints); if (length(lints) > 0) quit(status = 1)"
 Rscript -e "devtools::test()"
 R CMD build --no-build-vignettes .
@@ -67,7 +67,7 @@ R CMD check --no-manual OpenPVA_*.tar.gz
 Heavy profile equivalent:
 
 ```bash
-Rscript -e "renv::restore(prompt = FALSE)"
+RENV_CONFIG_AUTOLOADER_ENABLED=FALSE Rscript -e "options(renv.config.pak.enabled = FALSE); renv::restore(prompt = FALSE)"
 Rscript -e "devtools::test(filter = 'rng_seed|output_schema_contract|scenario_yaml_demography|spatial_patches|reproducibility_snapshots')"
 Rscript -e "devtools::test()"
 Rscript -e "targets::tar_invalidate(names = c('sim_basic')); targets::tar_make(script = '_targets.R', store = '_targets', names = c('sim_basic'))"

@@ -326,3 +326,17 @@
   - Eliminates a subtle parser ambiguity that could trigger false
     `K`/`K_patches` conflicts.
 - **Status**: active
+
+## DEC-020 — CI renv restore determinism guard
+- **Date**: 2026-02-09
+- **Decision**:
+  - In GitHub Actions workflows, explicitly disable renv autoloader via
+    `RENV_CONFIG_AUTOLOADER_ENABLED=FALSE`.
+  - Keep restore path non-`pak` in CI with explicit
+    `options(renv.config.pak.enabled = FALSE)` in restore commands.
+- **Rationale**:
+  - Prevents project autoload side effects during `install.packages("renv")`
+    in CI jobs.
+  - Avoids transient dependency-solver instability observed in `ci-fast`
+    `renv::restore()` on `main` pushes.
+- **Status**: active

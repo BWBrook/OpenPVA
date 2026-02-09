@@ -11,6 +11,7 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       RENV_CONFIG_PAK_ENABLED: "FALSE"
+      RENV_CONFIG_AUTOLOADER_ENABLED: "FALSE"
     steps:
       - uses: actions/checkout@v4
 
@@ -24,7 +25,9 @@ jobs:
         run: Rscript -e "install.packages('renv', repos = 'https://cloud.r-project.org')"
 
       - name: Restore dependencies
-        run: Rscript -e "renv::restore(prompt = FALSE)"
+        run: >-
+          Rscript -e "options(renv.config.pak.enabled = FALSE);
+          renv::restore(prompt = FALSE)"
 
       - name: Reproducibility regression tests
         run: >-
