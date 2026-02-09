@@ -1,0 +1,19 @@
+name: "wp2b3_v3_direct"
+schema_version: 3
+n_runs: 3
+n_years: 6
+initializer:
+  fun: "initialize_population"
+  args:
+    "n": 20
+survival_fun: "default_survival_fun"
+breeding_fun: "default_breeding_fun"
+fecundity_fun: "default_fecundity_fun"
+uncertainty:
+  harvest_quota:
+    dist: "fixed"
+    value: 2
+  cat_surv_prob:
+    dist: "uniform"
+    min: 0
+    max: 0.1

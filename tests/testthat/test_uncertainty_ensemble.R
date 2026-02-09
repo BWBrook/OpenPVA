@@ -167,3 +167,28 @@ test_that("run_scenario_ensemble validates uncertainty parameter names", {
     "Unknown uncertainty parameter"
   )
 })
+
+test_that("run_scenario_ensemble requires uncertainty from argument or scenario", {
+  sc <- scenario_spec(
+    name = "ensemble_missing_uncertainty",
+    n_runs = 2,
+    n_years = 4,
+    init_fun = function() initialize_population(15)
+  )
+
+  expect_error(
+    run_scenario_ensemble(sc, n_draws = 2),
+    "uncertainty_spec must be supplied either as a function argument or scenario field"
+  )
+
+  sc$uncertainty_spec <- list(
+    cat_surv_prob = list(dist = "fixed", value = 0.1)
+  )
+  out <- run_scenario_ensemble(
+    scenario = sc,
+    n_draws = 2,
+    seed = 808L
+  )
+  expect_s3_class(out, "openpva_ensemble_output")
+  expect_equal(nrow(out$sampled_parameters), 2L)
+})

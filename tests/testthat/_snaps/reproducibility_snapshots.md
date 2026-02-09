@@ -243,6 +243,61 @@
       ]
     }
 
+# schema v2 to v3 migration snapshot remains stable
+
+    {
+      "type": "list",
+      "attributes": {
+        "names": {
+          "type": "character",
+          "attributes": {},
+          "value": ["schema_version", "uncertainty", "reproduction_ev"]
+        }
+      },
+      "value": [
+        {
+          "type": "integer",
+          "attributes": {},
+          "value": [3]
+        },
+        {
+          "type": "NULL"
+        },
+        {
+          "type": "list",
+          "attributes": {
+            "names": {
+              "type": "character",
+              "attributes": {},
+              "value": ["env_repro_p_sd", "env_repro_lambda_sd", "cat_repro_prob", "cat_repro_mult"]
+            }
+          },
+          "value": [
+            {
+              "type": "double",
+              "attributes": {},
+              "value": [0.1]
+            },
+            {
+              "type": "double",
+              "attributes": {},
+              "value": [0.2]
+            },
+            {
+              "type": "double",
+              "attributes": {},
+              "value": [0.25]
+            },
+            {
+              "type": "double",
+              "attributes": {},
+              "value": [0.6]
+            }
+          ]
+        }
+      ]
+    }
+
 # seeded spatial-genetic output snapshots remain stable
 
     {

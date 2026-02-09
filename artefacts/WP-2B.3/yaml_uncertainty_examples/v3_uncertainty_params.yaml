@@ -1,0 +1,33 @@
+name: "wp2b3_v3_params"
+schema_version: 3
+n_runs: 4
+n_years: 8
+seed: 20260212
+initializer:
+  fun: "initialize_population"
+  args:
+    "n": 25
+survival_fun: "default_survival_fun"
+breeding_fun: "default_breeding_fun"
+fecundity_fun: "default_fecundity_fun"
+reproduction_ev:
+  env_repro_p_sd: 0.12
+  env_repro_lambda_sd: 0.08
+  cat_repro_prob: 0.1
+  cat_repro_mult: 0.5
+uncertainty:
+  params:
+    harvest_quota:
+      dist: "uniform"
+      min: 0
+      max: 5
+      integer: true
+    cat_surv_prob:
+      dist: "uniform"
+      min: 0
+      max: 0.2
+    cat_surv_mult:
+      dist: "lognormal"
+      meanlog: -0.35
+      sdlog: 0.10
+      upper: 1

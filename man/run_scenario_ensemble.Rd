@@ -4,14 +4,15 @@
 \alias{run_scenario_ensemble}
 \title{Run a scenario ensemble under sampled uncertainty draws}
 \usage{
-run_scenario_ensemble(scenario, uncertainty_spec, n_draws, seed = NULL)
+run_scenario_ensemble(scenario, uncertainty_spec = NULL, n_draws, seed = NULL)
 }
 \arguments{
 \item{scenario}{Scenario object created by [scenario_spec()].}
 
-\item{uncertainty_spec}{Named uncertainty draw specification list passed to
-[sample_uncertainty_parameters()]. Parameter names must match writable
-fields on `scenario`.}
+\item{uncertainty_spec}{Optional named uncertainty draw specification list
+passed to [sample_uncertainty_parameters()]. Parameter names must match
+writable fields on `scenario`. If `NULL`, uses
+`scenario$uncertainty_spec`.}
 
 \item{n_draws}{Number of uncertainty draws (positive integer).}
 

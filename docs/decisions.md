@@ -474,3 +474,26 @@
   - Supports immediate ensemble analyses with explicit reproducibility and audit
     trails.
 - **Status**: active
+
+## DEC-028 — YAML schema v3 uncertainty discipline and scenario fallback wiring
+- **Date**: 2026-02-09
+- **Decision**:
+  - Keep uncertainty schema strictly additive at `schema_version: 3`:
+    - schema v3 accepts `uncertainty` as either direct parameter mapping or
+      `uncertainty.params`.
+    - schema v2 rejects `uncertainty` with explicit migration guidance to
+      `schema_version: 3`.
+  - Parse validated uncertainty mappings into `scenario$uncertainty_spec` for
+    downstream ensemble workflows.
+  - Update `run_scenario_ensemble()` to accept `uncertainty_spec = NULL` and
+    use `scenario$uncertainty_spec` when available.
+  - Preserve schema v2 reproduction compatibility behavior in schema v3:
+    legacy `breeding_fun`/`fecundity_fun` inputs are adapted to baseline-rate
+    channels so controller-level reproduction EV semantics remain consistent.
+- **Rationale**:
+  - Enforces clear schema boundaries while keeping migration path explicit and
+    backward-compatible.
+  - Reduces ensemble invocation friction for YAML-driven workflows.
+  - Avoids silent semantic drift where schema v3 would otherwise diverge from
+    schema v2 reproduction compatibility expectations.
+- **Status**: active

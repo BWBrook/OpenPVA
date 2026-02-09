@@ -57,12 +57,14 @@ Returns a tibble with required columns:
 - `draw_id` (integer)
 - one column per named uncertainty parameter in `uncertainty_spec`.
 
-### `run_scenario_ensemble(scenario, uncertainty_spec, n_draws, seed = NULL)`
+### `run_scenario_ensemble(scenario, uncertainty_spec = NULL, n_draws, seed = NULL)`
 
 Returns a list with required fields:
 
 - `scenario`: input `openpva_scenario`.
-- `uncertainty_spec`: normalized uncertainty specification list.
+- `uncertainty_spec`: normalized uncertainty specification list. When function
+  input `uncertainty_spec = NULL`, this is sourced from
+  `scenario$uncertainty_spec`.
 - `sampled_parameters`: tibble returned by `sample_uncertainty_parameters()`.
 - `draw_results`: list of length `n_draws`; each element contains:
   - `draw_id` (integer),

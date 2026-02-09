@@ -82,6 +82,35 @@ test_that("schema migration snapshot remains stable", {
   expect_snapshot_value(migrated_subset, style = "json2")
 })
 
+test_that("schema v2 to v3 migration snapshot remains stable", {
+  testthat::local_edition(3)
+
+  cfg_v2 <- list(
+    schema_version = 2L,
+    name = "snapshot_cfg_v2",
+    n_runs = 1L,
+    n_years = 2L,
+    initializer = list(fun = "initialize_population", args = list(n = 10L)),
+    breeding_fun = "default_breeding_fun",
+    fecundity_fun = "default_fecundity_fun",
+    reproduction_ev = list(
+      env_repro_p_sd = 0.1,
+      env_repro_lambda_sd = 0.2,
+      cat_repro_prob = 0.25,
+      cat_repro_mult = 0.6
+    )
+  )
+
+  cfg_v3 <- OpenPVA:::.migrate_yaml_v2_to_v3(cfg_v2)
+  migrated_subset <- list(
+    schema_version = cfg_v3$schema_version,
+    uncertainty = cfg_v3$uncertainty,
+    reproduction_ev = cfg_v3$reproduction_ev
+  )
+
+  expect_snapshot_value(migrated_subset, style = "json2")
+})
+
 test_that("seeded spatial-genetic output snapshots remain stable", {
   testthat::local_edition(3)
 

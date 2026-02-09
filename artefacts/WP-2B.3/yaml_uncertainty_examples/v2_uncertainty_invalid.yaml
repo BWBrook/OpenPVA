@@ -1,0 +1,16 @@
+name: "wp2b3_v2_invalid_uncertainty"
+schema_version: 2
+n_runs: 1
+n_years: 1
+initializer:
+  fun: "initialize_population"
+  args:
+    "n": 8
+survival_fun: "default_survival_fun"
+breeding_fun: "default_breeding_fun"
+fecundity_fun: "default_fecundity_fun"
+uncertainty:
+  harvest_quota:
+    dist: "uniform"
+    min: 0
+    max: 2

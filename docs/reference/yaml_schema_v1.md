@@ -1,10 +1,11 @@
-# YAML schema contract (v1 + v2)
+# YAML schema contract (v1 + v2 + v3)
 
 This page documents the supported YAML scenario schemas for OpenPVA.
 
 ## Versioning rules
 
-- `schema_version: 2` is the current schema for reproduction semantics.
+- `schema_version: 3` is the current schema with uncertainty support.
+- `schema_version: 2` remains supported.
 - `schema_version: 1` remains supported.
 - Missing `schema_version` is treated as legacy schema 0 and migrated to v1.
 - Unknown future versions are rejected with a clear error.
@@ -49,12 +50,12 @@ Schema v1 accepts legacy top-level function names:
 - `breeding_fun`
 - `fecundity_fun`
 
-Schema v2 prefers baseline-rate channels:
+Schema v2/v3 prefer baseline-rate channels:
 
 - `breeding_prob_fun`
 - `fecundity_lambda_fun`
 
-Schema v2 also supports adaptation from v1-style channels so older YAML can be
+Schema v2/v3 also support adaptation from v1-style channels so older YAML can be
 upgraded incrementally.
 
 ## Demography table blocks
@@ -66,17 +67,17 @@ Schema v1 tables:
 - `demography.breeding.table` (`can_breed`)
 - `demography.fecundity.table` (`lambda`)
 
-Schema v2 tables:
+Schema v2/v3 tables:
 
 - `demography.breeding_prob.table` (`p_breed`)
 - `demography.fecundity_lambda.table` (`lambda`)
 
-When schema v2 input includes v1 demography table keys, OpenPVA adapts them to
-v2 channels during parsing.
+When schema v2/v3 input includes v1 demography table keys, OpenPVA adapts them
+to v2-style channels during parsing.
 
 ## Reproduction EV/cat configuration
 
-Schema v2 canonical form:
+Schema v2/v3 canonical form:
 
 - `reproduction_ev.env_repro_p_sd`
 - `reproduction_ev.env_repro_lambda_sd`
@@ -84,6 +85,40 @@ Schema v2 canonical form:
 - `reproduction_ev.cat_repro_mult`
 
 Legacy top-level forms of those keys are still accepted and migrated.
+
+## Uncertainty block (schema v3)
+
+Schema v3 adds an optional `uncertainty` mapping for ensemble workflows.
+Schema v2 intentionally does not accept this block and emits an explicit
+validation error directing users to `schema_version: 3`.
+
+Supported forms:
+
+- direct parameter map:
+  - `uncertainty.<parameter_name>.<spec_fields>`
+- nested parameter map:
+  - `uncertainty.params.<parameter_name>.<spec_fields>`
+
+Each parameter spec requires:
+
+- `dist`: one of `fixed`, `uniform`, `normal`, `lognormal`
+
+Distribution-specific required fields:
+
+- `fixed`: `value`
+- `uniform`: `min`, `max`
+- `normal`: `mean`, `sd`
+- `lognormal`: `meanlog`, `sdlog`
+
+Optional fields:
+
+- `lower` (clamp lower bound)
+- `upper` (clamp upper bound)
+- `integer` (`true`/`false`)
+
+Parameter names must match writable scenario fields (for example
+`harvest_quota`, `cat_surv_prob`, `cat_surv_mult`) for use with
+`run_scenario_ensemble()`.
 
 ## Lifecycle function hooks
 
@@ -160,12 +195,12 @@ Compatibility rules:
 Legacy schema 0 and schema v1 remain runnable:
 
 1. Missing `schema_version` is migrated to v1.
-2. Schema v2 parsing performs compatibility adaptation for v1-style
+2. Schema v2/v3 parsing performs compatibility adaptation for v1-style
    reproduction table and EV fields where possible.
 3. The returned scenario includes attribute `yaml_schema_version` set to the
-   parsed schema (`1` or `2`).
+   parsed schema (`1`, `2`, or `3`).
 
 ## Regression gate note
 
 - CI heavy validation includes schema migration snapshot checks to protect
-  v1/v2 adaptation behavior against unintended parser drift.
+  v1/v2/v3 adaptation behavior against unintended parser drift.

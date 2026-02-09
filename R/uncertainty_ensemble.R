@@ -62,9 +62,10 @@ sample_uncertainty_parameters <- function(uncertainty_spec, n_draws, seed = NULL
 #' preserving reproducibility and draw-level provenance.
 #'
 #' @param scenario Scenario object created by [scenario_spec()].
-#' @param uncertainty_spec Named uncertainty draw specification list passed to
-#'   [sample_uncertainty_parameters()]. Parameter names must match writable
-#'   fields on `scenario`.
+#' @param uncertainty_spec Optional named uncertainty draw specification list
+#'   passed to [sample_uncertainty_parameters()]. Parameter names must match
+#'   writable fields on `scenario`. If `NULL`, uses
+#'   `scenario$uncertainty_spec`.
 #' @param n_draws Number of uncertainty draws (positive integer).
 #' @param seed Optional integer seed controlling draw sampling and all stochastic
 #'   simulation paths. Caller RNG state is restored on exit.
@@ -80,9 +81,16 @@ sample_uncertainty_parameters <- function(uncertainty_spec, n_draws, seed = NULL
 #'     \item `seed`: normalized seed or `NULL`.
 #'   }
 #' @export
-run_scenario_ensemble <- function(scenario, uncertainty_spec, n_draws, seed = NULL) {
+run_scenario_ensemble <- function(scenario, uncertainty_spec = NULL, n_draws, seed = NULL) {
   if (!inherits(scenario, "openpva_scenario")) {
     stop("`scenario` must be created by scenario_spec().", call. = FALSE)
+  }
+  uncertainty_spec <- uncertainty_spec %||% scenario$uncertainty_spec %||% NULL
+  if (is.null(uncertainty_spec)) {
+    stop(
+      "uncertainty_spec must be supplied either as a function argument or scenario field",
+      call. = FALSE
+    )
   }
   uncertainty_spec <- .validate_uncertainty_spec(uncertainty_spec)
   n_draws <- .normalize_positive_count(n_draws, "n_draws")

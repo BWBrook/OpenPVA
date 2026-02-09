@@ -27,9 +27,10 @@ stable core API, documented scenario schema, strong tests, and reproducible demo
   - Density module is integrated across survival/breeding/fecundity channels
     with compatibility adapters retained.
 - YAML scenario status:
-  - YAML ingestion (`read_scenario_yaml()`) supports schema v1/v2 compatibility,
-    density blocks, deterministic seeds, mate requirement toggles, optional
-    history capture, and lifecycle function hooks (including `dispersal_fun`).
+  - YAML ingestion (`read_scenario_yaml()`) supports schema v1/v2/v3 with
+    additive uncertainty blocks in v3, plus density blocks, deterministic
+    seeds, mate requirement toggles, optional history capture, and lifecycle
+    function hooks (including `dispersal_fun`).
   - Packaged spatial/genetic scenario trio added under `inst/extdata/`:
     fragmented, connected, and asymmetric flow regimes.
 - `targets` pipeline status:
@@ -40,7 +41,7 @@ stable core API, documented scenario schema, strong tests, and reproducible demo
   - Demo now includes spatial/genetic interpretation workflow guidance:
     endpoint vs time-series vs connectivity diagnostics.
 - Tests status:
-  - Canonical suite passes via `devtools::test()` (`607` pass, `0` fail).
+  - Canonical suite passes via `devtools::test()` (`649` pass, `0` fail).
   - Regression coverage includes spatial/genetic time-series helpers,
     connectivity diagnostics, deprecation behavior, YAML scenario-pack
     compatibility, output contracts, and seeded snapshot slices.
@@ -50,7 +51,7 @@ stable core API, documented scenario schema, strong tests, and reproducible demo
 - Known failing tests / TODOs:
   - No known failing tests in canonical invocation.
   - Priority Queue has been extended with `Line 2B.x` and now continues from
-    `WP-2B.3` (after completing `WP-2B.1` and `WP-2B.2`).
+    `WP-2B.4` (after completing `WP-2B.1` through `WP-2B.3`).
 
 ## 3) Definition of Done for the next “reviewable milestone”
 
@@ -150,8 +151,8 @@ Success criteria:
 ## 6) Current phase and next steps (agent-maintained)
 
 - **Current phase**:
-  - Priority Queue extended to `Line 2B.x`; `WP-2B.1` and `WP-2B.2` completed,
-    active execution startpoint is `WP-2B.3`.
+  - Priority Queue extended to `Line 2B.x`; `WP-2B.1` through `WP-2B.3`
+    completed, active execution startpoint is `WP-2B.4`.
 - **Most recent milestone progress**:
   - Completed `WP-0.3.1` through `WP-2A.6`, including:
     - bootstrap baseline and artefact/log scaffolding,
@@ -162,7 +163,7 @@ Success criteria:
     - domain-sanity spatial/genetic scenario pack in `inst/extdata/`,
     - Quarto and reference-doc upgrades for scientific interpretation workflow.
 - **Immediate next steps**:
-  1. Execute `WP-2B.3` (YAML schema v3 uncertainty block + migrations/tests).
-  2. Progress to `WP-2B.4` sensitivity diagnostics after YAML integration.
+  1. Execute `WP-2B.4` (sensitivity diagnostics: PRCC + OAT elasticity).
+  2. Progress to `WP-2B.5` hindcast/calibration scaffold after diagnostics.
   3. Maintain artefact/log/decision discipline through the full `Line 2B.x`
      queue.

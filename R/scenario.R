@@ -53,6 +53,9 @@
 #' @param seed Optional integer random seed forwarded to
 #'   `run_basic_simulation_replicates()`. When set, replicated scenario outputs
 #'   are deterministic and caller RNG state is restored after execution.
+#' @param uncertainty_spec Optional uncertainty specification list compatible
+#'   with [sample_uncertainty_parameters()]. Used by
+#'   [run_scenario_ensemble()] when uncertainty is not supplied explicitly.
 #'
 #' @return An object of class `openpva_scenario`.
 #' @export
@@ -85,6 +88,7 @@ scenario_spec <- function(
     cat_repro_mult = 1,
     record_population_history = FALSE,
     seed = NULL,
+    uncertainty_spec = NULL,
     density_spec = NULL) {
   env_surv_sd <- as.numeric(env_surv_sd)
   cat_surv_prob <- as.numeric(cat_surv_prob)
@@ -123,7 +127,8 @@ scenario_spec <- function(
     cat_repro_prob = cat_repro_prob,
     cat_repro_mult = cat_repro_mult,
     record_population_history = record_population_history,
-    seed = seed
+    seed = seed,
+    uncertainty_spec = uncertainty_spec
   )
   scenario <- .validate_scenario(scenario)
   class(scenario) <- c("openpva_scenario", "list")
@@ -358,7 +363,7 @@ print.openpva_scenario <- function(x, ...) {
   }
   if (!is.numeric(ver) || length(ver) != 1L || is.na(ver) ||
       ver < 0 || ver != as.integer(ver)) {
-    stop("schema_version must be a non-negative integer (legacy 0 or supported 1/2)", call. = FALSE)
+    stop("schema_version must be a non-negative integer (legacy 0 or supported 1/2/3)", call. = FALSE)
   }
   as.integer(ver)
 }
@@ -384,7 +389,7 @@ print.openpva_scenario <- function(x, ...) {
   cfg
 }
 
-.validate_yaml_cfg_v2 <- function(cfg) {
+.validate_yaml_cfg_v2 <- function(cfg, allow_uncertainty = FALSE, schema_label = 2L) {
   cfg <- .validate_yaml_cfg_v1(cfg)
   demography <- cfg$demography %||% list()
   demography_breeding_prob <- demography[["breeding_prob"]]
@@ -403,15 +408,34 @@ print.openpva_scenario <- function(x, ...) {
 
   if (!has_breeding_prob || !has_fecundity_lambda) {
     stop(
-      "YAML schema_version 2 requires breeding_prob and fecundity_lambda channels ",
+      "YAML schema_version ", schema_label,
+      " requires breeding_prob and fecundity_lambda channels ",
       "(functions and/or demography tables).",
       call. = FALSE
     )
   }
+  if (!allow_uncertainty && !is.null(cfg$uncertainty)) {
+    stop(
+      "YAML schema_version 2 does not support an uncertainty block; use schema_version: 3.",
+      call. = FALSE
+    )
+  }
   if (!is.null(cfg$reproduction_ev) && !is.list(cfg$reproduction_ev)) {
-    stop("YAML schema_version 2 field reproduction_ev must be a mapping/list.", call. = FALSE)
+    stop(
+      "YAML schema_version ", schema_label,
+      " field reproduction_ev must be a mapping/list.",
+      call. = FALSE
+    )
   }
 
+  cfg
+}
+
+.validate_yaml_cfg_v3 <- function(cfg) {
+  cfg <- .validate_yaml_cfg_v2(cfg, allow_uncertainty = TRUE, schema_label = 3L)
+  if (!is.null(cfg$uncertainty) && !is.list(cfg$uncertainty)) {
+    stop("YAML schema_version 3 field uncertainty must be a mapping/list.", call. = FALSE)
+  }
   cfg
 }
 
@@ -480,6 +504,36 @@ print.openpva_scenario <- function(x, ...) {
   }
 
   cfg_out
+}
+
+.migrate_yaml_v2_to_v3 <- function(cfg) {
+  cfg_out <- cfg
+  cfg_out$schema_version <- 3L
+  if (is.null(cfg_out$uncertainty)) {
+    cfg_out$uncertainty <- NULL
+  }
+  cfg_out
+}
+
+.parse_uncertainty_yaml <- function(uncertainty_cfg) {
+  if (is.null(uncertainty_cfg)) {
+    return(NULL)
+  }
+  if (!is.list(uncertainty_cfg)) {
+    stop("uncertainty must be a mapping/list", call. = FALSE)
+  }
+
+  uncertainty_params <- uncertainty_cfg[["params"]] %||% uncertainty_cfg
+  if (is.null(uncertainty_params)) {
+    return(NULL)
+  }
+  if (!is.list(uncertainty_params)) {
+    stop("uncertainty$params must be a mapping/list", call. = FALSE)
+  }
+  if (!length(uncertainty_params)) {
+    return(NULL)
+  }
+  .validate_uncertainty_spec(uncertainty_params)
 }
 
 .parse_density_channel_yaml <- function(channel_cfg, channel_label) {
@@ -632,7 +686,8 @@ print.openpva_scenario <- function(x, ...) {
 #' @param path Path to a YAML file.
 #'
 #' YAML schema versioning:
-#' - `schema_version: 2` is the current reproduction-semantics schema.
+#' - `schema_version: 3` is the current uncertainty-capable schema.
+#' - `schema_version: 2` remains supported for backward compatibility.
 #' - `schema_version: 1` remains supported for backward compatibility.
 #' - missing `schema_version` is treated as legacy schema 0 and migrated to v1.
 #' - unknown future versions are rejected with an explicit error.
@@ -656,6 +711,14 @@ print.openpva_scenario <- function(x, ...) {
 #' `reproduction_ev$env_repro_p_sd`, `reproduction_ev$env_repro_lambda_sd`,
 #' `reproduction_ev$cat_repro_prob`, and `reproduction_ev$cat_repro_mult`.
 #' Legacy top-level forms of these keys are still accepted and migrated.
+#'
+#' In schema v3, an optional `uncertainty` block can be provided with either:
+#' - direct parameter mapping:
+#'   - `uncertainty.<parameter_name>.<dist/fields>`
+#' - nested mapping:
+#'   - `uncertainty.params.<parameter_name>.<dist/fields>`
+#' The uncertainty mapping is parsed into `scenario$uncertainty_spec` for use
+#' with [run_scenario_ensemble()].
 #'
 #' Density configuration can be supplied via an optional `density` block:
 #' - `density.survival`, `density.breeding`, `density.fecundity`
@@ -698,10 +761,14 @@ read_scenario_yaml <- function(path) {
   } else if (schema_version == 2L) {
     cfg <- .migrate_yaml_v1_to_v2(cfg)
     cfg <- .validate_yaml_cfg_v2(cfg)
+  } else if (schema_version == 3L) {
+    cfg <- .migrate_yaml_v1_to_v2(cfg)
+    cfg <- .migrate_yaml_v2_to_v3(cfg)
+    cfg <- .validate_yaml_cfg_v3(cfg)
   } else {
     stop(
       "Unsupported schema_version: ", schema_version,
-      ". Supported versions are 0 (legacy), 1, and 2.",
+      ". Supported versions are 0 (legacy), 1, 2, and 3.",
       call. = FALSE
     )
   }
@@ -738,7 +805,7 @@ read_scenario_yaml <- function(path) {
   mating_fun <- .resolve_function(mating_fun_name)
   dispersal_fun <- .resolve_function(dispersal_fun_name)
   inherit_fun <- if (is.null(inherit_fun_name)) NULL else .resolve_function(inherit_fun_name)
-  if (schema_version == 2L) {
+  if (schema_version >= 2L) {
     if (is.null(breeding_prob_fun) && !is.null(cfg$breeding_fun)) {
       breeding_prob_fun <- as_breeding_prob_fun(breeding_fun)
     }
@@ -814,6 +881,10 @@ read_scenario_yaml <- function(path) {
   env_repro_lambda_sd <- repro_ev$env_repro_lambda_sd %||% cfg$env_repro_lambda_sd %||% 0
   cat_repro_prob <- repro_ev$cat_repro_prob %||% cfg$cat_repro_prob %||% 0
   cat_repro_mult <- repro_ev$cat_repro_mult %||% cfg$cat_repro_mult %||% 1
+  uncertainty_spec <- NULL
+  if (schema_version >= 3L) {
+    uncertainty_spec <- .parse_uncertainty_yaml(cfg$uncertainty %||% NULL)
+  }
   density_spec <- .build_density_spec_from_yaml(cfg$density %||% NULL)
   require_mate <- cfg$require_mate %||% FALSE
   record_population_history <- cfg$record_population_history %||% FALSE
@@ -890,6 +961,7 @@ read_scenario_yaml <- function(path) {
     cat_repro_mult = cat_repro_mult,
     record_population_history = record_population_history,
     seed = seed,
+    uncertainty_spec = uncertainty_spec,
     density_spec = density_spec
   )
   attr(scenario, "yaml_schema_version") <- schema_version
@@ -932,6 +1004,9 @@ read_scenario_yaml <- function(path) {
   }
   if (!is.null(scenario$fecundity_lambda_fun) && !is.function(scenario$fecundity_lambda_fun)) {
     stop("fecundity_lambda_fun must be NULL or a function")
+  }
+  if (!is.null(scenario$uncertainty_spec)) {
+    scenario$uncertainty_spec <- .validate_uncertainty_spec(scenario$uncertainty_spec)
   }
   if (!is.null(scenario$density_spec)) {
     scenario$density_spec <- validate_density_spec(scenario$density_spec)

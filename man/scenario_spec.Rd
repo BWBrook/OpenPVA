@@ -33,6 +33,7 @@ scenario_spec(
   cat_repro_mult = 1,
   record_population_history = FALSE,
   seed = NULL,
+  uncertainty_spec = NULL,
   density_spec = NULL
 )
 }
@@ -112,6 +113,10 @@ spatial/genetic time-series summaries.}
 \item{seed}{Optional integer random seed forwarded to
 `run_basic_simulation_replicates()`. When set, replicated scenario outputs
 are deterministic and caller RNG state is restored after execution.}
+
+\item{uncertainty_spec}{Optional uncertainty specification list compatible
+with [sample_uncertainty_parameters()]. Used by
+[run_scenario_ensemble()] when uncertainty is not supplied explicitly.}
 
 \item{density_spec}{Optional density module specification from
 [density_spec()]. Defines channel-specific density multipliers for survival,

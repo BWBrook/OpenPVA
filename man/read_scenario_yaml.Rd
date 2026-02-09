@@ -10,7 +10,8 @@ read_scenario_yaml(path)
 \item{path}{Path to a YAML file.
 
 YAML schema versioning:
-- `schema_version: 2` is the current reproduction-semantics schema.
+- `schema_version: 3` is the current uncertainty-capable schema.
+- `schema_version: 2` remains supported for backward compatibility.
 - `schema_version: 1` remains supported for backward compatibility.
 - missing `schema_version` is treated as legacy schema 0 and migrated to v1.
 - unknown future versions are rejected with an explicit error.
@@ -34,6 +35,14 @@ configured under `reproduction_ev`:
 `reproduction_ev$env_repro_p_sd`, `reproduction_ev$env_repro_lambda_sd`,
 `reproduction_ev$cat_repro_prob`, and `reproduction_ev$cat_repro_mult`.
 Legacy top-level forms of these keys are still accepted and migrated.
+
+In schema v3, an optional `uncertainty` block can be provided with either:
+- direct parameter mapping:
+  - `uncertainty.<parameter_name>.<dist/fields>`
+- nested mapping:
+  - `uncertainty.params.<parameter_name>.<dist/fields>`
+The uncertainty mapping is parsed into `scenario$uncertainty_spec` for use
+with [run_scenario_ensemble()].
 
 Density configuration can be supplied via an optional `density` block:
 - `density.survival`, `density.breeding`, `density.fecundity`

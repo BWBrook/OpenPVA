@@ -7,6 +7,41 @@ For each major change, create an entry.
 
 ---
 
+### [2026-02-09] WP-2B.3 YAML schema v3 uncertainty block + migration tests
+
+- **Change summary**:
+  - Added schema v3 uncertainty parsing in `read_scenario_yaml()` with support
+    for both `uncertainty.params.<parameter>` and direct
+    `uncertainty.<parameter>` mappings.
+  - Added explicit schema discipline:
+    - schema v2 rejects `uncertainty` blocks and points users to
+      `schema_version: 3`.
+    - schema v3 remains additive and migration-compatible.
+  - Wired scenario-level uncertainty handoff by allowing
+    `run_scenario_ensemble(..., uncertainty_spec = NULL)` to use
+    `scenario$uncertainty_spec`.
+  - Added migration and parser regression coverage, including snapshot fixture
+    for v2 -> v3 migration.
+- **Artefacts inspected**:
+  - `artefacts/WP-2B.3/schema_migration_fixtures.md`
+  - `artefacts/WP-2B.3/yaml_uncertainty_examples/v3_uncertainty_params.yaml`
+  - `artefacts/WP-2B.3/v3_ensemble_sampled_parameters.csv`
+  - `artefacts/WP-2B.3/v3_ensemble_summary_per_draw.csv`
+  - `artefacts/WP-2B.3/v3_ensemble_summary_overall.csv`
+- **Observed behaviour**:
+  - Schema v3 YAML scenarios now carry validated `uncertainty_spec` directly in
+    scenario objects and run through seeded ensembles without additional
+    uncertainty arguments.
+  - Schema v2 uncertainty misuse fails loudly with explicit migration guidance,
+    preventing silent schema drift.
+  - Inspected draw-level outputs showed plausible directional risk patterns:
+    higher sampled `harvest_quota` and `cat_surv_prob` aligned with higher
+    extinction/floor-breach risk in the artefact tables.
+- **Follow-up tasks**:
+  - [ ] Execute `WP-2B.4` sensitivity diagnostics.
+
+---
+
 ### [2026-02-09] WP-2B.2 ensemble runner + uncertainty sampling primitives
 
 - **Change summary**:
@@ -29,7 +64,7 @@ For each major change, create an entry.
   - Draw-level extinction risk and mean final abundance varied substantially
     across sampled regimes, as expected for stress-testing uncertainty.
 - **Follow-up tasks**:
-  - [ ] Execute `WP-2B.3` YAML schema v3 uncertainty integration.
+  - [x] Execute `WP-2B.3` YAML schema v3 uncertainty integration.
 
 ---
 
@@ -51,7 +86,7 @@ For each major change, create an entry.
   - No runtime code-path changes were introduced in this WP.
   - Contract now explicitly unblocks implementation work for `WP-2B.2`.
 - **Follow-up tasks**:
-  - [ ] Execute `WP-2B.2` ensemble/sampling implementation.
+  - [x] Execute `WP-2B.2` ensemble/sampling implementation.
 
 ---
 

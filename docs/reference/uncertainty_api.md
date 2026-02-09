@@ -1,12 +1,12 @@
-# Uncertainty Ensemble API (WP-2B.2)
+# Uncertainty Ensemble API (WP-2B.2/WP-2B.3)
 
 This page documents the R-level uncertainty ensemble interfaces introduced in
-`WP-2B.2`.
+`WP-2B.2` and schema-linked behavior added in `WP-2B.3`.
 
 ## Exported functions
 
 - `sample_uncertainty_parameters(uncertainty_spec, n_draws, seed = NULL)`
-- `run_scenario_ensemble(scenario, uncertainty_spec, n_draws, seed = NULL)`
+- `run_scenario_ensemble(scenario, uncertainty_spec = NULL, n_draws, seed = NULL)`
 - `summarise_ensemble_outputs(ensemble_output, extinction_threshold = 0, final_n_floor = extinction_threshold)`
 
 ## `uncertainty_spec` format
@@ -14,6 +14,9 @@ This page documents the R-level uncertainty ensemble interfaces introduced in
 `uncertainty_spec` is a named list. Each name must correspond to a writable
 field on a scenario object (for example `cat_surv_prob`, `cat_surv_mult`,
 `harvest_quota`).
+
+If `run_scenario_ensemble()` is called with `uncertainty_spec = NULL`, it will
+use `scenario$uncertainty_spec` when present (for example from schema v3 YAML).
 
 Each parameter spec supports:
 
@@ -59,7 +62,10 @@ ens_summary <- summarise_ensemble_outputs(ens, extinction_threshold = 0, final_n
 
 ## Notes and caveats
 
-- This is an R-level interface; YAML integration is planned for `WP-2B.3`.
+- YAML schema v3 can populate `scenario$uncertainty_spec` via the
+  `uncertainty` block consumed by `read_scenario_yaml()`.
+- Schema v2 intentionally rejects `uncertainty` blocks with explicit guidance
+  to migrate to `schema_version: 3`.
 - Draw-level uncertainty values are fixed across replicate runs inside each draw
   by design in 2B.
 - Full statistical calibration/inference remains out of scope for `WP-2B.2`.

@@ -55,7 +55,7 @@ fecundity_fun: 'default_fecundity_fun'
 test_that("unknown or invalid schema_version fails with clear errors", {
   yaml_future <- "
 name: 'yaml_future'
-schema_version: 3
+schema_version: 4
 n_runs: 1
 n_years: 1
 initializer:
@@ -97,6 +97,99 @@ fecundity_fun: 'default_fecundity_fun'
   expect_error(
     read_scenario_yaml(tmp_bad),
     "schema_version must be a non-negative integer"
+  )
+})
+
+test_that("schema_version 3 YAML accepts uncertainty block and stores uncertainty_spec", {
+  yaml_text <- "
+name: 'yaml_v3_uncertainty'
+schema_version: 3
+n_runs: 2
+n_years: 3
+initializer:
+  fun: 'initialize_population'
+  args:
+    \"n\": 12
+survival_fun: 'default_survival_fun'
+breeding_fun: 'default_breeding_fun'
+fecundity_fun: 'default_fecundity_fun'
+uncertainty:
+  params:
+    harvest_quota:
+      dist: 'uniform'
+      min: 0
+      max: 4
+      integer: true
+    cat_surv_prob:
+      dist: 'uniform'
+      min: 0
+      max: 0.2
+"
+
+  tmp <- tempfile(fileext = ".yaml")
+  writeLines(yaml_text, tmp)
+  on.exit(unlink(tmp), add = TRUE)
+
+  sc <- read_scenario_yaml(tmp)
+  expect_equal(attr(sc, "yaml_schema_version"), 3L)
+  expect_true(is.list(sc$uncertainty_spec))
+  expect_true(is.function(sc$breeding_prob_fun))
+  expect_true(is.function(sc$fecundity_lambda_fun))
+  expect_true(all(c("harvest_quota", "cat_surv_prob") %in% names(sc$uncertainty_spec)))
+
+  out <- run_scenario_ensemble(
+    scenario = sc,
+    n_draws = 3,
+    seed = 303L
+  )
+  expect_s3_class(out, "openpva_ensemble_output")
+  expect_equal(nrow(out$sampled_parameters), 3L)
+})
+
+test_that("v2 to v3 migration helper preserves existing fields", {
+  cfg_v2 <- list(
+    schema_version = 2L,
+    name = "cfg_v2",
+    n_runs = 1L,
+    n_years = 1L,
+    initializer = list(fun = "initialize_population", args = list(n = 5L)),
+    breeding_fun = "default_breeding_fun",
+    fecundity_fun = "default_fecundity_fun",
+    reproduction_ev = list(env_repro_p_sd = 0.1)
+  )
+
+  cfg_v3 <- OpenPVA:::.migrate_yaml_v2_to_v3(cfg_v2)
+  expect_equal(cfg_v3$schema_version, 3L)
+  expect_equal(cfg_v3$name, cfg_v2$name)
+  expect_equal(cfg_v3$reproduction_ev$env_repro_p_sd, 0.1)
+})
+
+test_that("schema_version 3 invalid uncertainty config fails clearly", {
+  yaml_text <- "
+name: 'yaml_v3_invalid_uncertainty'
+schema_version: 3
+n_runs: 1
+n_years: 1
+initializer:
+  fun: 'initialize_population'
+  args:
+    \"n\": 8
+survival_fun: 'default_survival_fun'
+breeding_fun: 'default_breeding_fun'
+fecundity_fun: 'default_fecundity_fun'
+uncertainty:
+  params:
+    harvest_quota:
+      dist: 'unknown_dist'
+"
+
+  tmp <- tempfile(fileext = ".yaml")
+  writeLines(yaml_text, tmp)
+  on.exit(unlink(tmp), add = TRUE)
+
+  expect_error(
+    read_scenario_yaml(tmp),
+    "Unsupported dist"
   )
 })
 
@@ -281,6 +374,36 @@ survival_fun: 'default_survival_fun'
   expect_error(
     read_scenario_yaml(tmp),
     "requires breeding_prob and fecundity_lambda channels"
+  )
+})
+
+test_that("schema_version 2 rejects uncertainty block with clear guidance", {
+  yaml_text <- "
+name: 'yaml_v2_uncertainty_not_allowed'
+schema_version: 2
+n_runs: 1
+n_years: 1
+initializer:
+  fun: 'initialize_population'
+  args:
+    \"n\": 6
+survival_fun: 'default_survival_fun'
+breeding_fun: 'default_breeding_fun'
+fecundity_fun: 'default_fecundity_fun'
+uncertainty:
+  harvest_quota:
+    dist: 'uniform'
+    min: 0
+    max: 2
+"
+
+  tmp <- tempfile(fileext = ".yaml")
+  writeLines(yaml_text, tmp)
+  on.exit(unlink(tmp), add = TRUE)
+
+  expect_error(
+    read_scenario_yaml(tmp),
+    "schema_version 2 does not support an uncertainty block"
   )
 })
 
