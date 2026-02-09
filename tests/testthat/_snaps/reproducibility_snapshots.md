@@ -243,3 +243,127 @@
       ]
     }
 
+# seeded spatial-genetic output snapshots remain stable
+
+    {
+      "type": "list",
+      "attributes": {
+        "names": {
+          "type": "character",
+          "attributes": {},
+          "value": ["occupancy_overall", "transitions_overall"]
+        }
+      },
+      "value": [
+        {
+          "type": "list",
+          "attributes": {
+            "names": {
+              "type": "character",
+              "attributes": {},
+              "value": ["year", "patch_id", "n_runs", "mean_n_alive", "p_occupied", "n_extinct", "alive_only"]
+            },
+            "row.names": {
+              "type": "integer",
+              "attributes": {},
+              "value": [1, 2, 3, 4, 5, 6]
+            },
+            "class": {
+              "type": "character",
+              "attributes": {},
+              "value": ["tbl_df", "tbl", "data.frame"]
+            }
+          },
+          "value": [
+            {
+              "type": "integer",
+              "attributes": {},
+              "value": [1, 1, 2, 2, 3, 3]
+            },
+            {
+              "type": "integer",
+              "attributes": {},
+              "value": [1, 2, 1, 2, 1, 2]
+            },
+            {
+              "type": "integer",
+              "attributes": {},
+              "value": [3, 3, 3, 3, 3, 3]
+            },
+            {
+              "type": "double",
+              "attributes": {},
+              "value": [8, 8, 8, 8, 8.666667, 7.333333]
+            },
+            {
+              "type": "double",
+              "attributes": {},
+              "value": [1, 1, 1, 1, 1, 1]
+            },
+            {
+              "type": "integer",
+              "attributes": {},
+              "value": [0, 0, 0, 0, 0, 0]
+            },
+            {
+              "type": "logical",
+              "attributes": {},
+              "value": [true, true, true, true, true, true]
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "attributes": {
+            "names": {
+              "type": "character",
+              "attributes": {},
+              "value": ["origin_patch", "destination_patch", "mean_n_individuals", "total_n_individuals", "p_transition_given_origin", "alive_only"]
+            },
+            "row.names": {
+              "type": "integer",
+              "attributes": {},
+              "value": [1, 2, 3, 4]
+            },
+            "class": {
+              "type": "character",
+              "attributes": {},
+              "value": ["tbl_df", "tbl", "data.frame"]
+            }
+          },
+          "value": [
+            {
+              "type": "integer",
+              "attributes": {},
+              "value": [1, 1, 2, 2]
+            },
+            {
+              "type": "integer",
+              "attributes": {},
+              "value": [1, 2, 1, 2]
+            },
+            {
+              "type": "double",
+              "attributes": {},
+              "value": [6.777778, 1.444444, 1.777778, 6]
+            },
+            {
+              "type": "integer",
+              "attributes": {},
+              "value": [61, 13, 16, 54]
+            },
+            {
+              "type": "double",
+              "attributes": {},
+              "value": [0.824324, 0.175676, 0.228571, 0.771429]
+            },
+            {
+              "type": "logical",
+              "attributes": {},
+              "value": [true, true, true, true]
+            }
+          ]
+        }
+      ]
+    }
+

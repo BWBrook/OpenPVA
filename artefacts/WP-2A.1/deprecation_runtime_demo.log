@@ -1,0 +1,3 @@
+warnings_first_call=1
+warnings_second_call_same_session=0
+warnings_suppressed_option=0

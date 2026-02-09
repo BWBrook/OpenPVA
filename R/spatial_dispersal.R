@@ -97,3 +97,85 @@ make_markov_dispersal_fun <- function(transition_matrix) {
     as.integer(dest)
   }
 }
+
+.fixed_markov_dispersal <- function(transition_matrix) {
+  dispersal_fun <- make_markov_dispersal_fun(transition_matrix)
+  function(ind, population) dispersal_fun(ind, population)
+}
+
+#' Low-connectivity dispersal regime (3 patches)
+#'
+#' A convenience dispersal rule for fragmented systems where most individuals
+#' remain in their current patch each year.
+#'
+#' @param ind Individual object.
+#' @param population Full population list (unused, but part of the interface).
+#'
+#' @return Destination `patch_id` sampled from a low-connectivity transition
+#'   matrix.
+#' @export
+dispersal_low_connectivity_fun <- local({
+  f <- .fixed_markov_dispersal(
+    matrix(
+      c(
+        0.95, 0.04, 0.01,
+        0.03, 0.94, 0.03,
+        0.02, 0.05, 0.93
+      ),
+      nrow = 3,
+      byrow = TRUE
+    )
+  )
+  function(ind, population) f(ind, population)
+})
+
+#' High-connectivity dispersal regime (3 patches)
+#'
+#' A convenience dispersal rule for connected systems with substantial
+#' cross-patch movement.
+#'
+#' @param ind Individual object.
+#' @param population Full population list (unused, but part of the interface).
+#'
+#' @return Destination `patch_id` sampled from a high-connectivity transition
+#'   matrix.
+#' @export
+dispersal_high_connectivity_fun <- local({
+  f <- .fixed_markov_dispersal(
+    matrix(
+      c(
+        0.55, 0.25, 0.20,
+        0.25, 0.50, 0.25,
+        0.20, 0.25, 0.55
+      ),
+      nrow = 3,
+      byrow = TRUE
+    )
+  )
+  function(ind, population) f(ind, population)
+})
+
+#' Asymmetric-flow dispersal regime (3 patches)
+#'
+#' A convenience dispersal rule where movement probabilities differ strongly by
+#' origin patch, producing directional flow patterns.
+#'
+#' @param ind Individual object.
+#' @param population Full population list (unused, but part of the interface).
+#'
+#' @return Destination `patch_id` sampled from an asymmetric transition matrix.
+#' @export
+dispersal_asymmetric_flow_fun <- local({
+  f <- .fixed_markov_dispersal(
+    matrix(
+      c(
+        0.78, 0.18, 0.04,
+        0.12, 0.72, 0.16,
+        0.35, 0.10, 0.55
+      ),
+      nrow = 3,
+      byrow = TRUE
+    )
+  )
+  function(ind, population) f(ind, population)
+})

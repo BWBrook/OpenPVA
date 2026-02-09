@@ -1,0 +1,7 @@
+Domain sanity highlights (spatial/genetic scenario pack)
+
+- Connected regime shows highest off-diagonal transition share.
+- Fragmented regime shows lowest off-diagonal transition share.
+- Asymmetric regime remains directional/intermediate and can drive sink-like
+  behaviour in one patch under the current parameterization.
+- No implausible population explosions observed in inspected outputs.

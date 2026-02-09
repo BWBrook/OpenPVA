@@ -81,3 +81,43 @@ test_that("schema migration snapshot remains stable", {
 
   expect_snapshot_value(migrated_subset, style = "json2")
 })
+
+test_that("seeded spatial-genetic output snapshots remain stable", {
+  testthat::local_edition(3)
+
+  out <- run_basic_simulation_replicates(
+    n_runs = 3,
+    n_years = 4,
+    init_fun = function() {
+      pop <- initialize_population(16)
+      pop <- initialize_patches(pop, patch_ids = rep(c(1L, 2L), each = 8))
+      initialize_genotypes(pop, n_loci = 4, n_alleles = 2L)
+    },
+    survival_fun = function(ind) 1,
+    breeding_fun = function(ind) FALSE,
+    fecundity_fun = function(ind) 0L,
+    lifecycle_steps = c("age", "survival", "dispersal"),
+    dispersal_fun = make_markov_dispersal_fun(
+      matrix(c(0.85, 0.15, 0.2, 0.8), nrow = 2, byrow = TRUE)
+    ),
+    record_population_history = TRUE,
+    seed = 20260209L
+  )
+
+  occ_slice <- summarise_patch_occupancy_timeseries(out, n_patches = 2)$overall |>
+    dplyr::filter(.data$year <= 3) |>
+    dplyr::arrange(.data$year, .data$patch_id) |>
+    round_numeric_columns(digits = 6L)
+
+  conn_slice <- summarise_patch_connectivity_timeseries(out, n_patches = 2)$transitions_overall |>
+    dplyr::arrange(.data$origin_patch, .data$destination_patch) |>
+    round_numeric_columns(digits = 6L)
+
+  expect_snapshot_value(
+    list(
+      occupancy_overall = occ_slice,
+      transitions_overall = conn_slice
+    ),
+    style = "json2"
+  )
+})

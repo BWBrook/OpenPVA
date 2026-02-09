@@ -1,0 +1,26 @@
+ℹ Testing OpenPVA
+✔ | F W  S  OK | Context
+
+⠏ |          0 | output_schema_contract                                         
+⠋ |          1 | output_schema_contract                                         
+⠙ |         12 | output_schema_contract                                         
+⠙ |         22 | output_schema_contract                                         
+⠦ |         27 | output_schema_contract                                         
+⠦ |         47 | output_schema_contract                                         
+⠏ |         50 | output_schema_contract                                         
+⠹ |         53 | output_schema_contract                                         
+✔ |         57 | output_schema_contract [1.8s]
+
+⠏ |          0 | spatial_patches                                                
+⠸ |         14 | spatial_patches                                                
+⠋ |         21 | spatial_patches                                                
+⠼ |         35 | spatial_patches                                                
+⠙ |         42 | spatial_patches                                                
+⠧ |         48 | spatial_patches                                                
+⠙ |         52 | spatial_patches                                                
+✔ |         59 | spatial_patches
+
+══ Results ═════════════════════════════════════════════════════════════════════
+Duration: 2.6 s
+
+[ FAIL 0 | WARN 0 | SKIP 0 | PASS 116 ]

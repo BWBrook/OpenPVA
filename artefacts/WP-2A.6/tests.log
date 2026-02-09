@@ -1,0 +1,110 @@
+ℹ Testing OpenPVA
+✔ | F W  S  OK | Context
+
+⠏ |          0 | demography_environment                                         
+⠹ |          3 | demography_environment                                         
+⠼ |          5 | demography_environment                                         
+⠇ |          9 | demography_environment                                         
+✔ |          9 | demography_environment [1.5s]
+
+⠏ |          0 | demography_reproduction_spec                                   
+⠴ |          6 | demography_reproduction_spec                                   
+⠴ |         26 | demography_reproduction_spec                                   
+✔ |         48 | demography_reproduction_spec
+
+⠏ |          0 | demography_survival_spec                                       
+⠇ |          9 | demography_survival_spec                                       
+✔ |         19 | demography_survival_spec
+
+⠏ |          0 | density_module                                                 
+⠦ |          7 | density_module                                                 
+⠸ |         14 | density_module                                                 
+⠹ |         23 | density_module                                                 
+✔ |         24 | density_module
+
+⠏ |          0 | deprecation_framework                                          
+✔ |          7 | deprecation_framework
+
+⠏ |          0 | genetics_core                                                  
+⠧ |         18 | genetics_core                                                  
+⠇ |         39 | genetics_core                                                  
+✔ |         43 | genetics_core
+
+⠏ |          0 | init_population                                                
+✔ |         10 | init_population
+
+⠏ |          0 | management                                                     
+⠋ |          1 | management                                                     
+⠧ |          8 | management                                                     
+✔ |         12 | management
+
+⠏ |          0 | output_schema_contract                                         
+⠸ |         14 | output_schema_contract                                         
+⠦ |         27 | output_schema_contract                                         
+⠦ |         47 | output_schema_contract                                         
+⠏ |         50 | output_schema_contract                                         
+⠹ |         53 | output_schema_contract                                         
+✔ |         57 | output_schema_contract
+
+⠏ |          0 | reproducibility_snapshots                                      
+⠋ |          1 | reproducibility_snapshots                                      
+⠹ |          3 | reproducibility_snapshots                                      
+✔ |          3 | reproducibility_snapshots
+
+⠏ |          0 | reproduction_controller                                        
+⠼ |         15 | reproduction_controller                                        
+✔ |         20 | reproduction_controller
+
+⠏ |          0 | rng_seed                                                       
+⠋ |          1 | rng_seed                                                       
+⠹ |          3 | rng_seed                                                       
+⠇ |          9 | rng_seed                                                       
+⠸ |         14 | rng_seed                                                       
+✔ |         14 | rng_seed
+
+⠏ |          0 | scenario_yaml_demography                                       
+⠏ |         10 | scenario_yaml_demography                                       
+⠙ |         22 | scenario_yaml_demography                                       
+⠼ |         45 | scenario_yaml_demography                                       
+⠼ |         55 | scenario_yaml_demography                                       
+⠙ |         62 | scenario_yaml_demography                                       
+⠙ |         72 | scenario_yaml_demography                                       
+⠧ |         78 | scenario_yaml_demography                                       
+⠴ |         86 | scenario_yaml_demography                                       
+⠏ |         90 | scenario_yaml_demography                                       
+⠸ |         94 | scenario_yaml_demography                                       
+⠧ |         98 | scenario_yaml_demography                                       
+✔ |        101 | scenario_yaml_demography [6.7s]
+
+⠏ |          0 | scenario                                                       
+⠇ |         19 | scenario                                                       
+⠙ |         32 | scenario                                                       
+⠼ |         45 | scenario                                                       
+✔ |         55 | scenario
+
+⠏ |          0 | simulation_core                                                
+⠴ |         26 | simulation_core                                                
+⠙ |         42 | simulation_core                                                
+⠙ |         62 | simulation_core                                                
+✔ |         70 | simulation_core
+
+⠏ |          0 | simulation_summary                                             
+⠇ |         19 | simulation_summary                                             
+✔ |         40 | simulation_summary
+
+⠏ |          0 | spatial_patches                                                
+⠇ |         19 | spatial_patches                                                
+⠦ |         27 | spatial_patches                                                
+⠴ |         36 | spatial_patches                                                
+⠼ |         45 | spatial_patches                                                
+⠙ |         52 | spatial_patches                                                
+✔ |         59 | spatial_patches
+
+⠏ |          0 | supplementation                                                
+⠴ |         16 | supplementation                                                
+✔ |         16 | supplementation
+
+══ Results ═════════════════════════════════════════════════════════════════════
+Duration: 14.2 s
+
+[ FAIL 0 | WARN 0 | SKIP 0 | PASS 607 ]

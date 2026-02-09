@@ -135,6 +135,90 @@ patch_summary <- OpenPVA::summarise_patch_occupancy_final(
 patch_summary
 ```
 
+## Spatial-genetic interpretation workflow
+
+The spatial/genetic output family has three complementary layers:
+
+- final-time patch summaries for endpoint comparisons,
+- time-series patch summaries for trajectory/stability analysis,
+- connectivity/turnover diagnostics for movement mechanism inference.
+
+```{r, eval=FALSE}
+scenario_files <- c(
+  "demo_spatial_genetic_fragmented.yaml",
+  "demo_spatial_genetic_connected.yaml",
+  "demo_spatial_genetic_asymmetric.yaml"
+)
+
+paths <- vapply(
+  scenario_files,
+  function(fname) {
+    p <- system.file("extdata", fname, package = "OpenPVA")
+    if (identical(p, "")) file.path("..", "inst", "extdata", fname) else p
+  },
+  character(1)
+)
+
+spatial_scenarios <- lapply(paths, OpenPVA::read_scenario_yaml)
+names(spatial_scenarios) <- c("fragmented", "connected", "asymmetric")
+
+spatial_outputs <- lapply(spatial_scenarios, OpenPVA::run_scenario)
+```
+
+```{r, eval=FALSE}
+# 1) final-time endpoint summaries
+final_occ <- lapply(
+  spatial_outputs,
+  function(x) OpenPVA::summarise_patch_occupancy_final(x$sim_output, n_patches = 3)
+)
+
+final_div <- lapply(
+  spatial_outputs,
+  function(x) OpenPVA::summarise_patch_genetic_diversity_final(x$sim_output, n_patches = 3)
+)
+```
+
+```{r, eval=FALSE}
+# 2) time-series trajectory summaries (requires record_population_history = TRUE)
+occ_ts <- lapply(
+  spatial_outputs,
+  function(x) OpenPVA::summarise_patch_occupancy_timeseries(x$sim_output, n_patches = 3)
+)
+
+div_ts <- lapply(
+  spatial_outputs,
+  function(x) OpenPVA::summarise_patch_genetic_diversity_timeseries(x$sim_output, n_patches = 3)
+)
+```
+
+```{r, eval=FALSE}
+# 3) connectivity diagnostics and turnover flags
+conn <- lapply(
+  spatial_outputs,
+  function(x) OpenPVA::summarise_patch_connectivity_timeseries(x$sim_output, n_patches = 3)
+)
+
+conn$asymmetric$transitions_overall
+head(conn$fragmented$turnover)
+```
+
+```{r, eval=FALSE}
+# Example: compare mean occupancy in patch 3 at the final year
+vapply(
+  occ_ts,
+  function(x) {
+    z <- subset(x$overall, year == max(year) & patch_id == 3L)
+    z$mean_n_alive[[1]]
+  },
+  numeric(1)
+)
+```
+
+Interpretation tip:
+use final-time outputs for ranking scenarios, then explain those differences
+with time-series and connectivity diagnostics rather than endpoint metrics
+alone.
+
 ## Comparing harvest strategies
 
 ```{r, eval=FALSE}

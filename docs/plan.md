@@ -13,32 +13,43 @@ stable core API, documented scenario schema, strong tests, and reproducible demo
 ## 2) Current status (to be filled by the agent)
 
 - Repo structure summary:
-  - Repository has a coherent R-package layout with lifecycle modules, scenario compilers, targets pipeline, and Quarto demo content.
-  - First artefact bundle convention is now established at `artefacts/WP-0.3.1/`.
+  - Repository has a coherent R-package layout with lifecycle modules,
+    scenario compilers, targets pipeline, Quarto demo content, and staged
+    artefact bundles through `artefacts/WP-2A.6/`.
 - Core simulation/controller status:
-  - `run_basic_simulation()` and `run_basic_simulation_replicates()` execute successfully in smoke checks.
-  - Reproduction design lock is complete (`WP-0.5.1`) and baseline probability/lambda APIs are in place (`WP-0.5.2`, `WP-0.5.3`).
-  - Controller reproduction draws + reproduction EV/cat pathway are implemented (`WP-0.5.4`) with legacy compatibility preserved.
-  - Density decision lock is complete (`WP-1.1.1`) and R-level density channel integration is complete (`WP-1.1.2`) with compatibility adapters retained.
+  - `run_basic_simulation()` / `run_basic_simulation_replicates()` support
+    optional `record_population_history` capture for time-series spatial/genetic
+    summaries.
+  - Reproduction baseline-rate APIs, controller draws, EV/cat channels, and
+    compatibility wrappers are implemented and regression-tested.
+  - Soft-deprecation framework for selected legacy reproduction wrappers is
+    active and migration documented.
+  - Density module is integrated across survival/breeding/fecundity channels
+    with compatibility adapters retained.
 - YAML scenario status:
-  - YAML ingestion is present (`read_scenario_yaml()`), with demo files under `inst/extdata/`.
-  - YAML schema v2 contract is implemented, with schema v1 retained and migration/adaptation coverage.
-  - Optional top-level `seed` support is available for deterministic replicate outputs.
-  - Density YAML schema support is implemented via optional `density` block with legacy `K`/`K_patches` compatibility retained.
+  - YAML ingestion (`read_scenario_yaml()`) supports schema v1/v2 compatibility,
+    density blocks, deterministic seeds, mate requirement toggles, optional
+    history capture, and lifecycle function hooks (including `dispersal_fun`).
+  - Packaged spatial/genetic scenario trio added under `inst/extdata/`:
+    fragmented, connected, and asymmetric flow regimes.
 - `targets` pipeline status:
-  - Core targets remain runnable; heavy full-store runs are best treated as dedicated checks.
-  - Replicate/scenario targets now use explicit seeds for stable artefacts.
+  - Core targets remain runnable; smoke runs are used as reproducibility gates
+    in artefact cycles and CI-heavy profile.
 - Quarto demos status:
-  - Quarto project render path is stabilized and renders to `outputs/quarto_site`.
-  - Demo snippets now include explicit seeds for deterministic example outputs.
+  - Quarto project renders to `outputs/quarto_site`.
+  - Demo now includes spatial/genetic interpretation workflow guidance:
+    endpoint vs time-series vs connectivity diagnostics.
 - Tests status:
-  - Canonical suite passes via `devtools::test()` (`461` pass, `0` fail).
-  - Regression coverage now includes density API/channel behavior and legacy density compatibility.
+  - Canonical suite passes via `devtools::test()` (`607` pass, `0` fail).
+  - Regression coverage includes spatial/genetic time-series helpers,
+    connectivity diagnostics, deprecation behavior, YAML scenario-pack
+    compatibility, output contracts, and seeded snapshot slices.
 - Package check status:
-  - Tarball-based `R CMD check --no-manual --as-cran` passes with `0` errors and `0` warnings (`3` notes documented in `artefacts/WP-1.1.2/00check.log`).
+  - Tarball-based `R CMD check --no-manual --as-cran` passes with `0` errors
+    and `0` warnings (`3` known notes; see `artefacts/WP-2A.6/00check.log`).
 - Known failing tests / TODOs:
   - No known failing tests in canonical invocation.
-  - Priority queue is active; next unchecked item is `WP-1.2.1`.
+  - Priority Queue is currently exhausted through `WP-2A.6`.
 
 ## 3) Definition of Done for the next “reviewable milestone”
 
@@ -138,34 +149,17 @@ Success criteria:
 ## 6) Current phase and next steps (agent-maintained)
 
 - **Current phase**:
-  - Priority Queue execution complete through `WP-1.3.3`.
+  - Priority Queue execution complete through `WP-2A.6`.
 - **Most recent milestone progress**:
-  - Completed `WP-0.3.1` through `WP-1.3.3`:
+  - Completed `WP-0.3.1` through `WP-2A.6`, including:
     - bootstrap baseline and artefact/log scaffolding,
-    - package metadata hardening with clean `R CMD check` (0 errors/0 warnings),
-    - README quickstart cleanup with runnable R and YAML examples and evidence runs,
-    - CI baseline workflow with renv restore, lint gate, and tarball `R CMD check`,
-    - Quarto project render stabilization with non-conflicting output location,
-    - YAML schema v1 contract with legacy migration and version validation tests,
-    - output schema contract docs and regression test coverage,
-    - deterministic seed interface across replicates/scenarios/YAML with RNG restoration and regression tests,
-    - reproduction semantics decision lock with compatibility policy,
-    - new breeding probability and fecundity lambda APIs with legacy wrappers and tests,
-    - controller-level reproduction draw pathway with reproduction EV/cat summary diagnostics,
-    - YAML schema v2 reproduction semantics (`reproduction_ev` + migration/adaptation + v1/v2 coverage),
-    - README + Quarto refresh documenting reproduction semantics, EV/cats, and YAML v1/v2 behavior,
-    - semver/release policy lock + public API stability contract and `1.0.0` version bump,
-    - release candidate evidence bundle (`artefacts/release_1.0.0-rc1/`) + checklist update,
-    - density semantics decision lock (`DEC-005`) and implementation-ready design doc,
-    - R-level density integration across survival/breeding/fecundity with compatibility coverage and artefact evidence,
-    - YAML density schema support with parser tests, new packaged density v2 example, and migration/compatibility evidence,
-    - CI profile split with explicit fast/heavy validation contracts and local-equivalent evidence capture,
-    - reproducibility gate tightening with seeded snapshot regressions and expanded schema-output contract checks,
-    - non-publishing release automation scaffold with scripted evidence generation,
-    - reproduction feature extension with mate-required and mate-limited controls,
-    - spatial/genetic final-time patch diversity summarization helper with regression coverage,
-    - decision-support output expansion via final-abundance summaries and additive comparison metrics.
+    - reproduction/density API stabilization with compatibility layers,
+    - spatial/genetic output expansion from final-time summaries to
+      run/year/patch time-series and connectivity diagnostics,
+    - seeded regression gates for spatial/genetic snapshot slices,
+    - domain-sanity spatial/genetic scenario pack in `inst/extdata/`,
+    - Quarto and reference-doc upgrades for scientific interpretation workflow.
 - **Immediate next steps**:
-  1. Stop autonomous WP execution (Priority Queue exhausted).
-  2. Await promotion of new WPs into `docs/roadmap.md` queue.
-  3. Continue maintaining artefact/log/decision discipline for next line of work.
+  1. Stop autonomous WP execution (Priority Queue currently exhausted).
+  2. Await promotion of the next WP tranche into `docs/roadmap.md`.
+  3. Maintain artefact/log/decision discipline for the next queue.

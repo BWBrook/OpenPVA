@@ -7,6 +7,143 @@ For each major change, create an entry.
 
 ---
 
+### [2026-02-09] WP-2A.6 spatial-genetic docs + Quarto narrative upgrade
+
+- **Change summary**:
+  - Added spatial/genetic interpretation reference guide:
+    `docs/reference/spatial_genetic_outputs.md`.
+  - Updated Quarto demo with endpoint vs time-series vs connectivity workflow.
+  - Added docs index links and refreshed CI profile docs for spatial regression
+    coverage.
+- **Artefacts inspected**:
+  - Full tests pass (`PASS 607`, `FAIL 0`, `WARN 0`).
+  - Lint pass (`No lints found`).
+  - Targets smoke (`sim_basic`) completed.
+  - Quarto render completed (existing non-blocking output-path warning).
+  - `R CMD check --as-cran` note-only status (`3` notes).
+- **Observed behaviour**:
+  - Documentation and demo narrative now align with implemented spatial/genetic
+    APIs and scenario-pack examples.
+  - No runtime regressions observed from documentation-facing updates.
+- **Follow-up tasks**:
+  - [x] Priority Queue exhausted; await next promoted WP tranche.
+
+---
+
+### [2026-02-09] WP-2A.5 domain-sanity spatial/genetic scenario pack
+
+- **Change summary**:
+  - Added packaged YAML scenario trio:
+    - `demo_spatial_genetic_fragmented.yaml`
+    - `demo_spatial_genetic_connected.yaml`
+    - `demo_spatial_genetic_asymmetric.yaml`
+  - Added reusable spatial/genetic initializers and dispersal regime helpers.
+  - Added YAML parser hooks for `dispersal_fun`/`inherit_fun`/`mating_fun`.
+- **Artefacts inspected**:
+  - `artefacts/WP-2A.5/scenario_pack_comparison_metrics.csv`
+  - `artefacts/WP-2A.5/scenario_pack_final_occupancy.csv`
+  - `artefacts/WP-2A.5/scenario_pack_final_diversity.csv`
+  - `artefacts/WP-2A.5/domain_sanity_note.txt`
+- **Observed behaviour**:
+  - Movement regime signal is directional and plausible:
+    - off-diagonal transition share:
+      - fragmented: `0.066`,
+      - connected: `0.474`,
+      - asymmetric: `0.257`.
+  - Connected regime retains higher occupancy in patch 3 than fragmented.
+  - Asymmetric regime can produce sink-like behavior (patch 3 occupancy near
+    zero in inspected seeded run), which is biologically plausible under strong
+    directional flow and density/harvest settings.
+- **Domain sanity**:
+  - No implausible explosive growth observed in inspected outputs.
+  - One regime produced severe patch-level decline by design; kept as a stress
+    case and documented explicitly.
+- **Follow-up tasks**:
+  - [x] Execute WP-2A.6 (docs + Quarto interpretation upgrade).
+
+---
+
+### [2026-02-09] WP-2A.4 spatial-genetic contract tests and snapshot gates
+
+- **Change summary**:
+  - Expanded regression filter to include `test_spatial_patches.R` in heavy CI.
+  - Added seeded spatial/genetic snapshot slice to reproducibility fixtures.
+  - Expanded output contract checks for time-series/connectivity helper outputs.
+- **Artefacts inspected**:
+  - Regression filter pass (`PASS 234`, `FAIL 0`, `WARN 0`).
+  - Snapshot fixture file:
+    `artefacts/WP-2A.4/snapshot_fixtures.md`.
+  - Updated heavy CI workflow:
+    `artefacts/WP-2A.4/ci-heavy-validation.yaml`.
+- **Observed behaviour**:
+  - Snapshot and schema gates are stable and reproducible under fixed seeds.
+  - New spatial outputs are covered by explicit contract assertions.
+- **Follow-up tasks**:
+  - [x] Execute WP-2A.5 (domain-sanity scenario pack).
+
+---
+
+### [2026-02-09] WP-2A.3 dispersal/connectivity diagnostics
+
+- **Change summary**:
+  - Added `summarise_patch_connectivity_timeseries()` output pathway and
+    validation coverage.
+  - Added comparative connectivity artefacts under controlled regime settings.
+- **Artefacts inspected**:
+  - `artefacts/WP-2A.3/connectivity_metrics.csv`
+  - `artefacts/WP-2A.3/connectivity_transitions_overall.csv`
+  - `artefacts/WP-2A.3/connectivity_turnover.csv`
+- **Observed behaviour**:
+  - Regime ranking is coherent in seeded diagnostics:
+    - fragmented shows minimal cross-patch movement,
+    - connected shows strongest mixing,
+    - asymmetric sits between them with directional bias.
+  - Turnover (`colonized`/`extirpated`) remains bounded and interpretable.
+- **Follow-up tasks**:
+  - [x] Execute WP-2A.4 (regression gate hardening).
+
+---
+
+### [2026-02-09] WP-2A.2 time-series patch occupancy/diversity outputs
+
+- **Change summary**:
+  - Added per-run/per-year/per-patch occupancy and diversity helpers requiring
+    optional `population_history`.
+  - Added simulation/scenario/YAML support for `record_population_history`.
+- **Artefacts inspected**:
+  - Targeted tests pass (`PASS 285`, `FAIL 0`, `WARN 0`).
+  - Time-series artefacts:
+    - `artefacts/WP-2A.2/patch_occupancy_timeseries_overall.csv`
+    - `artefacts/WP-2A.2/patch_genetic_diversity_timeseries_overall.csv`
+- **Observed behaviour**:
+  - Time-series outputs have expected run/year/patch granularity.
+  - Occupancy probabilities stayed within `[0, 1]` in inspected seeded runs
+    (min `0.8`, max `1.0`).
+- **Follow-up tasks**:
+  - [x] Execute WP-2A.3 (connectivity diagnostics).
+
+---
+
+### [2026-02-09] WP-2A.1 deprecation framework (1.x runtime-safe)
+
+- **Change summary**:
+  - Added package-level soft-deprecation helper with once-per-session behavior.
+  - Applied soft deprecations to legacy reproduction wrapper interfaces.
+  - Added migration guide (`docs/reference/migration_1x_to_2x.md`).
+- **Artefacts inspected**:
+  - Targeted tests pass (`PASS 55`, `FAIL 0`, `WARN 0`).
+  - Runtime demo:
+    - first call warning count: `1`,
+    - repeated call warning count: `0`,
+    - suppression-option warning count: `0`.
+- **Observed behaviour**:
+  - Warnings are actionable and non-noisy while preserving runtime
+    compatibility for legacy pathways.
+- **Follow-up tasks**:
+  - [x] Execute WP-2A.2 (time-series spatial/genetic outputs).
+
+---
+
 ### [2026-02-09] WP-1.3.3 decision-support outputs expansion
 
 - **Change summary**:

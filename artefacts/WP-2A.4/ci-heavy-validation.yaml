@@ -1,0 +1,47 @@
+name: ci-heavy-validation
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1"
+
+jobs:
+  heavy_validation:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      RENV_CONFIG_PAK_ENABLED: "FALSE"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Install renv
+        run: Rscript -e "install.packages('renv', repos = 'https://cloud.r-project.org')"
+
+      - name: Restore dependencies
+        run: Rscript -e "renv::restore(prompt = FALSE)"
+
+      - name: Reproducibility regression tests
+        run: >-
+          Rscript -e "devtools::test(filter = 'rng_seed|output_schema_contract|scenario_yaml_demography|spatial_patches|reproducibility_snapshots')"
+
+      - name: Full package tests
+        run: Rscript -e "devtools::test()"
+
+      - name: targets heavy smoke
+        run: >-
+          Rscript -e "targets::tar_invalidate(names = c('sim_basic')); targets::tar_make(script = '_targets.R', store = '_targets', names = c('sim_basic'))"
+
+      - name: Quarto render
+        run: quarto render quarto
+
+      - name: Build source tarball
+        run: R CMD build --no-build-vignettes .
+
+      - name: Run R CMD check (heavy profile)
+        run: R CMD check --no-manual --as-cran OpenPVA_*.tar.gz

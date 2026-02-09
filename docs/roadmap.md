@@ -83,6 +83,14 @@ A WP is **Done** only when all of the following are true:
 - [x] WP-1.3.2 — Spatial/genetic enhancement increment
 - [x] WP-1.3.3 — Decision-support outputs expansion
 
+### Line 2A.x — Scientific rigor expansion (spatial-genetic depth)
+- [x] WP-2A.1 — Deprecation framework (1.x runtime-safe, 2.0-ready)
+- [x] WP-2A.2 — Time-series patch occupancy/diversity outputs
+- [x] WP-2A.3 — Dispersal/connectivity diagnostics
+- [x] WP-2A.4 — Spatial-genetic contract tests and snapshot gates
+- [x] WP-2A.5 — Domain-sanity spatial/genetic scenario pack
+- [x] WP-2A.6 — Spatial-genetic docs + Quarto scientific narrative upgrade
+
 ---
 
 ## 4) Detailed Work Package specs
@@ -893,6 +901,192 @@ Decision-support summaries expand for management comparison workflows.
 
 **Stop condition**
 - Stop once outputs are stable, documented, and tested.
+
+---
+
+## WP-2A.1 — Deprecation framework (1.x runtime-safe, 2.0-ready)
+
+**Outcome**  
+OpenPVA has an explicit deprecation framework that supports soft deprecations in
+1.x while preserving full runtime compatibility and documenting 2.0 migration
+targets.
+
+**Scope**
+- In scope:
+  - Add package-level soft-deprecation warning helper(s) with once-per-session
+    behavior.
+  - Apply soft deprecation warnings to selected legacy reproduction table
+    wrappers retained for compatibility.
+  - Add migration guide scaffold (`docs/reference/migration_1x_to_2x.md`).
+  - Document deprecation lifecycle states and migration defaults.
+- Out of scope:
+  - Removing any existing APIs in 1.x.
+  - Hard deprecations that break existing scripts.
+
+**Acceptance criteria**
+- Soft deprecations emit clear, actionable messages and can be silenced via an
+  explicit option for test/internal workflows.
+- Runtime compatibility remains intact for legacy paths.
+- Migration documentation exists and maps legacy to preferred interfaces.
+- Tests cover:
+  - warning emission,
+  - once-per-session behavior,
+  - suppression option behavior.
+
+**Artefact evidence**
+- Updated code/tests/docs for deprecation framework
+- `artefacts/WP-2A.1/` evidence logs and migration-note references
+
+**Stop condition**
+- Stop once deprecation framework is active, tested, and documented without
+  compatibility regressions.
+
+---
+
+## WP-2A.2 — Time-series patch occupancy/diversity outputs
+
+**Outcome**  
+Spatial/genetic summaries support per-year analysis across runs, not just
+final-time snapshots.
+
+**Scope**
+- In scope:
+  - Add time-series patch occupancy summary helper.
+  - Add time-series patch genetic diversity summary helper.
+  - Add minimal controller/scenario support required to access per-year
+    population state for these summaries.
+- Out of scope:
+  - Major kernel redesign.
+  - Non-spatial/non-genetic analytics.
+
+**Acceptance criteria**
+- New helpers return documented, stable tidy outputs with run/year/patch
+  granularity and aggregated summaries.
+- Existing final-time helper behavior remains unchanged.
+- Tests cover deterministic toy scenarios and edge cases (empty patches,
+  missing genotypes).
+
+**Artefact evidence**
+- Code/tests/docs updates
+- `artefacts/WP-2A.2/` with time-series spatial/genetic output examples
+
+**Stop condition**
+- Stop once time-series summaries are stable and regression-protected.
+
+---
+
+## WP-2A.3 — Dispersal/connectivity diagnostics
+
+**Outcome**  
+Users can quantify movement/connectivity patterns and patch-level turnover from
+seeded scenario outputs.
+
+**Scope**
+- In scope:
+  - Add helper(s) for patch transition summaries and connectivity diagnostics.
+  - Include net patch change / turnover-style metrics suitable for management
+    interpretation.
+- Out of scope:
+  - New dispersal kernels.
+  - Calibration/optimization workflows.
+
+**Acceptance criteria**
+- Diagnostics are documented and tested under controlled transition-matrix
+  scenarios.
+- Outputs are bounded/interpretable and robust to sparse populations.
+
+**Artefact evidence**
+- Code/tests/docs updates
+- `artefacts/WP-2A.3/` connectivity demo outputs
+
+**Stop condition**
+- Stop once connectivity diagnostics are stable with domain sanity evidence.
+
+---
+
+## WP-2A.4 — Spatial-genetic contract tests and snapshot gates
+
+**Outcome**  
+New spatial/genetic outputs are protected by explicit schema and seeded
+regression gates.
+
+**Scope**
+- In scope:
+  - Expand output schema contract tests for new helpers.
+  - Add bounded seeded snapshot checks for spatial/genetic output slices.
+  - Ensure heavy validation profile executes relevant regression checks.
+- Out of scope:
+  - Broad CI redesign.
+  - Full-object snapshotting.
+
+**Acceptance criteria**
+- Added tests run reliably and catch schema/behavior drift.
+- Snapshot scope remains intentionally bounded and documented.
+
+**Artefact evidence**
+- Updated test/snapshot fixtures and validation logs
+- `artefacts/WP-2A.4/` regression evidence
+
+**Stop condition**
+- Stop once regression gates are active and stable.
+
+---
+
+## WP-2A.5 — Domain-sanity spatial/genetic scenario pack
+
+**Outcome**  
+Packaged scenario set exercises key spatial/genetic regimes and supports
+scientific sanity checking.
+
+**Scope**
+- In scope:
+  - Add a small scenario pack covering:
+    - fragmented/low-connectivity regime,
+    - connected/high-flow regime,
+    - asymmetric flow regime.
+  - Include reproducible outputs and interpretation notes.
+- Out of scope:
+  - Broad data ingest pipelines.
+  - External empirical calibration.
+
+**Acceptance criteria**
+- Scenario pack runs with fixed seeds and yields plausible directional patterns.
+- YAML/R pathway compatibility is maintained.
+
+**Artefact evidence**
+- New `inst/extdata/` scenario examples
+- `artefacts/WP-2A.5/` comparative outputs and sanity notes
+
+**Stop condition**
+- Stop once scenario pack is runnable, interpretable, and documented.
+
+---
+
+## WP-2A.6 — Spatial-genetic docs + Quarto scientific narrative upgrade
+
+**Outcome**  
+Documentation and demo narrative clearly explain when/how to use new
+spatial-genetic outputs for inference and comparison.
+
+**Scope**
+- In scope:
+  - Add/refresh reference docs for new spatial-genetic helpers.
+  - Update Quarto demo with a spatial-genetic interpretation section.
+  - Document final-time vs time-series vs connectivity use-cases.
+- Out of scope:
+  - GUI/dashboard work.
+  - Publication automation changes.
+
+**Acceptance criteria**
+- Docs and Quarto examples execute and align with implemented APIs.
+- Guidance is explicit about assumptions, caveats, and interpretation.
+
+**Artefact evidence**
+- Docs/Quarto updates and render logs
+- `artefacts/WP-2A.6/` documentation validation evidence
+
+**Stop condition**
+- Stop once docs and Quarto narrative are coherent, tested, and reproducible.
 
 ---
 

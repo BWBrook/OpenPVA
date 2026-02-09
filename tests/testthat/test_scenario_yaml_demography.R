@@ -712,3 +712,205 @@ require_mate: %s
   expect_equal(births_true, 0L)
   expect_gt(births_false, births_true)
 })
+
+test_that("YAML record_population_history toggles run history capture", {
+  yaml_text <- "
+name: 'yaml_history_toggle'
+schema_version: 2
+n_runs: 2
+n_years: 2
+initializer:
+  fun: 'initialize_population'
+  args:
+    \"n\": 8
+survival_fun: 'default_survival_fun'
+demography:
+  breeding_prob:
+    table:
+      - sex: 'F'
+        age_min: 0
+        age_max: 100
+        p_breed: 0.0
+      - sex: 'M'
+        age_min: 0
+        age_max: 100
+        p_breed: 0.0
+  fecundity_lambda:
+    table:
+      - sex: 'F'
+        age_min: 0
+        age_max: 100
+        lambda: 0.0
+      - sex: 'M'
+        age_min: 0
+        age_max: 100
+        lambda: 0.0
+lifecycle_steps:
+  - age
+  - survival
+record_population_history: true
+seed: 321
+"
+  tmp <- tempfile(fileext = ".yaml")
+  writeLines(yaml_text, tmp)
+  on.exit(unlink(tmp), add = TRUE)
+
+  sc <- read_scenario_yaml(tmp)
+  expect_true(sc$record_population_history)
+
+  out <- run_scenario(sc)
+  expect_true(all(vapply(out$sim_output$runs, function(run) "population_history" %in% names(run), logical(1))))
+  expect_true(all(vapply(out$sim_output$runs, function(run) length(run$population_history), integer(1)) == 2L))
+})
+
+test_that("schema_version 2 YAML accepts spatial/genetic initializer and dispersal hooks", {
+  yaml_text <- "
+name: 'yaml_spatial_genetic_hooks'
+schema_version: 2
+n_runs: 1
+n_years: 3
+seed: 77
+initializer:
+  fun: 'initialize_spatial_genetic_population'
+  args:
+    n_per_patch: [12, 8, 6]
+    n_loci: 4
+    n_alleles: 2
+demography:
+  survival:
+    table:
+      - sex: 'F'
+        age_min: 0
+        age_max: 100
+        p_surv: 1.0
+      - sex: 'M'
+        age_min: 0
+        age_max: 100
+        p_surv: 1.0
+  breeding_prob:
+    table:
+      - sex: 'F'
+        age_min: 0
+        age_max: 100
+        p_breed: 0.0
+      - sex: 'M'
+        age_min: 0
+        age_max: 100
+        p_breed: 0.0
+  fecundity_lambda:
+    table:
+      - sex: 'F'
+        age_min: 0
+        age_max: 100
+        lambda: 0.0
+      - sex: 'M'
+        age_min: 0
+        age_max: 100
+        lambda: 0.0
+dispersal_fun: 'dispersal_asymmetric_flow_fun'
+inherit_fun: 'inherit_genotype_simple'
+record_population_history: true
+lifecycle_steps:
+  - age
+  - survival
+  - dispersal
+  - breeding_births
+"
+  tmp <- tempfile(fileext = ".yaml")
+  writeLines(yaml_text, tmp)
+  on.exit(unlink(tmp), add = TRUE)
+
+  sc <- read_scenario_yaml(tmp)
+  expect_true(is.function(sc$dispersal_fun))
+  expect_true(is.function(sc$inherit_fun))
+  expect_true(sc$record_population_history)
+
+  out <- run_scenario(sc)
+  conn <- summarise_patch_connectivity_timeseries(out$sim_output, n_patches = 3)
+  off_diag_n <- sum(conn$transitions$n_individuals[
+    conn$transitions$origin_patch != conn$transitions$destination_patch
+  ])
+
+  expect_true(off_diag_n > 0)
+  expect_equal(length(out$sim_output$runs[[1]]$population_history), 3L)
+})
+
+test_that("packaged spatial/genetic YAML scenario pack remains runnable", {
+  scenario_files <- c(
+    "demo_spatial_genetic_fragmented.yaml",
+    "demo_spatial_genetic_connected.yaml",
+    "demo_spatial_genetic_asymmetric.yaml"
+  )
+
+  for (fname in scenario_files) {
+    path <- system.file("extdata", fname, package = "OpenPVA")
+    if (identical(path, "")) {
+      path <- file.path("inst", "extdata", fname)
+    }
+    expect_true(file.exists(path), info = fname)
+
+    sc <- read_scenario_yaml(path)
+    expect_true(sc$record_population_history, info = fname)
+
+    # Keep tests fast while still validating packaged scenario structure.
+    sc$n_runs <- 2L
+    sc$n_years <- 4L
+    sc$seed <- 1001L
+
+    out <- run_scenario(sc)
+    expect_equal(nrow(out$sim_output$summary), 8L, info = fname)
+
+    occ <- summarise_patch_occupancy_timeseries(out$sim_output, n_patches = 3)
+    expect_equal(nrow(occ$overall), 12L, info = fname)
+  }
+})
+
+test_that("density channel parsing uses exact K/K_patches matching", {
+  yaml_text <- "
+name: 'yaml_density_exact_matching'
+schema_version: 2
+n_runs: 1
+n_years: 2
+initializer:
+  fun: 'initialize_spatial_population'
+  args:
+    n_per_patch: [6, 6, 6]
+demography:
+  breeding_prob:
+    table:
+      - sex: 'F'
+        age_min: 0
+        age_max: 100
+        p_breed: 0.0
+      - sex: 'M'
+        age_min: 0
+        age_max: 100
+        p_breed: 0.0
+  fecundity_lambda:
+    table:
+      - sex: 'F'
+        age_min: 0
+        age_max: 100
+        lambda: 0.0
+      - sex: 'M'
+        age_min: 0
+        age_max: 100
+        lambda: 0.0
+density:
+  survival:
+    model: 'ceiling'
+    K_patches: [20, 20, 20]
+lifecycle_steps:
+  - age
+  - survival
+"
+  tmp <- tempfile(fileext = ".yaml")
+  writeLines(yaml_text, tmp)
+  on.exit(unlink(tmp), add = TRUE)
+
+  sc <- read_scenario_yaml(tmp)
+  expect_true(!is.null(sc$density_spec))
+
+  out <- run_scenario(sc)
+  expect_equal(nrow(out$sim_output$summary), 2L)
+})

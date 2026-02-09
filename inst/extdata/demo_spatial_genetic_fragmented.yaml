@@ -1,0 +1,74 @@
+name: "demo_spatial_genetic_fragmented"
+schema_version: 2
+n_runs: 12
+n_years: 16
+seed: 20260210
+
+initializer:
+  fun: "initialize_spatial_genetic_population"
+  args:
+    n_per_patch: [45, 20, 10]
+    n_loci: 8
+    n_alleles: 2
+
+survival_fun: "default_survival_fun"
+dispersal_fun: "dispersal_low_connectivity_fun"
+inherit_fun: "inherit_genotype_simple"
+
+record_population_history: true
+
+# v2 reproduction channels
+demography:
+  breeding_prob:
+    table:
+      - sex: "F"
+        age_min: 0
+        age_max: 2
+        p_breed: 0.0
+      - sex: "F"
+        age_min: 3
+        age_max: 100
+        p_breed: 0.55
+      - sex: "M"
+        age_min: 0
+        age_max: 100
+        p_breed: 0.0
+  fecundity_lambda:
+    table:
+      - sex: "F"
+        age_min: 0
+        age_max: 2
+        lambda: 0.0
+      - sex: "F"
+        age_min: 3
+        age_max: 100
+        lambda: 1.1
+      - sex: "M"
+        age_min: 0
+        age_max: 100
+        lambda: 0.0
+
+reproduction_ev:
+  env_repro_p_sd: 0.08
+  env_repro_lambda_sd: 0.08
+  cat_repro_prob: 0.05
+  cat_repro_mult: 0.70
+
+env_surv_sd: 0.08
+cat_surv_prob: 0.04
+cat_surv_mult: 0.65
+
+density:
+  survival:
+    model: ceiling
+    K_patches: [80, 45, 30]
+
+lifecycle_steps:
+  - age
+  - survival
+  - dispersal
+  - breeding_births
+  - harvest
+
+management:
+  harvest_quota: 1

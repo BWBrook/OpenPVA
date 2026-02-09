@@ -57,11 +57,16 @@
 #'   the controller reproduction pathway.
 #' @param cat_repro_mult Multiplicative factor applied to both breeding
 #'   probability and fecundity lambda in reproduction catastrophe years.
+#' @param record_population_history Logical; if `TRUE`, stores a per-year
+#'   population snapshot in `population_history` for downstream
+#'   spatial/genetic time-series summaries.
 #'
 #' @return List with the final `population` and a `summary` tibble of yearly metrics
 #'   (including `n_supplemented`, `env_surv_mult`, `cat_surv_mult`,
 #'   `catastrophe`, `env_repro_p_mult`, `env_repro_lambda_mult`,
-#'   `cat_repro_mult`, and `repro_catastrophe` fields).
+#'   `cat_repro_mult`, and `repro_catastrophe` fields). If
+#'   `record_population_history = TRUE`, includes `population_history` (list of
+#'   length `n_years`) with per-year snapshots.
 #' @export
 run_basic_simulation <- function(
     initial_population,
@@ -88,6 +93,7 @@ run_basic_simulation <- function(
     env_repro_lambda_sd = 0,
     cat_repro_prob = 0,
     cat_repro_mult = 1,
+    record_population_history = FALSE,
     density_spec = NULL) {
   lifecycle_steps <- force(lifecycle_steps)
   if (!is.numeric(n_years) || length(n_years) != 1L || n_years < 0) {
@@ -168,6 +174,11 @@ run_basic_simulation <- function(
   if (!is.logical(require_mate) || length(require_mate) != 1L || is.na(require_mate)) {
     stop("require_mate must be a single logical value", call. = FALSE)
   }
+  if (!is.logical(record_population_history) ||
+      length(record_population_history) != 1L ||
+      is.na(record_population_history)) {
+    stop("record_population_history must be a single logical value", call. = FALSE)
+  }
 
   env_surv_sd <- as.numeric(env_surv_sd)
   if (length(env_surv_sd) != 1L || is.na(env_surv_sd) || env_surv_sd < 0) {
@@ -239,10 +250,15 @@ run_basic_simulation <- function(
       cat_repro_mult = numeric(),
       repro_catastrophe = logical()
     )
-    return(list(population = population, summary = summary_tbl))
+    out <- list(population = population, summary = summary_tbl)
+    if (record_population_history) {
+      out$population_history <- list()
+    }
+    return(out)
   }
 
   summary_rows <- vector("list", n_years)
+  population_history <- if (record_population_history) vector("list", n_years) else NULL
 
   for (year in seq_len(n_years)) {
     n_births_year <- 0L
@@ -455,6 +471,9 @@ run_basic_simulation <- function(
       cat_repro_mult = cat_repro_mult_year,
       repro_catastrophe = repro_cat_event_year
     )
+    if (record_population_history) {
+      population_history[[year]] <- .clone_population(population)
+    }
   }
 
   summary_tbl <- tibble::tibble(
@@ -475,7 +494,11 @@ run_basic_simulation <- function(
     repro_catastrophe = vapply(summary_rows, function(x) x$repro_catastrophe, logical(1))
   )
 
-  list(population = population, summary = summary_tbl)
+  out <- list(population = population, summary = summary_tbl)
+  if (record_population_history) {
+    out$population_history <- population_history
+  }
+  out
 }
 
 #' Run replicated demographic simulations
@@ -529,6 +552,8 @@ run_basic_simulation <- function(
 #'   the controller reproduction pathway.
 #' @param cat_repro_mult Multiplicative factor applied to breeding probability
 #'   and fecundity lambda in reproduction catastrophe years.
+#' @param record_population_history Logical; if `TRUE`, each run output includes
+#'   a `population_history` list with per-year snapshots.
 #' @param seed Optional integer random seed. When provided, replicate runs are
 #'   deterministic and the caller RNG state is restored on exit. The seed
 #'   controls demographic stochasticity and any year-level EV/cat draws applied
@@ -567,6 +592,7 @@ run_basic_simulation_replicates <- function(
     env_repro_lambda_sd = 0,
     cat_repro_prob = 0,
     cat_repro_mult = 1,
+    record_population_history = FALSE,
     seed = NULL,
     density_spec = NULL) {
   lifecycle_steps <- force(lifecycle_steps)
@@ -615,6 +641,11 @@ run_basic_simulation_replicates <- function(
   }
   if (!is.logical(require_mate) || length(require_mate) != 1L || is.na(require_mate)) {
     stop("require_mate must be a single logical value", call. = FALSE)
+  }
+  if (!is.logical(record_population_history) ||
+      length(record_population_history) != 1L ||
+      is.na(record_population_history)) {
+    stop("record_population_history must be a single logical value", call. = FALSE)
   }
 
   env_surv_sd <- as.numeric(env_surv_sd)
@@ -699,7 +730,8 @@ run_basic_simulation_replicates <- function(
       env_repro_p_sd = env_repro_p_sd,
       env_repro_lambda_sd = env_repro_lambda_sd,
       cat_repro_prob = cat_repro_prob,
-      cat_repro_mult = cat_repro_mult
+      cat_repro_mult = cat_repro_mult,
+      record_population_history = record_population_history
     )
     run_results[[run]] <- sim_result
     run_summaries[[run]] <- sim_result$summary
@@ -763,4 +795,11 @@ compute_survival_scale <- function(n_alive, K) {
     stop("seed must be NULL or a single integer", call. = FALSE)
   }
   seed_int
+}
+
+.clone_population <- function(population) {
+  if (!length(population)) {
+    return(population)
+  }
+  lapply(population, function(ind) ind)
 }

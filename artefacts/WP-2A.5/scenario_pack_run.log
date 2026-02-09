@@ -1,0 +1,12 @@
+    scenario  p_extinct final_year_mean_alive_patch3
+1 fragmented 0.00000000                   0.08333333
+2  connected 0.00000000                   0.25000000
+3 asymmetric 0.08333333                   0.00000000
+  final_year_p_occupied_patch3 mean_final_heterozygosity
+1                   0.08333333                 0.5000000
+2                   0.25000000                 0.6631944
+3                   0.00000000                       NaN
+  off_diag_transition_share colonized_events extirpated_events
+1                0.06595745                6                41
+2                0.47430117               33                61
+3                0.25671812               13                49

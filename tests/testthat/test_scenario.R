@@ -231,6 +231,24 @@ test_that("read_scenario_yaml handles management block", {
   expect_true(any(out$sim_output$summary$n_supplemented > 0L))
   expect_true(any(out$sim_output$summary$n_harvested >= 0L))
 })
+
+test_that("scenario_spec and run_scenario carry record_population_history", {
+  sc <- scenario_spec(
+    name = "history_demo",
+    n_runs = 2,
+    n_years = 2,
+    init_fun = function() initialize_population(6),
+    survival_fun = function(ind) 1,
+    breeding_fun = function(ind) FALSE,
+    fecundity_fun = function(ind) 0L,
+    lifecycle_steps = c("age", "survival"),
+    record_population_history = TRUE
+  )
+
+  expect_true(isTRUE(sc$record_population_history))
+  out <- run_scenario(sc)
+  expect_true(all(vapply(out$sim_output$runs, function(run) "population_history" %in% names(run), logical(1))))
+})
 test_that("read_scenario_yaml handles management block", {
   yaml_text <- "name: 'yaml_mgmt'\n"
   yaml_text <- paste0(yaml_text, "n_runs: 3\n")

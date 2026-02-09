@@ -31,6 +31,7 @@ scenario_spec(
   env_repro_lambda_sd = 0,
   cat_repro_prob = 0,
   cat_repro_mult = 1,
+  record_population_history = FALSE,
   seed = NULL,
   density_spec = NULL
 )
@@ -103,6 +104,10 @@ the controller reproduction pathway.}
 
 \item{cat_repro_mult}{Multiplicative factor applied to breeding probability
 and fecundity lambda in reproduction catastrophe years.}
+
+\item{record_population_history}{Logical; if `TRUE`, each run stores
+per-year population snapshots in `population_history` for downstream
+spatial/genetic time-series summaries.}
 
 \item{seed}{Optional integer random seed forwarded to
 `run_basic_simulation_replicates()`. When set, replicated scenario outputs

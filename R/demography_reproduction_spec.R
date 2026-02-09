@@ -128,6 +128,14 @@ validate_breeding_prob_table <- function(tbl) {
 #'   logical.
 #' @export
 validate_breeding_table <- function(tbl) {
+  .soft_deprecate_once(
+    "validate_breeding_table",
+    paste(
+      "`validate_breeding_table()` is soft-deprecated for OpenPVA 2.0.",
+      "Use `validate_breeding_prob_table()` with a `p_breed` column instead."
+    )
+  )
+
   tbl <- .validate_age_sex_table_core(
     tbl = tbl,
     required_cols = c("age_min", "age_max", "sex", "can_breed"),
@@ -177,6 +185,14 @@ make_default_breeding_prob_table <- function() {
 #'   `can_breed`.
 #' @export
 make_default_breeding_table <- function() {
+  .soft_deprecate_once(
+    "make_default_breeding_table",
+    paste(
+      "`make_default_breeding_table()` is soft-deprecated for OpenPVA 2.0.",
+      "Use `make_default_breeding_prob_table()` instead."
+    )
+  )
+
   prob_tbl <- make_default_breeding_prob_table()
   tbl <- dplyr::transmute(
     prob_tbl,
@@ -282,6 +298,14 @@ as_breeding_prob_fun <- function(breeding_fun) {
 #' @return A function with signature `function(ind)` returning `TRUE`/`FALSE`.
 #' @export
 build_breeding_fun_from_table <- function(tbl) {
+  .soft_deprecate_once(
+    "build_breeding_fun_from_table",
+    paste(
+      "`build_breeding_fun_from_table()` is soft-deprecated for OpenPVA 2.0.",
+      "Use `build_breeding_prob_fun_from_table()` (and adapt only when needed)."
+    )
+  )
+
   tbl_validated <- validate_breeding_table(tbl)
   prob_tbl <- dplyr::transmute(
     tbl_validated,
@@ -332,6 +356,14 @@ validate_fecundity_lambda_table <- function(tbl) {
 #' @return Invisibly returns the validated table.
 #' @export
 validate_fecundity_table <- function(tbl) {
+  .soft_deprecate_once(
+    "validate_fecundity_table",
+    paste(
+      "`validate_fecundity_table()` is soft-deprecated for OpenPVA 2.0.",
+      "Use `validate_fecundity_lambda_table()` instead."
+    )
+  )
+
   validate_fecundity_lambda_table(tbl)
 }
 
@@ -440,6 +472,14 @@ as_fecundity_lambda_fun <- function(fecundity_fun) {
 #'   integer offspring counts.
 #' @export
 build_fecundity_fun_from_table <- function(tbl) {
+  .soft_deprecate_once(
+    "build_fecundity_fun_from_table",
+    paste(
+      "`build_fecundity_fun_from_table()` is soft-deprecated for OpenPVA 2.0.",
+      "Use `build_fecundity_lambda_fun_from_table()` (and adapt only when needed)."
+    )
+  )
+
   lambda_fun <- build_fecundity_lambda_fun_from_table(tbl)
   as_fecundity_fun(lambda_fun)
 }

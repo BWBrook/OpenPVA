@@ -46,7 +46,7 @@ Changes to these interfaces are treated as breaking unless backward compatible.
 - `validate_fecundity_lambda_table()`
 - `build_fecundity_lambda_fun_from_table()`
 - `make_default_fecundity_lambda_table()`
-- Compatibility wrappers retained for 1.x:
+- Compatibility wrappers retained for 1.x (soft-deprecated for 2.0):
   - `validate_breeding_table()`
   - `build_breeding_fun_from_table()`
   - `make_default_breeding_table()`
@@ -78,9 +78,17 @@ release notes.
   - `summarise_genetic_diversity()`
 - Spatial convenience interfaces:
   - `make_markov_dispersal_fun()`
+  - `dispersal_low_connectivity_fun()`
+  - `dispersal_high_connectivity_fun()`
+  - `dispersal_asymmetric_flow_fun()`
   - `make_two_patch_spatial_scenario()`
+  - `initialize_spatial_population()`
+  - `initialize_spatial_genetic_population()`
   - `summarise_patch_occupancy_final()`
   - `summarise_patch_genetic_diversity_final()`
+  - `summarise_patch_occupancy_timeseries()`
+  - `summarise_patch_genetic_diversity_timeseries()`
+  - `summarise_patch_connectivity_timeseries()`
   - `initialize_patches()`
   - `default_dispersal_fun()`
 
@@ -88,3 +96,8 @@ release notes.
 
 Unexported functions (including names prefixed with `.`) are internal and not
 covered by semver stability promises.
+
+## Migration note
+
+For currently soft-deprecated wrappers and preferred replacements, see
+`docs/reference/migration_1x_to_2x.md`.

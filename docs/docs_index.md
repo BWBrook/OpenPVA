@@ -57,6 +57,14 @@ Use it as a starting point when orienting yourself in the project.
 - **reference/release_automation.md**  
   Non-publishing release evidence automation workflow and script usage.
 
+- **reference/migration_1x_to_2x.md**
+  Soft-deprecation registry and migration targets from legacy 1.x interfaces to
+  preferred 2.0-ready pathways.
+
+- **reference/spatial_genetic_outputs.md**
+  Guidance on final-time vs time-series vs connectivity spatial/genetic
+  summaries and interpretation caveats.
+
 ---
 
 ## This Index

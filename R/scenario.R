@@ -47,6 +47,9 @@
 #'   the controller reproduction pathway.
 #' @param cat_repro_mult Multiplicative factor applied to breeding probability
 #'   and fecundity lambda in reproduction catastrophe years.
+#' @param record_population_history Logical; if `TRUE`, each run stores
+#'   per-year population snapshots in `population_history` for downstream
+#'   spatial/genetic time-series summaries.
 #' @param seed Optional integer random seed forwarded to
 #'   `run_basic_simulation_replicates()`. When set, replicated scenario outputs
 #'   are deterministic and caller RNG state is restored after execution.
@@ -80,6 +83,7 @@ scenario_spec <- function(
     env_repro_lambda_sd = 0,
     cat_repro_prob = 0,
     cat_repro_mult = 1,
+    record_population_history = FALSE,
     seed = NULL,
     density_spec = NULL) {
   env_surv_sd <- as.numeric(env_surv_sd)
@@ -118,6 +122,7 @@ scenario_spec <- function(
     env_repro_lambda_sd = env_repro_lambda_sd,
     cat_repro_prob = cat_repro_prob,
     cat_repro_mult = cat_repro_mult,
+    record_population_history = record_population_history,
     seed = seed
   )
   scenario <- .validate_scenario(scenario)
@@ -166,6 +171,7 @@ run_scenario <- function(scenario) {
     env_repro_lambda_sd = scenario$env_repro_lambda_sd,
     cat_repro_prob = scenario$cat_repro_prob,
     cat_repro_mult = scenario$cat_repro_mult,
+    record_population_history = scenario$record_population_history,
     seed = scenario$seed
   )
   list(scenario = scenario, sim_output = sim_output)
@@ -501,11 +507,11 @@ print.openpva_scenario <- function(x, ...) {
     )
   }
 
-  model <- channel_cfg$model %||% NULL
-  fun_ref <- channel_cfg$fun %||% NULL
-  multiplier <- channel_cfg$multiplier %||% NULL
-  K <- channel_cfg$K %||% NULL
-  K_patches <- channel_cfg$K_patches %||% NULL
+  model <- channel_cfg[["model"]] %||% NULL
+  fun_ref <- channel_cfg[["fun"]] %||% NULL
+  multiplier <- channel_cfg[["multiplier"]] %||% NULL
+  K <- channel_cfg[["K"]] %||% NULL
+  K_patches <- channel_cfg[["K_patches"]] %||% NULL
 
   if (!is.null(fun_ref)) {
     if (!is.null(model) || !is.null(multiplier) || !is.null(K) || !is.null(K_patches)) {
@@ -583,23 +589,25 @@ print.openpva_scenario <- function(x, ...) {
     )
   }
 
-  has_legacy_shorthand <- !is.null(density_cfg$K) || !is.null(density_cfg$K_patches)
-  if (!is.null(density_cfg$survival) && has_legacy_shorthand) {
+  density_K <- density_cfg[["K"]] %||% NULL
+  density_K_patches <- density_cfg[["K_patches"]] %||% NULL
+  has_legacy_shorthand <- !is.null(density_K) || !is.null(density_K_patches)
+  if (!is.null(density_cfg[["survival"]]) && has_legacy_shorthand) {
     stop("density cannot combine survival channel config with shorthand K/K_patches", call. = FALSE)
   }
 
-  survival_cfg <- density_cfg$survival %||% NULL
+  survival_cfg <- density_cfg[["survival"]] %||% NULL
   if (is.null(survival_cfg) && has_legacy_shorthand) {
     survival_cfg <- list(
       model = "ceiling",
-      K = density_cfg$K %||% NULL,
-      K_patches = density_cfg$K_patches %||% NULL
+      K = density_K,
+      K_patches = density_K_patches
     )
   }
 
   survival_fun <- .parse_density_channel_yaml(survival_cfg, "survival")
-  breeding_fun <- .parse_density_channel_yaml(density_cfg$breeding %||% NULL, "breeding")
-  fecundity_fun <- .parse_density_channel_yaml(density_cfg$fecundity %||% NULL, "fecundity")
+  breeding_fun <- .parse_density_channel_yaml(density_cfg[["breeding"]] %||% NULL, "breeding")
+  fecundity_fun <- .parse_density_channel_yaml(density_cfg[["fecundity"]] %||% NULL, "fecundity")
 
   if (is.null(survival_fun) && is.null(breeding_fun) && is.null(fecundity_fun)) {
     stop(
@@ -640,6 +648,8 @@ print.openpva_scenario <- function(x, ...) {
 #' keys `env_surv_sd`, `cat_surv_prob`, and `cat_surv_mult`.
 #' Optional reproduction-controller function keys are `breeding_prob_fun` and
 #' `fecundity_lambda_fun`.
+#' Optional lifecycle-function keys are `mating_fun`, `dispersal_fun`, and
+#' `inherit_fun`.
 #'
 #' In schema v2, reproduction environmental variation and catastrophes are
 #' configured under `reproduction_ev`:
@@ -662,6 +672,9 @@ print.openpva_scenario <- function(x, ...) {
 #' An optional top-level `require_mate` logical controls whether unmated
 #' females can produce offspring (`FALSE`, legacy default) or are skipped
 #' during reproduction (`TRUE`).
+#' An optional top-level `record_population_history` logical can be set to
+#' `TRUE` to retain per-year population snapshots in scenario outputs for
+#' spatial/genetic time-series summary helpers.
 #'
 #' @return An `openpva_scenario` object.
 #' @export
@@ -714,11 +727,17 @@ read_scenario_yaml <- function(path) {
   fecundity_fun_name <- cfg$fecundity_fun %||% "default_fecundity_fun"
   breeding_prob_fun_name <- cfg$breeding_prob_fun %||% NULL
   fecundity_lambda_fun_name <- cfg$fecundity_lambda_fun %||% NULL
+  mating_fun_name <- cfg$mating_fun %||% "default_mating_fun"
+  dispersal_fun_name <- cfg$dispersal_fun %||% "default_dispersal_fun"
+  inherit_fun_name <- cfg$inherit_fun %||% NULL
   survival_fun <- .resolve_function(survival_fun_name)
   breeding_fun <- .resolve_function(breeding_fun_name)
   fecundity_fun <- .resolve_function(fecundity_fun_name)
   breeding_prob_fun <- if (is.null(breeding_prob_fun_name)) NULL else .resolve_function(breeding_prob_fun_name)
   fecundity_lambda_fun <- if (is.null(fecundity_lambda_fun_name)) NULL else .resolve_function(fecundity_lambda_fun_name)
+  mating_fun <- .resolve_function(mating_fun_name)
+  dispersal_fun <- .resolve_function(dispersal_fun_name)
+  inherit_fun <- if (is.null(inherit_fun_name)) NULL else .resolve_function(inherit_fun_name)
   if (schema_version == 2L) {
     if (is.null(breeding_prob_fun) && !is.null(cfg$breeding_fun)) {
       breeding_prob_fun <- as_breeding_prob_fun(breeding_fun)
@@ -797,6 +816,7 @@ read_scenario_yaml <- function(path) {
   cat_repro_mult <- repro_ev$cat_repro_mult %||% cfg$cat_repro_mult %||% 1
   density_spec <- .build_density_spec_from_yaml(cfg$density %||% NULL)
   require_mate <- cfg$require_mate %||% FALSE
+  record_population_history <- cfg$record_population_history %||% FALSE
   seed <- cfg$seed %||% NULL
 
   env_surv_sd <- as.numeric(env_surv_sd)
@@ -832,6 +852,11 @@ read_scenario_yaml <- function(path) {
   if (!is.logical(require_mate) || length(require_mate) != 1L || is.na(require_mate)) {
     stop("require_mate must be a logical scalar", call. = FALSE)
   }
+  if (!is.logical(record_population_history) ||
+      length(record_population_history) != 1L ||
+      is.na(record_population_history)) {
+    stop("record_population_history must be a logical scalar", call. = FALSE)
+  }
   if (!is.null(density_spec) && (!is.null(cfg$K) || !is.null(cfg$K_patches))) {
     stop("YAML cannot combine density block with top-level K/K_patches", call. = FALSE)
   }
@@ -850,6 +875,9 @@ read_scenario_yaml <- function(path) {
     K_patches = cfg$K_patches %||% NULL,
     harvest_quota = harvest_quota,
     lifecycle_steps = lifecycle_steps,
+    mating_fun = mating_fun,
+    inherit_fun = inherit_fun,
+    dispersal_fun = dispersal_fun,
     require_mate = require_mate,
     supplement_quota = supplement_quota,
     supplement_patch = supplement_patch,
@@ -860,6 +888,7 @@ read_scenario_yaml <- function(path) {
     env_repro_lambda_sd = env_repro_lambda_sd,
     cat_repro_prob = cat_repro_prob,
     cat_repro_mult = cat_repro_mult,
+    record_population_history = record_population_history,
     seed = seed,
     density_spec = density_spec
   )
@@ -913,6 +942,13 @@ read_scenario_yaml <- function(path) {
     stop("require_mate must be a single logical value", call. = FALSE)
   }
   scenario$require_mate <- require_mate
+  record_population_history <- scenario$record_population_history %||% FALSE
+  if (!is.logical(record_population_history) ||
+      length(record_population_history) != 1L ||
+      is.na(record_population_history)) {
+    stop("record_population_history must be a single logical value", call. = FALSE)
+  }
+  scenario$record_population_history <- record_population_history
   if (!is.null(scenario$inherit_fun) && !is.function(scenario$inherit_fun)) {
     stop("inherit_fun must be NULL or a function")
   }

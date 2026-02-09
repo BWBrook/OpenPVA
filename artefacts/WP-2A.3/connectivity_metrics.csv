@@ -1,0 +1,4 @@
+"scenario","total_off_diag","total_diag","off_diag_share","turnover_colonized","turnover_extirpated"
+"fragmented",47,874,0.0510314875135722,1,9
+"connected",436,488,0.471861471861472,3,8
+"asymmetric",252,607,0.293364377182771,5,15

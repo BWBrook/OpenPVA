@@ -30,6 +30,7 @@ run_basic_simulation_replicates(
   env_repro_lambda_sd = 0,
   cat_repro_prob = 0,
   cat_repro_mult = 1,
+  record_population_history = FALSE,
   seed = NULL,
   density_spec = NULL
 )
@@ -101,6 +102,9 @@ the controller reproduction pathway.}
 
 \item{cat_repro_mult}{Multiplicative factor applied to breeding probability
 and fecundity lambda in reproduction catastrophe years.}
+
+\item{record_population_history}{Logical; if `TRUE`, each run output includes
+a `population_history` list with per-year snapshots.}
 
 \item{seed}{Optional integer random seed. When provided, replicate runs are
 deterministic and the caller RNG state is restored on exit. The seed

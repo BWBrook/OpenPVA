@@ -23,6 +23,8 @@ Returns a list with:
   - `env_repro_lambda_mult` (numeric)
   - `cat_repro_mult` (numeric)
   - `repro_catastrophe` (logical)
+- Optional field when `record_population_history = TRUE`:
+  - `population_history`: list of per-year population snapshots.
 
 ## `run_basic_simulation_replicates()`
 
@@ -36,6 +38,8 @@ Returns a list with:
   - `run` (integer)
   - `went_extinct` (logical)
   - `time_to_extinction` (integer)
+- Optional per-run field when `record_population_history = TRUE`:
+  - `runs[[i]]$population_history`: list of per-year population snapshots.
 
 ## `run_scenario()`
 
@@ -124,6 +128,82 @@ Returns a tibble with required columns:
 - `mean_heterozygosity` (numeric)
 - `mean_Fhat` (numeric)
 - `alive_only` (logical)
+
+### `summarise_patch_occupancy_timeseries(sim_output, n_patches)`
+
+Returns a list with:
+
+- `per_run`: tibble with required columns:
+  - `run`
+  - `year`
+  - `patch_id`
+  - `n_alive`
+  - `occupied`
+  - `alive_only`
+- `overall`: tibble with required columns:
+  - `year`
+  - `patch_id`
+  - `n_runs`
+  - `mean_n_alive`
+  - `p_occupied`
+  - `n_extinct`
+  - `alive_only`
+
+### `summarise_patch_genetic_diversity_timeseries(sim_output, n_patches)`
+
+Returns a list with:
+
+- `per_run`: tibble with required columns:
+  - `run`
+  - `year`
+  - `patch_id`
+  - `n_genotyped`
+  - `mean_heterozygosity`
+  - `mean_Fhat`
+  - `alive_only`
+- `overall`: tibble with required columns:
+  - `year`
+  - `patch_id`
+  - `n_runs`
+  - `mean_n_genotyped`
+  - `p_patch_genotyped`
+  - `mean_heterozygosity`
+  - `mean_Fhat`
+  - `alive_only`
+
+### `summarise_patch_connectivity_timeseries(sim_output, n_patches)`
+
+Returns a list with:
+
+- `transitions`: tibble with required columns:
+  - `run`
+  - `year_from`
+  - `year_to`
+  - `origin_patch`
+  - `destination_patch`
+  - `n_individuals`
+  - `alive_only`
+- `transitions_overall`: tibble with required columns:
+  - `origin_patch`
+  - `destination_patch`
+  - `mean_n_individuals`
+  - `total_n_individuals`
+  - `p_transition_given_origin`
+  - `alive_only`
+- `net_patch_change`: tibble with required columns:
+  - `run`
+  - `year`
+  - `patch_id`
+  - `n_alive`
+  - `alive_only`
+  - `delta_n_alive`
+- `turnover`: tibble with required columns:
+  - `run`
+  - `year`
+  - `patch_id`
+  - `colonized`
+  - `extirpated`
+  - `alive_only`
 
 ## Compatibility note
 

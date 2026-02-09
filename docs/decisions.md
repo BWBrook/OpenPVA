@@ -286,3 +286,43 @@
   - Additive extension avoids disruptive schema changes while increasing
     decision-support utility.
 - **Status**: active
+
+## DEC-018 — 1.x soft-deprecation runtime policy for legacy reproduction wrappers
+- **Date**: 2026-02-09
+- **Decision**:
+  - Introduce a package-level soft-deprecation helper with:
+    - once-per-session warning emission per deprecated interface,
+    - explicit opt-out via `options(openpva.deprecation_warnings = FALSE)`.
+  - Apply soft-deprecation warnings to retained legacy reproduction wrappers:
+    - `validate_breeding_table()`
+    - `make_default_breeding_table()`
+    - `build_breeding_fun_from_table()`
+    - `validate_fecundity_table()`
+    - `build_fecundity_fun_from_table()`
+  - Keep runtime behavior fully compatible throughout the 1.x line.
+- **Rationale**:
+  - Preserves 1.x stability while actively guiding migration to baseline-rate
+    interfaces ahead of 2.0 removals.
+  - Once-per-session warning behavior limits noise in long analyses and CI.
+- **Status**: active
+
+## DEC-019 — Spatial/genetic scenario-pack hooks and exact density key parsing
+- **Date**: 2026-02-09
+- **Decision**:
+  - Add reusable spatial/genetic initialization helpers:
+    - `initialize_spatial_population()`
+    - `initialize_spatial_genetic_population()`
+  - Add fixed three-patch dispersal regime helpers for scenario-pack use:
+    - `dispersal_low_connectivity_fun()`
+    - `dispersal_high_connectivity_fun()`
+    - `dispersal_asymmetric_flow_fun()`
+  - Extend YAML scenario parsing to accept optional function hooks:
+    - `mating_fun`, `dispersal_fun`, `inherit_fun`.
+  - Use exact key extraction (`[[...]]`) in density parser internals to avoid
+    `$` partial-matching ambiguity between `K` and `K_patches`.
+- **Rationale**:
+  - Enables fully packaged and reproducible spatial-regime scenario examples in
+    both YAML and R pathways.
+  - Eliminates a subtle parser ambiguity that could trigger false
+    `K`/`K_patches` conflicts.
+- **Status**: active

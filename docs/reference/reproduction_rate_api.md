@@ -25,7 +25,7 @@ Compatibility adapters:
 - `as_breeding_prob_fun(breeding_fun)` wraps legacy logical interfaces as
   numeric probabilities (`0`/`1`).
 
-Legacy wrapper retained:
+Legacy wrapper retained (soft-deprecated for 2.0):
 
 - `build_breeding_fun_from_table(tbl)` still accepts `can_breed` tables and
   returns logical eligibility.
@@ -52,7 +52,7 @@ Compatibility adapters:
 - `as_fecundity_lambda_fun(fecundity_fun)` wraps legacy realized-count functions
   as non-negative numeric outputs.
 
-Legacy wrapper retained:
+Legacy wrapper retained (soft-deprecated for 2.0):
 
 - `build_fecundity_fun_from_table(tbl)` still returns realized counts from
   `lambda` tables (`Poisson(lambda)`).
@@ -65,7 +65,9 @@ These APIs are now the preferred baseline-rate channels for:
 - year-level reproduction EV/cat modifiers,
 - YAML schema v2 demography tables (`breeding_prob`, `fecundity_lambda`).
 
-Legacy builders and adapters remain available for backward compatibility.
+Legacy builders and adapters remain available for backward compatibility. See
+`docs/reference/migration_1x_to_2x.md` for the active soft-deprecation map and
+recommended replacements.
 
 ## Mating control extension
 

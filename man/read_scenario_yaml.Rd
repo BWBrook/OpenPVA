@@ -26,6 +26,8 @@ Survival environmental variation and catastrophes can be set via top-level
 keys `env_surv_sd`, `cat_surv_prob`, and `cat_surv_mult`.
 Optional reproduction-controller function keys are `breeding_prob_fun` and
 `fecundity_lambda_fun`.
+Optional lifecycle-function keys are `mating_fun`, `dispersal_fun`, and
+`inherit_fun`.
 
 In schema v2, reproduction environmental variation and catastrophes are
 configured under `reproduction_ev`:
@@ -47,7 +49,10 @@ An optional top-level `seed` can be supplied for deterministic replicate
 outputs.
 An optional top-level `require_mate` logical controls whether unmated
 females can produce offspring (`FALSE`, legacy default) or are skipped
-during reproduction (`TRUE`).}
+during reproduction (`TRUE`).
+An optional top-level `record_population_history` logical can be set to
+`TRUE` to retain per-year population snapshots in scenario outputs for
+spatial/genetic time-series summary helpers.}
 }
 \value{
 An `openpva_scenario` object.

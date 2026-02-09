@@ -1,0 +1,8 @@
+    scenario total_off_diag total_diag off_diag_share turnover_colonized
+1 fragmented             47        874     0.05103149                  1
+2  connected            436        488     0.47186147                  3
+3 asymmetric            252        607     0.29336438                  5
+  turnover_extirpated
+1                   9
+2                   8
+3                  15

@@ -29,6 +29,7 @@ run_basic_simulation(
   env_repro_lambda_sd = 0,
   cat_repro_prob = 0,
   cat_repro_mult = 1,
+  record_population_history = FALSE,
   density_spec = NULL
 )
 }
@@ -107,6 +108,10 @@ the controller reproduction pathway.}
 \item{cat_repro_mult}{Multiplicative factor applied to both breeding
 probability and fecundity lambda in reproduction catastrophe years.}
 
+\item{record_population_history}{Logical; if `TRUE`, stores a per-year
+population snapshot in `population_history` for downstream
+spatial/genetic time-series summaries.}
+
 \item{density_spec}{Optional density module specification from
 [density_spec()]. Defines channel-specific density multipliers for survival,
 breeding probability, and fecundity lambda.}
@@ -115,7 +120,9 @@ breeding probability, and fecundity lambda.}
 List with the final `population` and a `summary` tibble of yearly metrics
   (including `n_supplemented`, `env_surv_mult`, `cat_surv_mult`,
   `catastrophe`, `env_repro_p_mult`, `env_repro_lambda_mult`,
-  `cat_repro_mult`, and `repro_catastrophe` fields).
+  `cat_repro_mult`, and `repro_catastrophe` fields). If
+  `record_population_history = TRUE`, includes `population_history` (list of
+  length `n_years`) with per-year snapshots.
 }
 \description{
 Applies ageing, survival, and reproduction processes over multiple years.

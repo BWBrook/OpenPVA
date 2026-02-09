@@ -1,0 +1,7 @@
+WP-2A.6 validation summary
+
+- devtools::test(): PASS 607, FAIL 0, WARN 0
+- lintr::lint_package(): no lints
+- targets smoke: sim_basic completed
+- quarto render: completed (existing non-blocking path warning)
+- R CMD check --no-manual --as-cran: DONE, Status 3 NOTEs

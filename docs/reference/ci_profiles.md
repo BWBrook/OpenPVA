@@ -40,6 +40,7 @@ Checks:
   - `test_rng_seed.R`
   - `test_output_schema_contract.R`
   - `test_scenario_yaml_demography.R`
+  - `test_spatial_patches.R`
   - `test_reproducibility_snapshots.R`
 - full package tests,
 - `targets` smoke run (forced `sim_basic`),
@@ -67,7 +68,7 @@ Heavy profile equivalent:
 
 ```bash
 Rscript -e "renv::restore(prompt = FALSE)"
-Rscript -e "devtools::test(filter = 'rng_seed|output_schema_contract|scenario_yaml_demography|reproducibility_snapshots')"
+Rscript -e "devtools::test(filter = 'rng_seed|output_schema_contract|scenario_yaml_demography|spatial_patches|reproducibility_snapshots')"
 Rscript -e "devtools::test()"
 Rscript -e "targets::tar_invalidate(names = c('sim_basic')); targets::tar_make(script = '_targets.R', store = '_targets', names = c('sim_basic'))"
 quarto render quarto

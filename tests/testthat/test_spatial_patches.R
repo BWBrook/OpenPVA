@@ -14,6 +14,49 @@ test_that("initialize_patches assigns explicit and computed patch_ids", {
   expect_error(initialize_patches(base_pop, n_patches = 0), "n_patches")
 })
 
+test_that("spatial population initializers create expected patch/genotype structure", {
+  pop <- initialize_spatial_population(
+    n_per_patch = c(3L, 2L, 1L),
+    max_age = 1L
+  )
+  expect_equal(length(pop), 6L)
+  expect_equal(
+    vapply(pop, function(ind) ind$patch_id, integer(1)),
+    c(1L, 1L, 1L, 2L, 2L, 3L)
+  )
+
+  gpop <- initialize_spatial_genetic_population(
+    n_per_patch = c(2L, 2L),
+    n_loci = 4L,
+    n_alleles = 2L,
+    max_age = 1L
+  )
+  expect_equal(length(gpop), 4L)
+  expect_true(all(vapply(gpop, function(ind) is.matrix(ind$alleles), logical(1))))
+  expect_true(all(vapply(gpop, function(ind) is.finite(ind$F), logical(1))))
+
+  expect_error(initialize_spatial_population(c(0, 0)), "sum to at least 1")
+  expect_error(initialize_spatial_population(c(1, 2.5)), "integer counts")
+})
+
+test_that("fixed dispersal regimes encode different movement intensity", {
+  ind <- create_individual(1L, "F", age = 2L, patch_id = 1L)
+
+  set.seed(10)
+  low_draws <- replicate(500, dispersal_low_connectivity_fun(ind, NULL))
+  set.seed(10)
+  high_draws <- replicate(500, dispersal_high_connectivity_fun(ind, NULL))
+
+  expect_true(all(low_draws %in% c(1L, 2L, 3L)))
+  expect_true(all(high_draws %in% c(1L, 2L, 3L)))
+  expect_true(mean(low_draws == 1L) > mean(high_draws == 1L))
+
+  ind3 <- create_individual(2L, "M", age = 2L, patch_id = 3L)
+  set.seed(11)
+  asym_draws <- replicate(500, dispersal_asymmetric_flow_fun(ind3, NULL))
+  expect_true(sum(asym_draws == 1L) > sum(asym_draws == 2L))
+})
+
 test_that("run_basic_simulation applies patch-level K", {
   make_pop <- function() {
     pop <- initialize_population(n = 6, max_age = 1)
@@ -242,5 +285,111 @@ test_that("summarise_patch_genetic_diversity_final validates inputs", {
       n_patches = 0
     ),
     "n_patches"
+  )
+})
+
+test_that("time-series occupancy and diversity summaries use population_history", {
+  ind <- function(id, patch_id, alive = TRUE, alleles = NULL) {
+    x <- create_individual(id = id, sex = "F", age = 3L, patch_id = patch_id)
+    x$alive <- alive
+    x$alleles <- alleles
+    x$F <- if (is.null(alleles)) NA_real_ else .Fhat_from_alleles(alleles)
+    x
+  }
+
+  run1 <- list(
+    population_history = list(
+      list(
+        ind(1L, 1L, TRUE, rbind(c(1L, 2L), c(2L, 1L))),
+        ind(2L, 1L, TRUE, rbind(c(1L, 1L), c(1L, 1L))),
+        ind(3L, 2L, TRUE, NULL)
+      ),
+      list(
+        ind(1L, 2L, TRUE, rbind(c(1L, 1L), c(1L, 1L))),
+        ind(2L, 1L, TRUE, rbind(c(1L, 2L), c(1L, 2L))),
+        ind(3L, 2L, FALSE, NULL)
+      )
+    )
+  )
+  run2 <- list(
+    population_history = list(
+      list(
+        ind(4L, 1L, TRUE, rbind(c(1L, 1L), c(1L, 2L))),
+        ind(5L, 2L, TRUE, rbind(c(1L, 1L), c(1L, 1L)))
+      ),
+      list(
+        ind(4L, 1L, TRUE, rbind(c(1L, 1L), c(1L, 2L))),
+        ind(5L, 2L, TRUE, rbind(c(1L, 1L), c(1L, 1L)))
+      )
+    )
+  )
+  sim_output <- list(runs = list(run1, run2))
+
+  occ <- summarise_patch_occupancy_timeseries(sim_output, n_patches = 2, alive_only = TRUE)
+  expect_true(is.list(occ))
+  expect_true(all(c("per_run", "overall") %in% names(occ)))
+  expect_equal(nrow(occ$per_run), 8L)
+  expect_equal(occ$overall$mean_n_alive[occ$overall$year == 2L & occ$overall$patch_id == 2L], 1)
+
+  gen <- summarise_patch_genetic_diversity_timeseries(sim_output, n_patches = 2, alive_only = TRUE)
+  expect_true(is.list(gen))
+  expect_true(all(c("per_run", "overall") %in% names(gen)))
+  expect_equal(nrow(gen$per_run), 8L)
+  expect_true(all(gen$overall$p_patch_genotyped >= 0 & gen$overall$p_patch_genotyped <= 1))
+})
+
+test_that("connectivity summary captures transitions and turnover", {
+  mk <- function(id, patch_id, alive = TRUE) {
+    x <- create_individual(id = id, sex = "F", age = 3L, patch_id = patch_id)
+    x$alive <- alive
+    x
+  }
+  sim_output <- list(
+    runs = list(
+      list(population_history = list(
+        list(mk(1L, 1L), mk(2L, 1L), mk(3L, 2L)),
+        list(mk(1L, 2L), mk(2L, 1L), mk(3L, 2L, alive = FALSE))
+      )),
+      list(population_history = list(
+        list(mk(4L, 1L), mk(5L, 2L)),
+        list(mk(4L, 1L), mk(5L, 2L))
+      ))
+    )
+  )
+
+  conn <- summarise_patch_connectivity_timeseries(sim_output, n_patches = 2, alive_only = TRUE)
+  expect_true(is.list(conn))
+  expect_true(all(c("transitions", "transitions_overall", "net_patch_change", "turnover") %in% names(conn)))
+
+  p11 <- conn$transitions_overall$p_transition_given_origin[
+    conn$transitions_overall$origin_patch == 1L &
+      conn$transitions_overall$destination_patch == 1L
+  ]
+  p12 <- conn$transitions_overall$p_transition_given_origin[
+    conn$transitions_overall$origin_patch == 1L &
+      conn$transitions_overall$destination_patch == 2L
+  ]
+  expect_true(p11 > p12)
+  expect_true(all(is.logical(conn$turnover$colonized)))
+  expect_true(all(is.logical(conn$turnover$extirpated)))
+})
+
+test_that("time-series spatial helpers require population_history", {
+  sim_output <- list(
+    runs = list(
+      list(population = list())
+    )
+  )
+  expect_error(
+    summarise_patch_occupancy_timeseries(sim_output, n_patches = 2),
+    "record_population_history = TRUE"
+  )
+  expect_error(
+    summarise_patch_genetic_diversity_timeseries(sim_output, n_patches = 2),
+    "record_population_history = TRUE"
+  )
+  expect_error(
+    summarise_patch_connectivity_timeseries(sim_output, n_patches = 2),
+    "record_population_history = TRUE"
   )
 })

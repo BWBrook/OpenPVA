@@ -25,11 +25,15 @@ This page documents the supported YAML scenario schemas for OpenPVA.
 - `K_patches`
 - `harvest_quota`
 - `lifecycle_steps`
+- `mating_fun`
+- `dispersal_fun`
+- `inherit_fun`
 - `env_surv_sd`
 - `cat_surv_prob`
 - `cat_surv_mult`
 - `seed`
 - `require_mate`
+- `record_population_history`
 - `density` (optional density module block; see below)
 
 Management options can also be expressed under `management`:
@@ -81,6 +85,18 @@ Schema v2 canonical form:
 
 Legacy top-level forms of those keys are still accepted and migrated.
 
+## Lifecycle function hooks
+
+Optional function hooks can be supplied by name:
+
+- `mating_fun` (`function(females, males)` used in reproduction),
+- `dispersal_fun` (`function(ind, population)` used by `dispersal` lifecycle
+  steps),
+- `inherit_fun` (`function(mother, father)` used for offspring genotype
+  inheritance).
+
+When omitted, defaults from the core scenario API are used.
+
 ## Density configuration
 
 An optional `density` mapping can define channel-specific density multipliers.
@@ -129,6 +145,15 @@ Compatibility rules:
 - `require_mate: false` (default, legacy behavior): unmated females may still
   produce offspring (with `father_id = NA`).
 - `require_mate: true`: females without an assigned mate produce no offspring.
+
+## Population history capture
+
+- `record_population_history` is optional and must be a logical scalar.
+- `record_population_history: false` (default): run outputs contain final
+  population and yearly summary only.
+- `record_population_history: true`: each run output includes
+  `population_history` (one population snapshot per simulated year) for
+  spatial/genetic time-series summaries.
 
 ## Migration behavior
 

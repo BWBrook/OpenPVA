@@ -351,3 +351,36 @@ test_that("make_mate_limited_mating_fun validates quota input", {
     "max_mates_per_male"
   )
 })
+
+test_that("run_basic_simulation can record per-year population history", {
+  res <- run_basic_simulation(
+    initial_population = initialize_population(6),
+    n_years = 3,
+    survival_fun = function(ind) 1,
+    breeding_fun = function(ind) FALSE,
+    fecundity_fun = function(ind) 0L,
+    lifecycle_steps = c("age", "survival"),
+    record_population_history = TRUE
+  )
+
+  expect_true("population_history" %in% names(res))
+  expect_equal(length(res$population_history), 3L)
+  expect_true(all(vapply(res$population_history, is.list, logical(1))))
+})
+
+test_that("replicates propagate record_population_history", {
+  res <- run_basic_simulation_replicates(
+    n_runs = 2,
+    n_years = 2,
+    init_fun = function() initialize_population(6),
+    survival_fun = function(ind) 1,
+    breeding_fun = function(ind) FALSE,
+    fecundity_fun = function(ind) 0L,
+    lifecycle_steps = c("age", "survival"),
+    record_population_history = TRUE
+  )
+
+  expect_equal(length(res$runs), 2L)
+  expect_true(all(vapply(res$runs, function(run) "population_history" %in% names(run), logical(1))))
+  expect_true(all(vapply(res$runs, function(run) length(run$population_history), integer(1)) == 2L))
+})

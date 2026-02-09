@@ -128,4 +128,68 @@ test_that("summary helper output schemas are stable", {
       "p_any_below_floor"
     )
   )
+
+  reps_hist <- run_basic_simulation_replicates(
+    n_runs = 3,
+    n_years = 4,
+    init_fun = function() {
+      pop <- initialize_population(12)
+      initialize_patches(pop, patch_ids = rep(c(1L, 2L), each = 6))
+    },
+    survival_fun = function(ind) 1,
+    breeding_fun = function(ind) FALSE,
+    fecundity_fun = function(ind) 0L,
+    lifecycle_steps = c("age", "survival", "dispersal"),
+    dispersal_fun = make_markov_dispersal_fun(
+      matrix(c(0.9, 0.1, 0.2, 0.8), nrow = 2, byrow = TRUE)
+    ),
+    record_population_history = TRUE
+  )
+
+  occ_ts <- summarise_patch_occupancy_timeseries(reps_hist, n_patches = 2)
+  expect_true(is.list(occ_ts))
+  expect_required_columns(
+    occ_ts$per_run,
+    c("run", "year", "patch_id", "n_alive", "occupied", "alive_only")
+  )
+  expect_required_columns(
+    occ_ts$overall,
+    c("year", "patch_id", "n_runs", "mean_n_alive", "p_occupied", "n_extinct", "alive_only")
+  )
+
+  gen_ts <- summarise_patch_genetic_diversity_timeseries(reps_hist, n_patches = 2)
+  expect_true(is.list(gen_ts))
+  expect_required_columns(
+    gen_ts$per_run,
+    c("run", "year", "patch_id", "n_genotyped", "mean_heterozygosity", "mean_Fhat", "alive_only")
+  )
+  expect_required_columns(
+    gen_ts$overall,
+    c(
+      "year", "patch_id", "n_runs", "mean_n_genotyped", "p_patch_genotyped",
+      "mean_heterozygosity", "mean_Fhat", "alive_only"
+    )
+  )
+
+  conn_ts <- summarise_patch_connectivity_timeseries(reps_hist, n_patches = 2)
+  expect_true(is.list(conn_ts))
+  expect_required_columns(
+    conn_ts$transitions,
+    c("run", "year_from", "year_to", "origin_patch", "destination_patch", "n_individuals", "alive_only")
+  )
+  expect_required_columns(
+    conn_ts$transitions_overall,
+    c(
+      "origin_patch", "destination_patch", "mean_n_individuals",
+      "total_n_individuals", "p_transition_given_origin", "alive_only"
+    )
+  )
+  expect_required_columns(
+    conn_ts$net_patch_change,
+    c("run", "year", "patch_id", "n_alive", "alive_only", "delta_n_alive")
+  )
+  expect_required_columns(
+    conn_ts$turnover,
+    c("run", "year", "patch_id", "colonized", "extirpated", "alive_only")
+  )
 })
