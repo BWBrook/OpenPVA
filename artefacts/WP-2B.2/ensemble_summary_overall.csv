@@ -1,0 +1,2 @@
+"n_draws","extinction_threshold","final_n_floor","mean_p_extinction","sd_p_extinction","mean_mean_final_n_alive","sd_mean_final_n_alive","mean_p_final_below_floor","sd_p_final_below_floor","mean_p_any_below_floor","sd_p_any_below_floor"
+8,0,8,0.375,0.350736187206101,169.072916666667,208.793289578036,0.395833333333333,0.344313211047133,0.395833333333333,0.344313211047133

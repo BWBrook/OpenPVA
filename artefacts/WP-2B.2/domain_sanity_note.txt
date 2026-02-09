@@ -1,0 +1,5 @@
+WP-2B.2 seeded uncertainty ensemble note
+Date: 2026-02-09
+n_draws: 8
+draw-level mean p_extinction: 0.375
+draw-level range mean_final_n_alive: 6.08 to 626.75

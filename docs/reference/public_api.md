@@ -91,6 +91,10 @@ release notes.
   - `summarise_patch_connectivity_timeseries()`
   - `initialize_patches()`
   - `default_dispersal_fun()`
+- Uncertainty/ensemble interfaces:
+  - `sample_uncertainty_parameters()`
+  - `run_scenario_ensemble()`
+  - `summarise_ensemble_outputs()`
 
 ## Internal API rule
 

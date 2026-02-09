@@ -50,7 +50,7 @@ stable core API, documented scenario schema, strong tests, and reproducible demo
 - Known failing tests / TODOs:
   - No known failing tests in canonical invocation.
   - Priority Queue has been extended with `Line 2B.x` and now continues from
-    `WP-2B.2` (after completing `WP-2B.1` contract lock).
+    `WP-2B.3` (after completing `WP-2B.1` and `WP-2B.2`).
 
 ## 3) Definition of Done for the next “reviewable milestone”
 
@@ -150,8 +150,8 @@ Success criteria:
 ## 6) Current phase and next steps (agent-maintained)
 
 - **Current phase**:
-  - Priority Queue extended to `Line 2B.x`; `WP-2B.1` completed and active
-    execution startpoint is `WP-2B.2`.
+  - Priority Queue extended to `Line 2B.x`; `WP-2B.1` and `WP-2B.2` completed,
+    active execution startpoint is `WP-2B.3`.
 - **Most recent milestone progress**:
   - Completed `WP-0.3.1` through `WP-2A.6`, including:
     - bootstrap baseline and artefact/log scaffolding,
@@ -162,7 +162,7 @@ Success criteria:
     - domain-sanity spatial/genetic scenario pack in `inst/extdata/`,
     - Quarto and reference-doc upgrades for scientific interpretation workflow.
 - **Immediate next steps**:
-  1. Execute `WP-2B.2` (R-level ensemble runner + sampling primitives).
-  2. Progress to `WP-2B.3` for additive YAML schema v3 uncertainty support.
+  1. Execute `WP-2B.3` (YAML schema v3 uncertainty block + migrations/tests).
+  2. Progress to `WP-2B.4` sensitivity diagnostics after YAML integration.
   3. Maintain artefact/log/decision discipline through the full `Line 2B.x`
      queue.

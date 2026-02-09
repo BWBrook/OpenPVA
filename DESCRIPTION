@@ -43,4 +43,5 @@ Collate:
     'simulation_summary.R'
     'simulation_plots.R'
     'scenario.R'
+    'uncertainty_ensemble.R'
     'management.R'

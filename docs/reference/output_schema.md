@@ -48,6 +48,55 @@ Returns a list with:
 - `scenario`: `openpva_scenario` object.
 - `sim_output`: output object from `run_basic_simulation_replicates()`.
 
+## Uncertainty ensemble interfaces
+
+### `sample_uncertainty_parameters(uncertainty_spec, n_draws, seed = NULL)`
+
+Returns a tibble with required columns:
+
+- `draw_id` (integer)
+- one column per named uncertainty parameter in `uncertainty_spec`.
+
+### `run_scenario_ensemble(scenario, uncertainty_spec, n_draws, seed = NULL)`
+
+Returns a list with required fields:
+
+- `scenario`: input `openpva_scenario`.
+- `uncertainty_spec`: normalized uncertainty specification list.
+- `sampled_parameters`: tibble returned by `sample_uncertainty_parameters()`.
+- `draw_results`: list of length `n_draws`; each element contains:
+  - `draw_id` (integer),
+  - `scenario` (`openpva_scenario` with draw-specific parameters applied),
+  - `sim_output` (output from `run_scenario()` for that draw).
+- `seed`: normalized integer seed or `NULL`.
+
+### `summarise_ensemble_outputs(ensemble_output, extinction_threshold = 0, final_n_floor = extinction_threshold)`
+
+Returns a list with required fields:
+
+- `per_draw`: tibble with required columns:
+  - `draw_id`
+  - `p_extinction`
+  - `mean_time_to_extinction`
+  - `median_time_to_extinction`
+  - `mean_final_n_alive`
+  - `median_final_n_alive`
+  - `p_final_below_floor`
+  - `p_any_below_floor`
+  - plus sampled uncertainty parameter columns joined from `sampled_parameters`.
+- `overall`: one-row tibble with required columns:
+  - `n_draws`
+  - `extinction_threshold`
+  - `final_n_floor`
+  - `mean_p_extinction`
+  - `sd_p_extinction`
+  - `mean_mean_final_n_alive`
+  - `sd_mean_final_n_alive`
+  - `mean_p_final_below_floor`
+  - `sd_p_final_below_floor`
+  - `mean_p_any_below_floor`
+  - `sd_p_any_below_floor`
+
 ## Summary helpers
 
 ### `summarise_extinction(sim_output, threshold = 0)`

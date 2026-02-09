@@ -93,7 +93,7 @@ A WP is **Done** only when all of the following are true:
 
 ### Line 2B.x — Scientific rigor expansion (uncertainty, validation, scale)
 - [x] WP-2B.1 — DECISION: uncertainty + validation contract (R-first, YAML-additive)
-- [ ] WP-2B.2 — Ensemble runner + parameter sampling primitives
+- [x] WP-2B.2 — Ensemble runner + parameter sampling primitives
 - [ ] WP-2B.3 — YAML schema v3 uncertainty block + migration tests
 - [ ] WP-2B.4 — Sensitivity diagnostics (PRCC + OAT elasticity)
 - [ ] WP-2B.5 — Hindcast/calibration scaffold (bounded, transparent)

@@ -451,3 +451,26 @@
   - Preserves backward compatibility while enabling a clear, testable
     uncertainty expansion path.
 - **Status**: active
+
+## DEC-027 — WP-2B.2 uncertainty API shape and distribution set
+- **Date**: 2026-02-09
+- **Decision**:
+  - Introduce exported R-level APIs:
+    - `sample_uncertainty_parameters()`
+    - `run_scenario_ensemble()`
+    - `summarise_ensemble_outputs()`
+  - Adopt a named-list `uncertainty_spec` contract where each parameter uses:
+    - `dist` in `{fixed, uniform, normal, lognormal}`,
+    - distribution-specific scalar fields,
+    - optional `lower`, `upper`, and `integer` controls.
+  - Require uncertainty parameter names to match writable scenario fields
+    (explicit error on unknown parameters).
+  - Keep draw semantics fixed-within-draw and return draw-level provenance via
+    `sampled_parameters` and `draw_results`.
+  - Keep APIs experimental in 1.x while output schema is stabilized.
+- **Rationale**:
+  - Provides a bounded, interpretable uncertainty API without overcommitting to
+    a larger inference framework.
+  - Supports immediate ensemble analyses with explicit reproducibility and audit
+    trails.
+- **Status**: active

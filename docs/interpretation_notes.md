@@ -7,6 +7,32 @@ For each major change, create an entry.
 
 ---
 
+### [2026-02-09] WP-2B.2 ensemble runner + uncertainty sampling primitives
+
+- **Change summary**:
+  - Added R-level uncertainty APIs:
+    - `sample_uncertainty_parameters()`
+    - `run_scenario_ensemble()`
+    - `summarise_ensemble_outputs()`
+  - Added uncertainty API reference note:
+    `docs/reference/uncertainty_api.md`.
+  - Updated public API and output schema docs for ensemble contracts.
+- **Artefacts inspected**:
+  - `artefacts/WP-2B.2/ensemble_sample_table.csv`
+  - `artefacts/WP-2B.2/ensemble_summary_per_draw.csv`
+  - `artefacts/WP-2B.2/ensemble_summary_overall.csv`
+  - `artefacts/WP-2B.2/domain_sanity_note.txt`
+- **Observed behaviour**:
+  - Seeded uncertainty draws are deterministic.
+  - Ensemble summaries show plausible directional response to drawn management
+    intensity and survival modifiers.
+  - Draw-level extinction risk and mean final abundance varied substantially
+    across sampled regimes, as expected for stress-testing uncertainty.
+- **Follow-up tasks**:
+  - [ ] Execute `WP-2B.3` YAML schema v3 uncertainty integration.
+
+---
+
 ### [2026-02-09] WP-2B.1 uncertainty/validation contract lock
 
 - **Change summary**:
