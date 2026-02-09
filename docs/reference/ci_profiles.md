@@ -14,6 +14,7 @@ Triggers:
 
 Checks:
 
+- Ubuntu system requirements install (`apt`) for R package runtime/link deps,
 - dependency restore (`renv::restore()`),
 - lint (`lintr::lint_package()`),
 - tests (`devtools::test()`),
@@ -36,6 +37,7 @@ Triggers:
 
 Checks:
 
+- Ubuntu system requirements install (`apt`) for R package runtime/link deps,
 - reproducibility regression tests:
   - `test_rng_seed.R`
   - `test_output_schema_contract.R`
@@ -57,6 +59,8 @@ Purpose:
 Fast profile equivalent:
 
 ```bash
+sudo apt-get update
+sudo apt-get install -y libcurl4-openssl-dev libfontconfig1-dev libfreetype6-dev libgit2-dev libglpk-dev libx11-dev pandoc
 RENV_CONFIG_AUTOLOADER_ENABLED=FALSE Rscript -e "options(renv.config.pak.enabled = FALSE); renv::restore(prompt = FALSE)"
 Rscript -e "lints <- lintr::lint_package(); print(lints); if (length(lints) > 0) quit(status = 1)"
 Rscript -e "devtools::test()"
@@ -67,6 +71,8 @@ R CMD check --no-manual OpenPVA_*.tar.gz
 Heavy profile equivalent:
 
 ```bash
+sudo apt-get update
+sudo apt-get install -y libcurl4-openssl-dev libfontconfig1-dev libfreetype6-dev libgit2-dev libglpk-dev libx11-dev pandoc
 RENV_CONFIG_AUTOLOADER_ENABLED=FALSE Rscript -e "options(renv.config.pak.enabled = FALSE); renv::restore(prompt = FALSE)"
 Rscript -e "devtools::test(filter = 'rng_seed|output_schema_contract|scenario_yaml_demography|spatial_patches|reproducibility_snapshots')"
 Rscript -e "devtools::test()"

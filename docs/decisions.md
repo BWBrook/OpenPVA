@@ -340,3 +340,24 @@
   - Avoids transient dependency-solver instability observed in `ci-fast`
     `renv::restore()` on `main` pushes.
 - **Status**: active
+
+## DEC-021 — CI system requirements preinstall policy
+- **Date**: 2026-02-09
+- **Decision**:
+  - In GitHub Actions workflows, install required Ubuntu system packages before
+    `renv::restore()`:
+    - `libcurl4-openssl-dev`
+    - `libfontconfig1-dev`
+    - `libfreetype6-dev`
+    - `libgit2-dev`
+    - `libglpk-dev`
+    - `libx11-dev`
+    - `pandoc`
+  - Apply this policy consistently to both `ci-fast` and
+    `ci-heavy-validation`.
+- **Rationale**:
+  - Fixes binary load failures during dependency restore (for example
+    `igraph.so` failing to load because `libglpk.so.40` was absent).
+  - Aligns CI runtime environment with declared package/system requirements,
+    reducing restore/check flakiness and follow-on runtime link errors.
+- **Status**: active
