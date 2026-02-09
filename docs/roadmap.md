@@ -91,6 +91,14 @@ A WP is **Done** only when all of the following are true:
 - [x] WP-2A.5 — Domain-sanity spatial/genetic scenario pack
 - [x] WP-2A.6 — Spatial-genetic docs + Quarto scientific narrative upgrade
 
+### Line 2B.x — Scientific rigor expansion (uncertainty, validation, scale)
+- [x] WP-2B.1 — DECISION: uncertainty + validation contract (R-first, YAML-additive)
+- [ ] WP-2B.2 — Ensemble runner + parameter sampling primitives
+- [ ] WP-2B.3 — YAML schema v3 uncertainty block + migration tests
+- [ ] WP-2B.4 — Sensitivity diagnostics (PRCC + OAT elasticity)
+- [ ] WP-2B.5 — Hindcast/calibration scaffold (bounded, transparent)
+- [ ] WP-2B.6 — Performance hardening + uncertainty docs/Quarto integration
+
 ---
 
 ## 4) Detailed Work Package specs
@@ -1087,6 +1095,196 @@ spatial-genetic outputs for inference and comparison.
 
 **Stop condition**
 - Stop once docs and Quarto narrative are coherent, tested, and reproducible.
+
+---
+
+## WP-2B.1 — DECISION: uncertainty + validation contract (R-first, YAML-additive)
+
+**Outcome**  
+Uncertainty and validation semantics are explicitly locked before implementation
+so downstream APIs/tests/docs are coherent and migration-safe.
+
+**Scope**
+- In scope:
+  - Define uncertainty taxonomy for 2B line:
+    - parameter uncertainty on vital rates/management controls,
+    - scenario-level uncertainty channels included/excluded in 2B scope.
+  - Lock composition order relative to density and EV/cat modifiers.
+  - Lock 2B calibration/hindcast scope boundary (scaffold vs full inference).
+  - Record compatibility policy for 1.x and YAML evolution path.
+- Out of scope:
+  - Full ensemble implementation.
+  - New schema parser code.
+
+**Acceptance criteria**
+- Decision is recorded in `docs/decisions.md` with:
+  - uncertainty channels,
+  - modifier composition order,
+  - compatibility/deprecation stance.
+- A reference contract note exists under `docs/reference/`.
+- A log entry and artefact note summarise rationale/tradeoffs.
+
+**Artefact evidence**
+- `artefacts/WP-2B.1/decision_summary.md`
+- `docs/reference/uncertainty_validation_contract.md`
+- `docs/log/<WP-2B.1 log>.md`
+
+**Stop condition**
+- Stop once contract decisions are explicit, reviewable, and sufficient to
+  unblock WP-2B.2 implementation.
+
+---
+
+## WP-2B.2 — Ensemble runner + parameter sampling primitives
+
+**Outcome**  
+R-level workflows can run reproducible uncertainty ensembles with explicit
+sample tables and stable output contracts.
+
+**Scope**
+- In scope:
+  - Add bounded parameter sampling helpers.
+  - Add ensemble runner API that combines sampled draws and replicate runs.
+  - Add summary helpers for per-draw and overall uncertainty outputs.
+  - Add deterministic seed handling and sampled-parameter provenance.
+- Out of scope:
+  - YAML schema changes (WP-2B.3).
+  - Advanced inference/calibration.
+
+**Acceptance criteria**
+- New R-level APIs are documented and tested.
+- Ensemble outputs include sampled parameters and run-level identifiers.
+- Seeded runs are reproducible and covered by regression tests.
+
+**Artefact evidence**
+- `artefacts/WP-2B.2/ensemble_sample_table.csv`
+- `artefacts/WP-2B.2/ensemble_summary.csv`
+- `artefacts/WP-2B.2/repro_seed_check.md`
+
+**Stop condition**
+- Stop once ensemble execution is reproducible, documented, and contract-tested.
+
+---
+
+## WP-2B.3 — YAML schema v3 uncertainty block + migration tests
+
+**Outcome**  
+YAML scenarios can declare uncertainty settings via additive schema v3 fields,
+while v2 and legacy scenarios remain supported.
+
+**Scope**
+- In scope:
+  - Introduce `schema_version: 3` with additive `uncertainty` block.
+  - Compile uncertainty YAML into R-level ensemble channels.
+  - Add migration/compatibility tests (v2 -> v3/default handling).
+- Out of scope:
+  - Breaking removal of prior schema paths.
+  - Non-additive parser redesign.
+
+**Acceptance criteria**
+- `read_scenario_yaml()` supports v2 and v3 uncertainty behavior.
+- Unknown/invalid uncertainty config yields explicit validation errors.
+- Migration tests and schema snapshots are added and passing.
+
+**Artefact evidence**
+- `artefacts/WP-2B.3/schema_migration_fixtures.md`
+- `artefacts/WP-2B.3/yaml_uncertainty_examples/`
+
+**Stop condition**
+- Stop once YAML uncertainty is additive, validated, and regression-protected.
+
+---
+
+## WP-2B.4 — Sensitivity diagnostics (PRCC + OAT elasticity)
+
+**Outcome**  
+Users can quantify which uncertain inputs most influence key decision outputs.
+
+**Scope**
+- In scope:
+  - Add PRCC-style sensitivity helper(s) for ensemble outputs.
+  - Add one-at-a-time elasticity helper(s) around a bounded baseline.
+  - Document interpretation caveats and metric definitions.
+- Out of scope:
+  - Full global sensitivity ecosystem beyond bounded 2B scope.
+  - Bayesian model averaging.
+
+**Acceptance criteria**
+- Diagnostics return stable documented output tables.
+- Tests cover deterministic toy models with expected directional signals.
+- Docs include interpretation guidance and limitations.
+
+**Artefact evidence**
+- `artefacts/WP-2B.4/sensitivity_prcc.csv`
+- `artefacts/WP-2B.4/sensitivity_oat.csv`
+- `artefacts/WP-2B.4/diagnostic_plots/`
+
+**Stop condition**
+- Stop once sensitivity outputs are interpretable, reproducible, and tested.
+
+---
+
+## WP-2B.5 — Hindcast/calibration scaffold (bounded, transparent)
+
+**Outcome**  
+A transparent calibration scaffold exists for bounded parameter search against
+observed/hindcast summary targets.
+
+**Scope**
+- In scope:
+  - Add objective scoring helper(s) for observed-vs-simulated summaries.
+  - Add bounded search wrapper(s) (grid/random style only).
+  - Add reproducible hindcast/calibration reporting helpers.
+- Out of scope:
+  - Full Bayesian inference engines.
+  - Automatic production tuning loops.
+
+**Acceptance criteria**
+- Calibration scaffold APIs are documented and tested.
+- Objective scores and best-fit summaries are reproducible under fixed seeds.
+- Explicit docs note that this is scaffold-level, not full statistical
+  inference.
+
+**Artefact evidence**
+- `artefacts/WP-2B.5/hindcast_scores.csv`
+- `artefacts/WP-2B.5/calibration_candidates.csv`
+- `artefacts/WP-2B.5/calibration_best_fit.md`
+
+**Stop condition**
+- Stop once scaffold is bounded, reproducible, and clearly documented.
+
+---
+
+## WP-2B.6 — Performance hardening + uncertainty docs/Quarto integration
+
+**Outcome**  
+Uncertainty and sensitivity workflows are practical at moderate scale and
+documented for scientific use.
+
+**Scope**
+- In scope:
+  - Profile uncertainty workflow hotspots.
+  - Add bounded parallel/performance improvements compatible with deterministic
+    seeds and existing contracts.
+  - Extend Quarto/reference docs with uncertainty workflow narrative.
+  - Add CI-heavy bounded uncertainty smoke checks.
+- Out of scope:
+  - Unbounded HPC orchestration.
+  - Non-reproducible performance shortcuts.
+
+**Acceptance criteria**
+- Before/after profiling note exists with reproducible conditions.
+- Parallel/serial runs satisfy reproducibility contract expectations.
+- Quarto uncertainty narrative renders successfully.
+- CI-heavy uncertainty smoke path passes.
+
+**Artefact evidence**
+- `artefacts/WP-2B.6/performance_profile.md`
+- `artefacts/WP-2B.6/parallel_repro_comparison.csv`
+- `artefacts/WP-2B.6/quarto_render_log.txt`
+
+**Stop condition**
+- Stop once performance/determinism/docs checks are coherent and green.
 
 ---
 

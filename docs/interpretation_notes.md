@@ -7,6 +7,28 @@ For each major change, create an entry.
 
 ---
 
+### [2026-02-09] WP-2B.1 uncertainty/validation contract lock
+
+- **Change summary**:
+  - Locked Line 2B uncertainty/validation semantics in `DEC-026`.
+  - Added reference contract note:
+    `docs/reference/uncertainty_validation_contract.md`.
+  - Added WP artefact summary:
+    `artefacts/WP-2B.1/decision_summary.md`.
+- **Artefacts inspected**:
+  - Decision record and contract note for consistency of:
+    - uncertainty taxonomy,
+    - modifier composition order,
+    - draw-level semantics,
+    - additive compatibility boundaries.
+- **Observed behaviour**:
+  - No runtime code-path changes were introduced in this WP.
+  - Contract now explicitly unblocks implementation work for `WP-2B.2`.
+- **Follow-up tasks**:
+  - [ ] Execute `WP-2B.2` ensemble/sampling implementation.
+
+---
+
 ### [2026-02-09] WP-2A.6 spatial-genetic docs + Quarto narrative upgrade
 
 - **Change summary**:

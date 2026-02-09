@@ -403,3 +403,51 @@
   - The smoke objective is to verify minimal pipeline execution, which is
     satisfied by direct `tar_make()` on selected targets.
 - **Status**: active
+
+## DEC-025 — Promote Line 2B.x roadmap tranche (uncertainty, validation, scale)
+- **Date**: 2026-02-09
+- **Decision**:
+  - Extend the Priority Queue in `docs/roadmap.md` with `Line 2B.x` containing:
+    - `WP-2B.1` through `WP-2B.6`.
+  - Keep strict top-to-bottom queue execution semantics unchanged.
+  - Sequence 2B work as:
+    - contract lock (`WP-2B.1`) -> R-level uncertainty engine (`WP-2B.2`)
+      -> YAML schema v3 integration (`WP-2B.3`) -> diagnostics (`WP-2B.4`)
+      -> calibration scaffold (`WP-2B.5`) -> performance/docs hardening
+      (`WP-2B.6`).
+- **Rationale**:
+  - Priority Queue was exhausted through `WP-2A.6`; autonomous execution
+    requires a promoted next tranche.
+  - This ordering keeps high-risk interface decisions ahead of implementation
+    and preserves additive compatibility strategy before schema expansion.
+- **Status**: active
+
+## DEC-026 — Uncertainty/validation contract for Line 2B implementation
+- **Date**: 2026-02-09
+- **Decision**:
+  - Lock uncertainty taxonomy for 2B implementation as:
+    - parameter uncertainty on vital-rate baseline channels (survival,
+      breeding probability, fecundity lambda),
+    - management control uncertainty for selected scalar controls (e.g.
+      harvest/supplementation intensity),
+    - no explicit observation-error likelihood layer in 2B (out of scope).
+  - Lock modifier composition order for rate channels:
+    - baseline -> density modifier -> uncertainty modifier -> year EV/cat
+      modifier -> bounds clamp -> stochastic draw.
+  - Lock per-draw semantics:
+    - sampled uncertainty parameters are fixed within a draw and shared across
+      that draw's replicate runs unless explicitly marked year-varying.
+  - Lock compatibility strategy:
+    - uncertainty is additive and opt-in in 1.x,
+    - existing deterministic/legacy pathways remain valid with default
+      uncertainty disabled,
+    - YAML uncertainty integration lands in schema v3 as additive fields.
+  - Lock calibration/hindcast boundary for 2B:
+    - provide transparent bounded scoring/search scaffold only,
+    - full Bayesian/statistical inference remains out of scope.
+- **Rationale**:
+  - Prevents semantic drift across WP-2B.2 to WP-2B.6 by fixing interfaces and
+    composition order before implementation.
+  - Preserves backward compatibility while enabling a clear, testable
+    uncertainty expansion path.
+- **Status**: active
