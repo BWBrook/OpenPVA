@@ -193,3 +193,55 @@ test_that("summary helper output schemas are stable", {
     c("run", "year", "patch_id", "colonized", "extirpated", "alive_only")
   )
 })
+
+test_that("sensitivity diagnostic output schemas are stable", {
+  sc <- scenario_spec(
+    name = "sensitivity_schema_contract",
+    n_runs = 8,
+    n_years = 8,
+    init_fun = function() initialize_population(30)
+  )
+  uncertainty_spec <- list(
+    harvest_quota = list(dist = "uniform", min = 0, max = 5, integer = TRUE),
+    cat_surv_prob = list(dist = "uniform", min = 0, max = 0.2)
+  )
+
+  ens <- run_scenario_ensemble(
+    scenario = sc,
+    uncertainty_spec = uncertainty_spec,
+    n_draws = 10,
+    seed = 404L
+  )
+  ens_summary <- summarise_ensemble_outputs(ens, final_n_floor = 8)
+
+  prcc <- summarise_sensitivity_prcc(
+    ensemble_data = ens_summary,
+    response_col = "p_extinction"
+  )
+  expect_s3_class(prcc, "tbl_df")
+  expect_required_columns(
+    prcc,
+    c("parameter", "prcc", "p_value", "n_obs", "n_controls", "abs_prcc")
+  )
+
+  oat <- summarise_sensitivity_oat(
+    scenario = sc,
+    oat_spec = list(
+      harvest_quota = list(baseline = 2, delta = 1, lower = 0, upper = 6)
+    ),
+    metric_fun = function(sim_output) {
+      summarise_final_abundance(sim_output)$overall$mean_final_n_alive
+    },
+    metric_name = "mean_final_n_alive",
+    seed = 505L
+  )
+  expect_s3_class(oat, "tbl_df")
+  expect_required_columns(
+    oat,
+    c(
+      "parameter", "metric_name", "baseline_value", "low_value", "high_value",
+      "baseline_metric", "low_metric", "high_metric", "local_slope",
+      "elasticity", "pct_change_low", "pct_change_high"
+    )
+  )
+})

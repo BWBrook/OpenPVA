@@ -44,4 +44,5 @@ Collate:
     'simulation_plots.R'
     'scenario.R'
     'uncertainty_ensemble.R'
+    'sensitivity_diagnostics.R'
     'management.R'

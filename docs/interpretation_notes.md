@@ -7,6 +7,34 @@ For each major change, create an entry.
 
 ---
 
+### [2026-02-09] WP-2B.4 sensitivity diagnostics (PRCC + OAT elasticity)
+
+- **Change summary**:
+  - Added sensitivity diagnostics:
+    - `summarise_sensitivity_prcc()`
+    - `summarise_sensitivity_oat()`
+  - Added sensitivity reference note:
+    `docs/reference/sensitivity_diagnostics.md`.
+  - Updated output/public API docs and schema-contract tests for sensitivity
+    output tables.
+- **Artefacts inspected**:
+  - `artefacts/WP-2B.4/sensitivity_prcc.csv`
+  - `artefacts/WP-2B.4/sensitivity_oat.csv`
+  - `artefacts/WP-2B.4/diagnostic_plots/prcc_barplot.png`
+  - `artefacts/WP-2B.4/diagnostic_plots/oat_elasticity.png`
+  - `artefacts/WP-2B.4/diagnostic_summary.md`
+- **Observed behaviour**:
+  - PRCC ranking showed strong positive influence of `harvest_quota` on
+    extinction probability in the inspected ensemble fixture.
+  - Bounded OAT diagnostics produced directional elasticity signals for tested
+    stressor parameters on mean final abundance.
+  - Diagnostic tables and plots were reproducible under fixed seeds and
+    remained within expected numeric domains.
+- **Follow-up tasks**:
+  - [ ] Execute `WP-2B.5` hindcast/calibration scaffold.
+
+---
+
 ### [2026-02-09] WP-2B.3 YAML schema v3 uncertainty block + migration tests
 
 - **Change summary**:
@@ -38,7 +66,7 @@ For each major change, create an entry.
     higher sampled `harvest_quota` and `cat_surv_prob` aligned with higher
     extinction/floor-breach risk in the artefact tables.
 - **Follow-up tasks**:
-  - [ ] Execute `WP-2B.4` sensitivity diagnostics.
+  - [x] Execute `WP-2B.4` sensitivity diagnostics.
 
 ---
 

@@ -95,6 +95,8 @@ release notes.
   - `sample_uncertainty_parameters()`
   - `run_scenario_ensemble()`
   - `summarise_ensemble_outputs()`
+  - `summarise_sensitivity_prcc()`
+  - `summarise_sensitivity_oat()`
 
 ## Internal API rule
 

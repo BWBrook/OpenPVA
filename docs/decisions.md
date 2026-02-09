@@ -497,3 +497,29 @@
   - Avoids silent semantic drift where schema v3 would otherwise diverge from
     schema v2 reproduction compatibility expectations.
 - **Status**: active
+
+## DEC-029 — Sensitivity diagnostic contract (PRCC + bounded OAT)
+- **Date**: 2026-02-09
+- **Decision**:
+  - Add exported diagnostics:
+    - `summarise_sensitivity_prcc()`
+    - `summarise_sensitivity_oat()`
+  - PRCC scope:
+    - compute partial rank correlations on draw-level ensemble summaries,
+    - support inputs from `run_scenario_ensemble()` outputs,
+      `summarise_ensemble_outputs()` lists, or direct draw tables,
+    - return parameter-wise coefficients and p-values with stable schema.
+  - OAT scope:
+    - use explicit `oat_spec` baselines and bounded perturbations
+      (`baseline ± delta` clamped by optional `lower`/`upper`),
+    - evaluate scalar metrics via user-supplied `metric_fun`,
+    - return local slope/elasticity and low/high percent-change diagnostics.
+  - Keep sensitivity methods bounded and transparent:
+    - no full global-SA ecosystem in this tranche,
+    - no inference claims beyond local/ensemble interpretation.
+- **Rationale**:
+  - Delivers interpretable parameter-influence diagnostics for uncertainty
+    outputs while keeping method scope aligned with the Line 2B contract.
+  - Preserves auditability by enforcing explicit input specs and stable output
+    tables.
+- **Status**: active

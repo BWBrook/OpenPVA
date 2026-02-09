@@ -99,6 +99,34 @@ Returns a list with required fields:
   - `mean_p_any_below_floor`
   - `sd_p_any_below_floor`
 
+### `summarise_sensitivity_prcc(ensemble_data, response_col = "p_extinction", parameter_cols = NULL)`
+
+Returns a tibble with one row per analyzed parameter and required columns:
+
+- `parameter`
+- `prcc`
+- `p_value`
+- `n_obs`
+- `n_controls`
+- `abs_prcc`
+
+### `summarise_sensitivity_oat(scenario, oat_spec, metric_fun = NULL, metric_name = "p_extinction", seed = NULL)`
+
+Returns a tibble with one row per OAT parameter and required columns:
+
+- `parameter`
+- `metric_name`
+- `baseline_value`
+- `low_value`
+- `high_value`
+- `baseline_metric`
+- `low_metric`
+- `high_metric`
+- `local_slope`
+- `elasticity`
+- `pct_change_low`
+- `pct_change_high`
+
 ## Summary helpers
 
 ### `summarise_extinction(sim_output, threshold = 0)`
