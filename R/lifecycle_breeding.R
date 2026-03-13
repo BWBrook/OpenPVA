@@ -83,12 +83,12 @@ make_mate_limited_mating_fun <- function(max_mates_per_male = 1L) {
 
 #' Default breeding function
 #'
-#' Returns TRUE for females aged 4 or older.
+#' Returns `TRUE` when the default breeding probability is positive.
 #'
 #' @param ind Individual object.
 #'
 #' @return Logical. TRUE if eligible to breed.
 #' @export
 default_breeding_fun <- function(ind) {
-  ind$age >= 4
+  default_breeding_prob_fun(ind) > 0
 }

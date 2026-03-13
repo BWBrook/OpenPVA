@@ -1,5 +1,5 @@
 name: "demo_spatial_genetic_fragmented"
-schema_version: 2
+schema_version: 3
 n_runs: 12
 n_years: 16
 seed: 20260210
@@ -17,7 +17,6 @@ inherit_fun: "inherit_genotype_simple"
 
 record_population_history: true
 
-# v2 reproduction channels
 demography:
   breeding_prob:
     table:

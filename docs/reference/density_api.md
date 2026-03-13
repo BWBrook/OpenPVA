@@ -1,7 +1,7 @@
-# Density API (1.1.x)
+# Density API
 
-This page documents the R-level density module interface introduced after the
-1.0 release line.
+This page documents the explicit R-level density module interface used by the
+current controller/scenario APIs.
 
 ## Purpose
 
@@ -42,28 +42,13 @@ For each vital-rate calculation, OpenPVA applies:
 4. bounds clamp (`[0, 1]` for probabilities, `>= 0` for lambdas)
 5. stochastic draw (Bernoulli/Poisson where relevant)
 
-## Legacy compatibility mapping
-
-Legacy carrying-capacity inputs remain supported:
-
-- `K` maps to a global ceiling multiplier on the survival channel.
-- `K_patches` maps to patch-level ceiling multipliers on the survival channel.
-
-Compatibility rules:
-
-- `K` and `K_patches` remain mutually exclusive.
-- `density_spec` cannot be combined with `K` or `K_patches` in the same call.
-
 ## YAML integration
 
-YAML scenarios can configure density through a top-level `density` block. See
+YAML scenarios configure density through a top-level `density` block. See
 `docs/reference/yaml_schema_v1.md` for field-level schema details.
 
 ## Notes on `survival_scale` summary field
 
-`survival_scale` remains for legacy compatibility:
-
-- Legacy global `K`: stores the global ceiling scale used that year.
-- Legacy `K_patches`: set to `NA` because no single global scalar applies.
-- Explicit `density_spec`: set to `1` (channel effects are represented directly
-  through outcomes rather than a legacy scalar).
+`survival_scale` is retained in the summary schema and remains `1` for the
+explicit density path. Channel effects are represented through outcomes rather
+than through a separate legacy scalar.

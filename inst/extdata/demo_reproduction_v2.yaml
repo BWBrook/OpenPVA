@@ -1,5 +1,5 @@
 name: "demo_reproduction_v2"
-schema_version: 2
+schema_version: 3
 n_runs: 6
 n_years: 10
 seed: 20260308
@@ -51,7 +51,10 @@ env_surv_sd: 0.1
 cat_surv_prob: 0.05
 cat_surv_mult: 0.4
 
-K: 70
+density:
+  survival:
+    model: ceiling
+    K: 70
 lifecycle_steps:
   - age
   - survival

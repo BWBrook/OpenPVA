@@ -60,7 +60,7 @@ Key top-level elements:
 - `outputs/` – Generated outputs (via targets, not ad hoc scripts).
 
 For a map of the internal documentation, see `docs/docs_index.md`.
-For API stability status in the 1.x line, see `docs/reference/public_api.md`.
+For the current exported surface, see `docs/reference/public_api.md`.
 For density-channel configuration details, see `docs/reference/density_api.md`.
 For CI profile split and local reproducibility commands, see `docs/reference/ci_profiles.md`.
 For release-evidence automation, see `docs/reference/release_automation.md`.
@@ -111,7 +111,9 @@ sc <- OpenPVA::scenario_spec(
   n_runs = 5,
   n_years = 20,
   init_fun = function() OpenPVA::initialize_population(50),
-  K = 80,
+  density_spec = OpenPVA::density_spec(
+    survival_fun = OpenPVA::make_ceiling_density_fun(K = 80)
+  ),
   harvest_quota = 2,
   seed = 20260208L
 )
@@ -251,7 +253,9 @@ sc <- OpenPVA::scenario_spec(
   env_repro_lambda_sd = 0.10,
   cat_repro_prob = 0.10,
   cat_repro_mult = 0.50,
-  K = 60,
+  density_spec = OpenPVA::density_spec(
+    survival_fun = OpenPVA::make_ceiling_density_fun(K = 60)
+  ),
   harvest_quota = 2,
   seed = 20260208L
 )
@@ -265,26 +269,18 @@ head(res$sim_output$summary[, c(
 )])
 ```
 
-Load scenarios from YAML (optional):
+Load scenarios from canonical schema v3 YAML:
 
 ```r
-yaml_v2 <- file.path("inst", "extdata", "demo_reproduction_v2.yaml")
-sc_v2 <- OpenPVA::read_scenario_yaml(yaml_v2)
-attr(sc_v2, "yaml_schema_version")
-
-yaml_v1 <- file.path("inst", "extdata", "demo_demography.yaml")
-sc_v1 <- OpenPVA::read_scenario_yaml(yaml_v1)
-attr(sc_v1, "yaml_schema_version")
-
-yaml_density_v2 <- file.path("inst", "extdata", "demo_density_v2.yaml")
-sc_density_v2 <- OpenPVA::read_scenario_yaml(yaml_density_v2)
-attr(sc_density_v2, "yaml_schema_version")
+yaml_path <- file.path("inst", "extdata", "demo_reproduction_v2.yaml")
+sc_yaml <- OpenPVA::read_scenario_yaml(yaml_path)
+attr(sc_yaml, "yaml_schema_version")
 ```
 
 YAML is a convenience for sharing scenarios; all functionality is accessible directly from R.
 You can set `seed` in either `scenario_spec()` or YAML to make replicated outputs deterministic.
 
-## Reproduction semantics and YAML versions (0.5.x)
+## Reproduction semantics and YAML schema
 
 How do I specify breeding and fecundity now?
 
@@ -294,9 +290,6 @@ How do I specify breeding and fecundity now?
 - Table builders:
   - `build_breeding_prob_fun_from_table()`
   - `build_fecundity_lambda_fun_from_table()`
-- Legacy wrappers remain available for compatibility:
-  - `build_breeding_fun_from_table()`
-  - `build_fecundity_fun_from_table()`
 
 How do reproduction EV/cats work?
 
@@ -306,19 +299,22 @@ How do reproduction EV/cats work?
   - `env_repro_lambda_sd`
   - `cat_repro_prob`
   - `cat_repro_mult`
-- In YAML schema v2, use the `reproduction_ev` block with the same key names.
+- In YAML schema v3, use the `reproduction_ev` block with the same key names.
 - Summary outputs expose realized year-level reproduction diagnostics:
   - `env_repro_p_mult`
   - `env_repro_lambda_mult`
   - `cat_repro_mult`
   - `repro_catastrophe`
 
-What happens to my old YAML?
+What YAML shape is supported?
 
-- `schema_version: 1` remains supported.
-- Missing `schema_version` still maps to legacy->v1 migration.
-- `schema_version: 2` is current and supports explicit reproduction semantics.
-- Compatibility adaptation is retained for feasible v1-shaped reproduction fields.
+- `schema_version: 3` is required.
+- Use canonical demography keys:
+  - `demography.survival.table`
+  - `demography.breeding_prob.table`
+  - `demography.fecundity_lambda.table`
+- Use `density` for density configuration and `management` for harvest and supplementation.
+- Older YAML shapes are intentionally not supported in this development line.
 
 ## Reproducibility and RNG seeding
 

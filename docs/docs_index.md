@@ -42,7 +42,7 @@ Use it as a starting point when orienting yourself in the project.
 ## Reference Contracts
 
 - **reference/public_api.md**  
-  Stable vs experimental API contract for the 1.x line.
+  Current exported API surface and removed legacy interfaces.
 
 - **reference/output_schema.md**  
   Required structure of simulation and summary outputs used for regression tests.
@@ -58,8 +58,8 @@ Use it as a starting point when orienting yourself in the project.
   Non-publishing release evidence automation workflow and script usage.
 
 - **reference/migration_1x_to_2x.md**
-  Soft-deprecation registry and migration targets from legacy 1.x interfaces to
-  preferred 2.0-ready pathways.
+  Summary of legacy interfaces intentionally removed from the current
+  development line.
 
 - **reference/spatial_genetic_outputs.md**
   Guidance on final-time vs time-series vs connectivity spatial/genetic

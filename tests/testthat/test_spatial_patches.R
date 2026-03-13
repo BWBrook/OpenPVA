@@ -62,17 +62,14 @@ test_that("run_basic_simulation applies patch-level K", {
     pop <- initialize_population(n = 6, max_age = 1)
     initialize_patches(pop, patch_ids = c(1, 1, 1, 2, 2, 2))
   }
-  survival_fun <- function(ind) 1
-  breeding_fun <- function(ind) FALSE
-  fecundity_fun <- function(ind) 0L
 
   set.seed(101)
   res_none <- run_basic_simulation(
     initial_population = make_pop(),
     n_years = 1,
-    survival_fun = survival_fun,
-    breeding_fun = breeding_fun,
-    fecundity_fun = fecundity_fun
+    survival_fun = function(ind) 1,
+    breeding_prob_fun = function(ind) 0,
+    fecundity_lambda_fun = function(ind) 0
   )
   expect_equal(res_none$summary$n_alive[1], 6L)
   expect_equal(res_none$summary$survival_scale[1], 1)
@@ -81,26 +78,15 @@ test_that("run_basic_simulation applies patch-level K", {
   res_patch <- run_basic_simulation(
     initial_population = make_pop(),
     n_years = 1,
-    survival_fun = survival_fun,
-    breeding_fun = breeding_fun,
-    fecundity_fun = fecundity_fun,
-    K_patches = c(1, 1)
+    survival_fun = function(ind) 1,
+    breeding_prob_fun = function(ind) 0,
+    fecundity_lambda_fun = function(ind) 0,
+    density_spec = density_spec(
+      survival_fun = make_ceiling_density_fun(K_patches = c(1, 1))
+    )
   )
   expect_lt(res_patch$summary$n_alive[1], res_none$summary$n_alive[1])
-  expect_true(is.na(res_patch$summary$survival_scale[1]))
-
-  expect_error(
-    run_basic_simulation(
-      initial_population = make_pop(),
-      n_years = 1,
-      survival_fun = survival_fun,
-      breeding_fun = breeding_fun,
-      fecundity_fun = fecundity_fun,
-      K = 100,
-      K_patches = c(50, 50)
-    ),
-    "Specify either K or K_patches"
-  )
+  expect_equal(res_patch$summary$survival_scale[1], 1)
 })
 
 test_that("run_basic_simulation_replicates threads patch-level K", {
@@ -108,23 +94,21 @@ test_that("run_basic_simulation_replicates threads patch-level K", {
     pop <- initialize_population(n = 4, max_age = 1)
     initialize_patches(pop, patch_ids = c(1, 1, 2, 2))
   }
-  survival_fun <- function(ind) 1
-  breeding_fun <- function(ind) FALSE
-  fecundity_fun <- function(ind) 0L
-
   set.seed(202)
   res <- run_basic_simulation_replicates(
     n_runs = 3,
     n_years = 1,
     init_fun = init_fun,
-    survival_fun = survival_fun,
-    breeding_fun = breeding_fun,
-    fecundity_fun = fecundity_fun,
-    K_patches = c(1, 1)
+    survival_fun = function(ind) 1,
+    breeding_prob_fun = function(ind) 0,
+    fecundity_lambda_fun = function(ind) 0,
+    density_spec = density_spec(
+      survival_fun = make_ceiling_density_fun(K_patches = c(1, 1))
+    )
   )
   expect_equal(nrow(res$summary), 3L)
   expect_true(all(res$summary$n_alive < 4L))
-  expect_true(all(is.na(res$summary$survival_scale)))
+  expect_true(all(res$summary$survival_scale == 1))
 })
 
 test_that("apply_dispersal updates patch_ids for alive individuals", {
@@ -146,9 +130,6 @@ test_that("lifecycle pipeline supports dispersal step", {
   pop <- initialize_population(n = 4, max_age = 1)
   pop <- initialize_patches(pop, patch_ids = c(1, 1, 2, 2))
 
-  survival_fun <- function(ind) 1
-  breeding_fun <- function(ind) FALSE
-  fecundity_fun <- function(ind) 0L
   dispersal_fun <- function(ind, population) {
     if (!is.na(ind$patch_id) && ind$patch_id == 1L) return(2L)
     ind$patch_id
@@ -158,9 +139,9 @@ test_that("lifecycle pipeline supports dispersal step", {
   res <- run_basic_simulation(
     initial_population = pop,
     n_years = 1,
-    survival_fun = survival_fun,
-    breeding_fun = breeding_fun,
-    fecundity_fun = fecundity_fun,
+    survival_fun = function(ind) 1,
+    breeding_prob_fun = function(ind) 0,
+    fecundity_lambda_fun = function(ind) 0,
     lifecycle_steps = steps,
     dispersal_fun = dispersal_fun
   )
@@ -171,9 +152,9 @@ test_that("lifecycle pipeline supports dispersal step", {
     run_basic_simulation(
       initial_population = pop,
       n_years = 1,
-      survival_fun = survival_fun,
-      breeding_fun = breeding_fun,
-      fecundity_fun = fecundity_fun,
+      survival_fun = function(ind) 1,
+      breeding_prob_fun = function(ind) 0,
+      fecundity_lambda_fun = function(ind) 0,
       lifecycle_steps = c("foo"),
       dispersal_fun = dispersal_fun
     ),
@@ -186,19 +167,18 @@ test_that("summarise_patch_occupancy_final aggregates across runs", {
     pop <- initialize_population(n = 4, max_age = 1)
     initialize_patches(pop, patch_ids = c(1, 1, 2, 2))
   }
-  survival_fun <- function(ind) 1
-  breeding_fun <- function(ind) FALSE
-  fecundity_fun <- function(ind) 0L
   dispersal_fun <- function(ind, population) ind$patch_id
 
   res <- run_basic_simulation_replicates(
     n_runs = 2,
     n_years = 1,
     init_fun = init_fun,
-    survival_fun = survival_fun,
-    breeding_fun = breeding_fun,
-    fecundity_fun = fecundity_fun,
-    K_patches = c(10, 10),
+    survival_fun = function(ind) 1,
+    breeding_prob_fun = function(ind) 0,
+    fecundity_lambda_fun = function(ind) 0,
+    density_spec = density_spec(
+      survival_fun = make_ceiling_density_fun(K_patches = c(10, 10))
+    ),
     dispersal_fun = dispersal_fun
   )
 

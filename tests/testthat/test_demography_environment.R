@@ -1,16 +1,13 @@
 test_that("survival environmental variation and catastrophes affect outcomes", {
   pop <- initialize_population(n = 50, max_age = 2)
-  survival_fun <- function(ind) 1
-  breeding_fun <- function(ind) FALSE
-  fecundity_fun <- function(ind) 0L
   steps <- c("age", "survival")
 
   res_none <- run_basic_simulation(
     initial_population = pop,
     n_years = 1,
-    survival_fun = survival_fun,
-    breeding_fun = breeding_fun,
-    fecundity_fun = fecundity_fun,
+    survival_fun = function(ind) 1,
+    breeding_prob_fun = function(ind) 0,
+    fecundity_lambda_fun = function(ind) 0,
     lifecycle_steps = steps,
     env_surv_sd = 0,
     cat_surv_prob = 0,
@@ -26,9 +23,9 @@ test_that("survival environmental variation and catastrophes affect outcomes", {
   res_cat <- run_basic_simulation(
     initial_population = pop,
     n_years = 1,
-    survival_fun = survival_fun,
-    breeding_fun = breeding_fun,
-    fecundity_fun = fecundity_fun,
+    survival_fun = function(ind) 1,
+    breeding_prob_fun = function(ind) 0,
+    fecundity_lambda_fun = function(ind) 0,
     lifecycle_steps = steps,
     env_surv_sd = 0,
     cat_surv_prob = 1,
@@ -43,9 +40,9 @@ test_that("survival environmental variation and catastrophes affect outcomes", {
   res_env1 <- run_basic_simulation(
     initial_population = pop,
     n_years = 1,
-    survival_fun = survival_fun,
-    breeding_fun = breeding_fun,
-    fecundity_fun = fecundity_fun,
+    survival_fun = function(ind) 1,
+    breeding_prob_fun = function(ind) 0,
+    fecundity_lambda_fun = function(ind) 0,
     lifecycle_steps = steps,
     env_surv_sd = 0.5,
     cat_surv_prob = 0,
@@ -56,9 +53,9 @@ test_that("survival environmental variation and catastrophes affect outcomes", {
   res_env2 <- run_basic_simulation(
     initial_population = pop,
     n_years = 1,
-    survival_fun = survival_fun,
-    breeding_fun = breeding_fun,
-    fecundity_fun = fecundity_fun,
+    survival_fun = function(ind) 1,
+    breeding_prob_fun = function(ind) 0,
+    fecundity_lambda_fun = function(ind) 0,
     lifecycle_steps = steps,
     env_surv_sd = 0.5,
     cat_surv_prob = 0,
@@ -77,10 +74,6 @@ test_that("scenario-level catastrophe parameters influence extinction risk", {
     n_runs = 10,
     n_years = 10,
     init_fun = init_fun,
-    survival_fun = default_survival_fun,
-    breeding_fun = default_breeding_fun,
-    fecundity_fun = default_fecundity_fun,
-    K = NULL,
     lifecycle_steps = c("age", "survival"),
     env_surv_sd = 0,
     cat_surv_prob = 0,
@@ -92,10 +85,6 @@ test_that("scenario-level catastrophe parameters influence extinction risk", {
     n_runs = 10,
     n_years = 10,
     init_fun = init_fun,
-    survival_fun = default_survival_fun,
-    breeding_fun = default_breeding_fun,
-    fecundity_fun = default_fecundity_fun,
-    K = NULL,
     lifecycle_steps = c("age", "survival"),
     env_surv_sd = 0,
     cat_surv_prob = 0.3,

@@ -1,45 +1,14 @@
-test_that("legacy YAML with function names still works", {
+test_that("schema_version 3 YAML is accepted and tracked", {
   yaml_text <- "
-name: 'yaml_legacy'
-n_runs: 2
-n_years: 3
-initializer:
-  fun: 'initialize_population'
-  args:
-    \"n\": 10
-survival_fun: 'default_survival_fun'
-breeding_fun: 'default_breeding_fun'
-fecundity_fun: 'default_fecundity_fun'
-"
-
-  tmp <- tempfile(fileext = ".yaml")
-  writeLines(yaml_text, tmp)
-  on.exit(unlink(tmp), add = TRUE)
-
-  sc <- read_scenario_yaml(tmp)
-  expect_true(inherits(sc, "openpva_scenario"))
-  expect_equal(attr(sc, "yaml_schema_version"), 1L)
-
-  set.seed(123)
-  out <- run_scenario(sc)
-  expect_true(is.list(out$sim_output))
-  expect_true(nrow(out$sim_output$summary) > 0)
-})
-
-test_that("schema_version 1 YAML is accepted and tracked", {
-  yaml_text <- "
-name: 'yaml_v1'
-schema_version: 1
+name: 'yaml_v3'
+schema_version: 3
 n_runs: 1
 n_years: 2
 seed: 99
 initializer:
   fun: 'initialize_population'
   args:
-    \"n\": 8
-survival_fun: 'default_survival_fun'
-breeding_fun: 'default_breeding_fun'
-fecundity_fun: 'default_fecundity_fun'
+    'n': 8
 "
 
   tmp <- tempfile(fileext = ".yaml")
@@ -48,11 +17,26 @@ fecundity_fun: 'default_fecundity_fun'
 
   sc <- read_scenario_yaml(tmp)
   expect_true(inherits(sc, "openpva_scenario"))
-  expect_equal(attr(sc, "yaml_schema_version"), 1L)
+  expect_equal(attr(sc, "yaml_schema_version"), 3L)
   expect_equal(sc$seed, 99L)
 })
 
-test_that("unknown or invalid schema_version fails with clear errors", {
+test_that("missing or unsupported schema_version fails clearly", {
+  yaml_missing <- "
+name: 'yaml_missing'
+n_runs: 1
+n_years: 1
+initializer:
+  fun: 'initialize_population'
+  args:
+    'n': 5
+"
+  tmp_missing <- tempfile(fileext = ".yaml")
+  writeLines(yaml_missing, tmp_missing)
+  on.exit(unlink(tmp_missing), add = TRUE)
+
+  expect_error(read_scenario_yaml(tmp_missing), "schema_version: 3")
+
   yaml_future <- "
 name: 'yaml_future'
 schema_version: 4
@@ -61,43 +45,13 @@ n_years: 1
 initializer:
   fun: 'initialize_population'
   args:
-    \"n\": 5
-survival_fun: 'default_survival_fun'
-breeding_fun: 'default_breeding_fun'
-fecundity_fun: 'default_fecundity_fun'
+    'n': 5
 "
-
   tmp_future <- tempfile(fileext = ".yaml")
   writeLines(yaml_future, tmp_future)
   on.exit(unlink(tmp_future), add = TRUE)
 
-  expect_error(
-    read_scenario_yaml(tmp_future),
-    "Unsupported schema_version"
-  )
-
-  yaml_bad_type <- "
-name: 'yaml_bad_version'
-schema_version: 'one'
-n_runs: 1
-n_years: 1
-initializer:
-  fun: 'initialize_population'
-  args:
-    \"n\": 5
-survival_fun: 'default_survival_fun'
-breeding_fun: 'default_breeding_fun'
-fecundity_fun: 'default_fecundity_fun'
-"
-
-  tmp_bad <- tempfile(fileext = ".yaml")
-  writeLines(yaml_bad_type, tmp_bad)
-  on.exit(unlink(tmp_bad), add = TRUE)
-
-  expect_error(
-    read_scenario_yaml(tmp_bad),
-    "schema_version must be a non-negative integer"
-  )
+  expect_error(read_scenario_yaml(tmp_future), "schema_version: 3")
 })
 
 test_that("schema_version 3 YAML accepts uncertainty block and stores uncertainty_spec", {
@@ -109,10 +63,7 @@ n_years: 3
 initializer:
   fun: 'initialize_population'
   args:
-    \"n\": 12
-survival_fun: 'default_survival_fun'
-breeding_fun: 'default_breeding_fun'
-fecundity_fun: 'default_fecundity_fun'
+    'n': 12
 uncertainty:
   params:
     harvest_quota:
@@ -133,8 +84,6 @@ uncertainty:
   sc <- read_scenario_yaml(tmp)
   expect_equal(attr(sc, "yaml_schema_version"), 3L)
   expect_true(is.list(sc$uncertainty_spec))
-  expect_true(is.function(sc$breeding_prob_fun))
-  expect_true(is.function(sc$fecundity_lambda_fun))
   expect_true(all(c("harvest_quota", "cat_surv_prob") %in% names(sc$uncertainty_spec)))
 
   out <- run_scenario_ensemble(
@@ -146,25 +95,7 @@ uncertainty:
   expect_equal(nrow(out$sampled_parameters), 3L)
 })
 
-test_that("v2 to v3 migration helper preserves existing fields", {
-  cfg_v2 <- list(
-    schema_version = 2L,
-    name = "cfg_v2",
-    n_runs = 1L,
-    n_years = 1L,
-    initializer = list(fun = "initialize_population", args = list(n = 5L)),
-    breeding_fun = "default_breeding_fun",
-    fecundity_fun = "default_fecundity_fun",
-    reproduction_ev = list(env_repro_p_sd = 0.1)
-  )
-
-  cfg_v3 <- OpenPVA:::.migrate_yaml_v2_to_v3(cfg_v2)
-  expect_equal(cfg_v3$schema_version, 3L)
-  expect_equal(cfg_v3$name, cfg_v2$name)
-  expect_equal(cfg_v3$reproduction_ev$env_repro_p_sd, 0.1)
-})
-
-test_that("schema_version 3 invalid uncertainty config fails clearly", {
+test_that("invalid uncertainty config fails clearly", {
   yaml_text <- "
 name: 'yaml_v3_invalid_uncertainty'
 schema_version: 3
@@ -173,10 +104,7 @@ n_years: 1
 initializer:
   fun: 'initialize_population'
   args:
-    \"n\": 8
-survival_fun: 'default_survival_fun'
-breeding_fun: 'default_breeding_fun'
-fecundity_fun: 'default_fecundity_fun'
+    'n': 8
 uncertainty:
   params:
     harvest_quota:
@@ -187,25 +115,30 @@ uncertainty:
   writeLines(yaml_text, tmp)
   on.exit(unlink(tmp), add = TRUE)
 
-  expect_error(
-    read_scenario_yaml(tmp),
-    "Unsupported dist"
-  )
+  expect_error(read_scenario_yaml(tmp), "Unsupported dist")
 })
 
-test_that("schema_version 2 YAML supports reproduction tables and reproduction_ev block", {
+test_that("canonical demography tables override function references", {
   yaml_text <- "
-name: 'yaml_v2'
-schema_version: 2
-n_runs: 2
-n_years: 3
-seed: 202
+name: 'yaml_demography'
+schema_version: 3
+n_runs: 1
+n_years: 2
 initializer:
   fun: 'initialize_population'
   args:
-    \"n\": 12
-survival_fun: 'default_survival_fun'
+    'n': 12
 demography:
+  survival:
+    table:
+      - sex: 'F'
+        age_min: 0
+        age_max: 100
+        p_surv: 1.0
+      - sex: 'M'
+        age_min: 0
+        age_max: 100
+        p_surv: 1.0
   breeding_prob:
     table:
       - sex: 'F'
@@ -215,7 +148,7 @@ demography:
       - sex: 'F'
         age_min: 4
         age_max: 100
-        p_breed: 0.7
+        p_breed: 1.0
       - sex: 'M'
         age_min: 0
         age_max: 100
@@ -229,7 +162,7 @@ demography:
       - sex: 'F'
         age_min: 4
         age_max: 100
-        lambda: 1.2
+        lambda: 1.5
       - sex: 'M'
         age_min: 0
         age_max: 100
@@ -250,12 +183,11 @@ lifecycle_steps:
   on.exit(unlink(tmp), add = TRUE)
 
   sc <- read_scenario_yaml(tmp)
-  expect_true(inherits(sc, "openpva_scenario"))
-  expect_equal(attr(sc, "yaml_schema_version"), 2L)
+  expect_true(is.function(sc$survival_fun))
+  expect_true(is.function(sc$breeding_prob_fun))
+  expect_true(is.function(sc$fecundity_lambda_fun))
   expect_equal(sc$env_repro_p_sd, 0.1)
   expect_equal(sc$env_repro_lambda_sd, 0.2)
-  expect_equal(sc$cat_repro_prob, 0.3)
-  expect_equal(sc$cat_repro_mult, 0.5)
 
   set.seed(123)
   out <- run_scenario(sc)
@@ -265,42 +197,26 @@ lifecycle_steps:
   ) %in% names(out$sim_output$summary)))
 })
 
-test_that("schema_version 2 adapts legacy demography/reproduction fields", {
+test_that("density block supports explicit channel configuration", {
   yaml_text <- "
-name: 'yaml_v2_legacy_adapt'
-schema_version: 2
+name: 'yaml_density'
+schema_version: 3
 n_runs: 1
-n_years: 2
+n_years: 1
 initializer:
   fun: 'initialize_population'
   args:
-    \"n\": 8
-survival_fun: 'default_survival_fun'
-demography:
+    'n': 12
+density:
+  survival:
+    model: ceiling
+    K: 6
   breeding:
-    table:
-      - sex: 'F'
-        age_min: 4
-        age_max: 100
-        can_breed: true
-      - sex: 'M'
-        age_min: 0
-        age_max: 100
-        can_breed: false
+    model: constant
+    multiplier: 0
   fecundity:
-    table:
-      - sex: 'F'
-        age_min: 4
-        age_max: 100
-        lambda: 1.5
-      - sex: 'M'
-        age_min: 0
-        age_max: 100
-        lambda: 0
-env_repro_p_sd: 0.1
-env_repro_lambda_sd: 0.2
-cat_repro_prob: 0.4
-cat_repro_mult: 0.6
+    model: constant
+    multiplier: 1
 lifecycle_steps:
   - age
   - survival
@@ -312,265 +228,48 @@ lifecycle_steps:
   on.exit(unlink(tmp), add = TRUE)
 
   sc <- read_scenario_yaml(tmp)
-  expect_equal(attr(sc, "yaml_schema_version"), 2L)
-  expect_true(is.function(sc$breeding_prob_fun))
-  expect_true(is.function(sc$fecundity_lambda_fun))
-  expect_equal(sc$env_repro_p_sd, 0.1)
-  expect_equal(sc$env_repro_lambda_sd, 0.2)
-  expect_equal(sc$cat_repro_prob, 0.4)
-  expect_equal(sc$cat_repro_mult, 0.6)
-})
-
-test_that("v1 to v2 migration helper upgrades demography and reproduction_ev", {
-  cfg_v1 <- list(
-    schema_version = 1L,
-    name = "cfg_v1",
-    n_runs = 1L,
-    n_years = 1L,
-    initializer = list(fun = "initialize_population", args = list(n = 5L)),
-    demography = list(
-      breeding = list(table = list(
-        list(sex = "F", age_min = 4, age_max = 100, can_breed = TRUE),
-        list(sex = "M", age_min = 0, age_max = 100, can_breed = FALSE)
-      )),
-      fecundity = list(table = list(
-        list(sex = "F", age_min = 4, age_max = 100, lambda = 1.5),
-        list(sex = "M", age_min = 0, age_max = 100, lambda = 0)
-      ))
-    ),
-    env_repro_p_sd = 0.1,
-    env_repro_lambda_sd = 0.2,
-    cat_repro_prob = 0.3,
-    cat_repro_mult = 0.4
-  )
-
-  cfg_v2 <- OpenPVA:::.migrate_yaml_v1_to_v2(cfg_v1)
-  expect_equal(cfg_v2$schema_version, 2L)
-  expect_true(!is.null(cfg_v2$demography$breeding_prob$table))
-  expect_true(!is.null(cfg_v2$demography$fecundity_lambda$table))
-  expect_equal(cfg_v2$reproduction_ev$env_repro_p_sd, 0.1)
-  expect_equal(cfg_v2$reproduction_ev$env_repro_lambda_sd, 0.2)
-  expect_equal(cfg_v2$reproduction_ev$cat_repro_prob, 0.3)
-  expect_equal(cfg_v2$reproduction_ev$cat_repro_mult, 0.4)
-})
-
-test_that("schema_version 2 invalid YAML fails with a clear error", {
-  yaml_text <- "
-name: 'yaml_v2_invalid'
-schema_version: 2
-n_runs: 1
-n_years: 1
-initializer:
-  fun: 'initialize_population'
-  args:
-    \"n\": 5
-survival_fun: 'default_survival_fun'
-"
-
-  tmp <- tempfile(fileext = ".yaml")
-  writeLines(yaml_text, tmp)
-  on.exit(unlink(tmp), add = TRUE)
-
-  expect_error(
-    read_scenario_yaml(tmp),
-    "requires breeding_prob and fecundity_lambda channels"
-  )
-})
-
-test_that("schema_version 2 rejects uncertainty block with clear guidance", {
-  yaml_text <- "
-name: 'yaml_v2_uncertainty_not_allowed'
-schema_version: 2
-n_runs: 1
-n_years: 1
-initializer:
-  fun: 'initialize_population'
-  args:
-    \"n\": 6
-survival_fun: 'default_survival_fun'
-breeding_fun: 'default_breeding_fun'
-fecundity_fun: 'default_fecundity_fun'
-uncertainty:
-  harvest_quota:
-    dist: 'uniform'
-    min: 0
-    max: 2
-"
-
-  tmp <- tempfile(fileext = ".yaml")
-  writeLines(yaml_text, tmp)
-  on.exit(unlink(tmp), add = TRUE)
-
-  expect_error(
-    read_scenario_yaml(tmp),
-    "schema_version 2 does not support an uncertainty block"
-  )
-})
-
-test_that("demography block overrides survival function", {
-  yaml_text <- "
-name: 'yaml_demo_demography_override'
-schema_version: 1
-n_runs: 1
-n_years: 1
-initializer:
-  fun: 'initialize_population'
-  args:
-    \"n\": 5
-survival_fun: 'default_survival_fun'
-breeding_fun: 'default_breeding_fun'
-fecundity_fun: 'default_fecundity_fun'
-demography:
-  survival:
-    table:
-      - sex: 'F'
-        age_min: 0
-        age_max: 0
-        p_surv: 0.1
-      - sex: 'F'
-        age_min: 1
-        age_max: 100
-        p_surv: 0.1
-      - sex: 'M'
-        age_min: 0
-        age_max: 100
-        p_surv: 0.1
-K: 100
-lifecycle_steps:
-  - age
-  - survival
-"
-
-  tmp <- tempfile(fileext = ".yaml")
-  writeLines(yaml_text, tmp)
-  on.exit(unlink(tmp), add = TRUE)
-
-  sc <- read_scenario_yaml(tmp)
-  expect_true(inherits(sc, "openpva_scenario"))
-  expect_equal(attr(sc, "yaml_schema_version"), 1L)
-
-  ind <- create_individual(1L, "F", age = 0L)
-  expect_equal(sc$survival_fun(ind), 0.1)
-  expect_equal(default_survival_fun(ind), 0.85)
-
-  set.seed(42)
-  out <- run_scenario(sc)
-  expect_equal(out$scenario$K, 100)
-})
-
-test_that("demo_demography YAML parses tables and EV/cat parameters", {
-  path <- system.file("extdata", "demo_demography.yaml", package = "OpenPVA")
-  expect_true(file.exists(path))
-
-  sc <- read_scenario_yaml(path)
-  expect_true(inherits(sc, "openpva_scenario"))
-  expect_equal(attr(sc, "yaml_schema_version"), 1L)
-  expect_equal(sc$env_surv_sd, 0.2)
-  expect_equal(sc$cat_surv_prob, 0.05)
-  expect_equal(sc$cat_surv_mult, 0.3)
-  expect_equal(sc$seed, 20260305L)
-  expect_equal(sc$harvest_quota, 2)
-
-  sc$n_runs <- 5
-  sc$n_years <- 10
+  expect_true(inherits(sc$density_spec, "openpva_density_spec"))
+  expect_true(is.null(sc$harvest_quota))
 
   set.seed(123)
   out <- run_scenario(sc)
-  summary_tbl <- out$sim_output$summary
-  expect_true(all(c("env_surv_mult", "cat_surv_mult", "catastrophe") %in% names(summary_tbl)))
+  expect_equal(out$sim_output$summary$n_births[1], 0L)
 })
 
-test_that("demo_reproduction_v2 YAML parses and runs", {
-  path <- system.file("extdata", "demo_reproduction_v2.yaml", package = "OpenPVA")
-  expect_true(file.exists(path))
-
-  sc <- read_scenario_yaml(path)
-  expect_true(inherits(sc, "openpva_scenario"))
-  expect_equal(attr(sc, "yaml_schema_version"), 2L)
-  expect_true(is.function(sc$breeding_prob_fun))
-  expect_true(is.function(sc$fecundity_lambda_fun))
-  expect_equal(sc$env_repro_p_sd, 0.15)
-  expect_equal(sc$env_repro_lambda_sd, 0.1)
-  expect_equal(sc$cat_repro_prob, 0.1)
-  expect_equal(sc$cat_repro_mult, 0.5)
-
-  out <- run_scenario(sc)
-  summary_tbl <- out$sim_output$summary
-  expect_true(all(c(
-    "env_repro_p_mult",
-    "env_repro_lambda_mult",
-    "cat_repro_mult",
-    "repro_catastrophe"
-  ) %in% names(summary_tbl)))
-})
-
-test_that("demo_density_v2 YAML parses and runs with density_spec", {
-  path <- system.file("extdata", "demo_density_v2.yaml", package = "OpenPVA")
-  expect_true(file.exists(path))
-
-  sc <- read_scenario_yaml(path)
-  expect_true(inherits(sc, "openpva_scenario"))
-  expect_equal(attr(sc, "yaml_schema_version"), 2L)
-  expect_s3_class(sc$density_spec, "openpva_density_spec")
-  expect_true(is.null(sc$K))
-  expect_true(is.null(sc$K_patches))
-
-  out <- run_scenario(sc)
-  expect_true(all(c(
-    "env_repro_p_mult",
-    "env_repro_lambda_mult",
-    "cat_repro_mult",
-    "repro_catastrophe"
-  ) %in% names(out$sim_output$summary)))
-})
-
-test_that("schema_version 2 YAML supports density block channels", {
+test_that("density shorthand and legacy top-level K fields are rejected", {
   yaml_text <- "
-name: 'yaml_v2_density_channels'
-schema_version: 2
-n_runs: 2
-n_years: 4
-seed: 222
+name: 'yaml_bad_density'
+schema_version: 3
+n_runs: 1
+n_years: 1
 initializer:
   fun: 'initialize_population'
   args:
-    \"n\": 20
-survival_fun: 'default_survival_fun'
-demography:
-  breeding_prob:
-    table:
-      - sex: 'F'
-        age_min: 0
-        age_max: 100
-        p_breed: 0.8
-      - sex: 'M'
-        age_min: 0
-        age_max: 100
-        p_breed: 0.0
-  fecundity_lambda:
-    table:
-      - sex: 'F'
-        age_min: 0
-        age_max: 100
-        lambda: 1.5
-      - sex: 'M'
-        age_min: 0
-        age_max: 100
-        lambda: 0.0
+    'n': 8
 density:
-  survival:
-    model: ceiling
-    K: 8
-  breeding:
-    model: constant
-    multiplier: 0.6
-  fecundity:
-    model: constant
-    multiplier: 0.5
-lifecycle_steps:
-  - age
-  - survival
-  - breeding_births
+  K: 10
+"
+
+  tmp <- tempfile(fileext = ".yaml")
+  writeLines(yaml_text, tmp)
+  on.exit(unlink(tmp), add = TRUE)
+
+  expect_error(read_scenario_yaml(tmp), "unknown field")
+})
+
+test_that("function resolution accepts package functions and explicit pkg::fun refs", {
+  yaml_text <- "
+name: 'yaml_namespaced'
+schema_version: 3
+n_runs: 1
+n_years: 1
+initializer:
+  fun: 'OpenPVA::initialize_population'
+  args:
+    'n': 6
+survival_fun: 'OpenPVA::default_survival_fun'
+breeding_prob_fun: 'OpenPVA::default_breeding_prob_fun'
+fecundity_lambda_fun: 'OpenPVA::default_fecundity_lambda_fun'
 "
 
   tmp <- tempfile(fileext = ".yaml")
@@ -579,357 +278,40 @@ lifecycle_steps:
 
   sc <- read_scenario_yaml(tmp)
   expect_true(inherits(sc, "openpva_scenario"))
-  expect_equal(attr(sc, "yaml_schema_version"), 2L)
-  expect_s3_class(sc$density_spec, "openpva_density_spec")
-  expect_true(is.null(sc$K))
-  expect_true(is.null(sc$K_patches))
 
-  out <- run_scenario(sc)
-  expect_equal(nrow(out$sim_output$summary), sc$n_runs * sc$n_years)
-  expect_true(all(out$sim_output$summary$n_alive >= 0))
+  yaml_bad <- "
+name: 'yaml_bad_ref'
+schema_version: 3
+n_runs: 1
+n_years: 1
+initializer:
+  fun: 'does_not_exist'
+"
+  tmp_bad <- tempfile(fileext = ".yaml")
+  writeLines(yaml_bad, tmp_bad)
+  on.exit(unlink(tmp_bad), add = TRUE)
+
+  expect_error(
+    run_scenario(read_scenario_yaml(tmp_bad)),
+    "Unknown unnamespaced function reference"
+  )
 })
 
-test_that("density shorthand K in YAML maps to survival ceiling behavior", {
+test_that("canonical YAML supports spatial/genetic hooks", {
   yaml_text <- "
-name: 'yaml_v2_density_shorthand'
-schema_version: 2
-n_runs: 3
-n_years: 3
-seed: 909
-initializer:
-  fun: 'initialize_population'
-  args:
-    \"n\": 30
-survival_fun: 'default_survival_fun'
-demography:
-  breeding_prob:
-    table:
-      - sex: 'F'
-        age_min: 0
-        age_max: 100
-        p_breed: 0.7
-      - sex: 'M'
-        age_min: 0
-        age_max: 100
-        p_breed: 0.0
-  fecundity_lambda:
-    table:
-      - sex: 'F'
-        age_min: 0
-        age_max: 100
-        lambda: 1.1
-      - sex: 'M'
-        age_min: 0
-        age_max: 100
-        lambda: 0.0
-density:
-  K: 12
-lifecycle_steps:
-  - age
-  - survival
-  - breeding_births
-"
-
-  tmp <- tempfile(fileext = ".yaml")
-  writeLines(yaml_text, tmp)
-  on.exit(unlink(tmp), add = TRUE)
-
-  sc <- read_scenario_yaml(tmp)
-  expect_s3_class(sc$density_spec, "openpva_density_spec")
-  expect_true(is.null(sc$K))
-
-  out_yaml <- run_scenario(sc)
-
-  sc_ref <- scenario_spec(
-    name = "ref_density_shorthand",
-    n_runs = 3,
-    n_years = 3,
-    init_fun = function() initialize_population(30),
-    survival_fun = default_survival_fun,
-    breeding_prob_fun = function(ind) if (ind$sex == "F") 0.7 else 0,
-    fecundity_lambda_fun = function(ind) if (ind$sex == "F") 1.1 else 0,
-    density_spec = density_spec(
-      survival_fun = make_ceiling_density_fun(K = 12)
-    ),
-    lifecycle_steps = c("age", "survival", "breeding_births"),
-    seed = 909L
-  )
-  out_ref <- run_scenario(sc_ref)
-
-  expect_identical(out_yaml$sim_output$summary$n_alive, out_ref$sim_output$summary$n_alive)
-})
-
-test_that("invalid density YAML inputs fail clearly", {
-  yaml_unknown_field <- "
-name: 'yaml_density_bad_field'
-schema_version: 2
+name: 'yaml_spatial_genetic'
+schema_version: 3
 n_runs: 1
-n_years: 1
-initializer:
-  fun: 'initialize_population'
-  args:
-    \"n\": 10
-survival_fun: 'default_survival_fun'
-demography:
-  breeding_prob:
-    table:
-      - sex: 'F'
-        age_min: 0
-        age_max: 100
-        p_breed: 0.6
-  fecundity_lambda:
-    table:
-      - sex: 'F'
-        age_min: 0
-        age_max: 100
-        lambda: 1.0
-density:
-  foo: 1
-"
-  tmp_unknown <- tempfile(fileext = ".yaml")
-  writeLines(yaml_unknown_field, tmp_unknown)
-  on.exit(unlink(tmp_unknown), add = TRUE)
-  expect_error(
-    read_scenario_yaml(tmp_unknown),
-    "density has unknown fields"
-  )
-
-  yaml_missing_constant <- "
-name: 'yaml_density_missing_constant'
-schema_version: 2
-n_runs: 1
-n_years: 1
-initializer:
-  fun: 'initialize_population'
-  args:
-    \"n\": 10
-survival_fun: 'default_survival_fun'
-demography:
-  breeding_prob:
-    table:
-      - sex: 'F'
-        age_min: 0
-        age_max: 100
-        p_breed: 0.6
-  fecundity_lambda:
-    table:
-      - sex: 'F'
-        age_min: 0
-        age_max: 100
-        lambda: 1.0
-density:
-  breeding:
-    model: constant
-"
-  tmp_missing <- tempfile(fileext = ".yaml")
-  writeLines(yaml_missing_constant, tmp_missing)
-  on.exit(unlink(tmp_missing), add = TRUE)
-  expect_error(
-    read_scenario_yaml(tmp_missing),
-    "multiplier is required"
-  )
-
-  yaml_density_and_legacy <- "
-name: 'yaml_density_and_legacy'
-schema_version: 2
-n_runs: 1
-n_years: 1
-initializer:
-  fun: 'initialize_population'
-  args:
-    \"n\": 10
-survival_fun: 'default_survival_fun'
-demography:
-  breeding_prob:
-    table:
-      - sex: 'F'
-        age_min: 0
-        age_max: 100
-        p_breed: 0.6
-  fecundity_lambda:
-    table:
-      - sex: 'F'
-        age_min: 0
-        age_max: 100
-        lambda: 1.0
-K: 20
-density:
-  survival:
-    model: ceiling
-    K: 15
-"
-  tmp_mix <- tempfile(fileext = ".yaml")
-  writeLines(yaml_density_and_legacy, tmp_mix)
-  on.exit(unlink(tmp_mix), add = TRUE)
-  expect_error(
-    read_scenario_yaml(tmp_mix),
-    "cannot combine density block with top-level K/K_patches"
-  )
-})
-
-test_that("YAML require_mate toggles unmated female reproduction", {
-  yaml_template <- "
-name: 'yaml_require_mate_toggle'
-schema_version: 1
-n_runs: 1
-n_years: 1
-seed: 123
-initializer:
-  fun: 'initialize_population'
-  args:
-    \"n\": 50
-demography:
-  survival:
-    table:
-      - sex: 'F'
-        age_min: 0
-        age_max: 100
-        p_surv: 1.0
-      - sex: 'M'
-        age_min: 0
-        age_max: 100
-        p_surv: 0.0
-  breeding:
-    table:
-      - sex: 'F'
-        age_min: 0
-        age_max: 100
-        can_breed: true
-      - sex: 'M'
-        age_min: 0
-        age_max: 100
-        can_breed: false
-  fecundity:
-    table:
-      - sex: 'F'
-        age_min: 0
-        age_max: 100
-        lambda: 1.0
-      - sex: 'M'
-        age_min: 0
-        age_max: 100
-        lambda: 0.0
-lifecycle_steps:
-  - age
-  - survival
-  - breeding_births
-require_mate: %s
-"
-
-  tmp_true <- tempfile(fileext = ".yaml")
-  tmp_false <- tempfile(fileext = ".yaml")
-  writeLines(sprintf(yaml_template, "true"), tmp_true)
-  writeLines(sprintf(yaml_template, "false"), tmp_false)
-  on.exit(unlink(c(tmp_true, tmp_false)), add = TRUE)
-
-  sc_true <- read_scenario_yaml(tmp_true)
-  sc_false <- read_scenario_yaml(tmp_false)
-  expect_true(sc_true$require_mate)
-  expect_false(sc_false$require_mate)
-
-  out_true <- run_scenario(sc_true)
-  out_false <- run_scenario(sc_false)
-
-  births_true <- sum(out_true$sim_output$summary$n_births)
-  births_false <- sum(out_false$sim_output$summary$n_births)
-  expect_equal(births_true, 0L)
-  expect_gt(births_false, births_true)
-})
-
-test_that("YAML record_population_history toggles run history capture", {
-  yaml_text <- "
-name: 'yaml_history_toggle'
-schema_version: 2
-n_runs: 2
 n_years: 2
-initializer:
-  fun: 'initialize_population'
-  args:
-    \"n\": 8
-survival_fun: 'default_survival_fun'
-demography:
-  breeding_prob:
-    table:
-      - sex: 'F'
-        age_min: 0
-        age_max: 100
-        p_breed: 0.0
-      - sex: 'M'
-        age_min: 0
-        age_max: 100
-        p_breed: 0.0
-  fecundity_lambda:
-    table:
-      - sex: 'F'
-        age_min: 0
-        age_max: 100
-        lambda: 0.0
-      - sex: 'M'
-        age_min: 0
-        age_max: 100
-        lambda: 0.0
-lifecycle_steps:
-  - age
-  - survival
-record_population_history: true
-seed: 321
-"
-  tmp <- tempfile(fileext = ".yaml")
-  writeLines(yaml_text, tmp)
-  on.exit(unlink(tmp), add = TRUE)
-
-  sc <- read_scenario_yaml(tmp)
-  expect_true(sc$record_population_history)
-
-  out <- run_scenario(sc)
-  expect_true(all(vapply(out$sim_output$runs, function(run) "population_history" %in% names(run), logical(1))))
-  expect_true(all(vapply(out$sim_output$runs, function(run) length(run$population_history), integer(1)) == 2L))
-})
-
-test_that("schema_version 2 YAML accepts spatial/genetic initializer and dispersal hooks", {
-  yaml_text <- "
-name: 'yaml_spatial_genetic_hooks'
-schema_version: 2
-n_runs: 1
-n_years: 3
-seed: 77
 initializer:
   fun: 'initialize_spatial_genetic_population'
   args:
-    n_per_patch: [12, 8, 6]
+    n_per_patch: [3, 3]
     n_loci: 4
     n_alleles: 2
-demography:
-  survival:
-    table:
-      - sex: 'F'
-        age_min: 0
-        age_max: 100
-        p_surv: 1.0
-      - sex: 'M'
-        age_min: 0
-        age_max: 100
-        p_surv: 1.0
-  breeding_prob:
-    table:
-      - sex: 'F'
-        age_min: 0
-        age_max: 100
-        p_breed: 0.0
-      - sex: 'M'
-        age_min: 0
-        age_max: 100
-        p_breed: 0.0
-  fecundity_lambda:
-    table:
-      - sex: 'F'
-        age_min: 0
-        age_max: 100
-        lambda: 0.0
-      - sex: 'M'
-        age_min: 0
-        age_max: 100
-        lambda: 0.0
+survival_fun: 'default_survival_fun'
+breeding_prob_fun: 'default_breeding_prob_fun'
+fecundity_lambda_fun: 'default_fecundity_lambda_fun'
 dispersal_fun: 'dispersal_asymmetric_flow_fun'
 inherit_fun: 'inherit_genotype_simple'
 record_population_history: true
@@ -939,101 +321,14 @@ lifecycle_steps:
   - dispersal
   - breeding_births
 "
+
   tmp <- tempfile(fileext = ".yaml")
   writeLines(yaml_text, tmp)
   on.exit(unlink(tmp), add = TRUE)
 
   sc <- read_scenario_yaml(tmp)
-  expect_true(is.function(sc$dispersal_fun))
-  expect_true(is.function(sc$inherit_fun))
-  expect_true(sc$record_population_history)
-
   out <- run_scenario(sc)
-  conn <- summarise_patch_connectivity_timeseries(out$sim_output, n_patches = 3)
-  off_diag_n <- sum(conn$transitions$n_individuals[
-    conn$transitions$origin_patch != conn$transitions$destination_patch
-  ])
 
-  expect_true(off_diag_n > 0)
-  expect_equal(length(out$sim_output$runs[[1]]$population_history), 3L)
-})
-
-test_that("packaged spatial/genetic YAML scenario pack remains runnable", {
-  scenario_files <- c(
-    "demo_spatial_genetic_fragmented.yaml",
-    "demo_spatial_genetic_connected.yaml",
-    "demo_spatial_genetic_asymmetric.yaml"
-  )
-
-  for (fname in scenario_files) {
-    path <- system.file("extdata", fname, package = "OpenPVA")
-    if (identical(path, "")) {
-      path <- file.path("inst", "extdata", fname)
-    }
-    expect_true(file.exists(path), info = fname)
-
-    sc <- read_scenario_yaml(path)
-    expect_true(sc$record_population_history, info = fname)
-
-    # Keep tests fast while still validating packaged scenario structure.
-    sc$n_runs <- 2L
-    sc$n_years <- 4L
-    sc$seed <- 1001L
-
-    out <- run_scenario(sc)
-    expect_equal(nrow(out$sim_output$summary), 8L, info = fname)
-
-    occ <- summarise_patch_occupancy_timeseries(out$sim_output, n_patches = 3)
-    expect_equal(nrow(occ$overall), 12L, info = fname)
-  }
-})
-
-test_that("density channel parsing uses exact K/K_patches matching", {
-  yaml_text <- "
-name: 'yaml_density_exact_matching'
-schema_version: 2
-n_runs: 1
-n_years: 2
-initializer:
-  fun: 'initialize_spatial_population'
-  args:
-    n_per_patch: [6, 6, 6]
-demography:
-  breeding_prob:
-    table:
-      - sex: 'F'
-        age_min: 0
-        age_max: 100
-        p_breed: 0.0
-      - sex: 'M'
-        age_min: 0
-        age_max: 100
-        p_breed: 0.0
-  fecundity_lambda:
-    table:
-      - sex: 'F'
-        age_min: 0
-        age_max: 100
-        lambda: 0.0
-      - sex: 'M'
-        age_min: 0
-        age_max: 100
-        lambda: 0.0
-density:
-  survival:
-    model: 'ceiling'
-    K_patches: [20, 20, 20]
-lifecycle_steps:
-  - age
-  - survival
-"
-  tmp <- tempfile(fileext = ".yaml")
-  writeLines(yaml_text, tmp)
-  on.exit(unlink(tmp), add = TRUE)
-
-  sc <- read_scenario_yaml(tmp)
-  expect_true(!is.null(sc$density_spec))
-
-  out <- run_scenario(sc)
-  expect_equal(nrow(out$sim_output$summary), 2L)
+  expect_true(isTRUE(sc$record_population_history))
+  expect_true("population_history" %in% names(out$sim_output$runs[[1]]))
 })

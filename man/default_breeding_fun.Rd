@@ -13,5 +13,5 @@ default_breeding_fun(ind)
 Logical. TRUE if eligible to breed.
 }
 \description{
-Returns TRUE for females aged 4 or older.
+Returns `TRUE` when the default breeding probability is positive.
 }

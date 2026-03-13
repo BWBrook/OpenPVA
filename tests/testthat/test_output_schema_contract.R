@@ -137,8 +137,8 @@ test_that("summary helper output schemas are stable", {
       initialize_patches(pop, patch_ids = rep(c(1L, 2L), each = 6))
     },
     survival_fun = function(ind) 1,
-    breeding_fun = function(ind) FALSE,
-    fecundity_fun = function(ind) 0L,
+    breeding_prob_fun = function(ind) 0,
+    fecundity_lambda_fun = function(ind) 0,
     lifecycle_steps = c("age", "survival", "dispersal"),
     dispersal_fun = make_markov_dispersal_fun(
       matrix(c(0.9, 0.1, 0.2, 0.8), nrow = 2, byrow = TRUE)

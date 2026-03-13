@@ -1,5 +1,5 @@
 name: "demo_density_v2"
-schema_version: 2
+schema_version: 3
 n_runs: 8
 n_years: 12
 seed: 20260209

@@ -6,8 +6,8 @@ test_that("compare_scenarios ranks harvest strategies", {
       n_years = 5,
       init_fun = function() initialize_population(6),
       survival_fun = function(ind) 1,
-      breeding_fun = function(ind) TRUE,
-      fecundity_fun = function(ind) 2L,
+      breeding_prob_fun = function(ind) 1,
+      fecundity_lambda_fun = function(ind) 2,
       harvest_quota = quota,
       lifecycle_steps = default_lifecycle_steps()
     )
@@ -53,8 +53,8 @@ test_that("compare_scenarios supports explicit final abundance floor", {
     n_years = 4,
     init_fun = function() initialize_population(5),
     survival_fun = function(ind) 1,
-    breeding_fun = function(ind) FALSE,
-    fecundity_fun = function(ind) 0L
+    breeding_prob_fun = function(ind) 0,
+    fecundity_lambda_fun = function(ind) 0
   )
 
   set.seed(101)

@@ -1,14 +1,15 @@
 name: 'yaml_mgmt'
+schema_version: 3
 n_runs: 3
 n_years: 4
 initializer:
   fun: 'initialize_population'
   args:
     n: 10
-survival_fun: 'default_survival_fun'
-breeding_fun: 'default_breeding_fun'
-fecundity_fun: 'default_fecundity_fun'
-K: 50
+density:
+  survival:
+    model: ceiling
+    K: 50
 lifecycle_steps:
   - age
   - survival

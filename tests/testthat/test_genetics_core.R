@@ -164,16 +164,13 @@ test_that("run_basic_simulation propagates inherit_fun through controller", {
     initialize_genotypes(population = pop, n_loci = 2, n_alleles = 2)
   }
   survival_fun <- function(ind) 1
-  breeding_fun <- function(ind) TRUE
-  fecundity_fun <- function(ind) 1L
-
   set.seed(123)
   res <- run_basic_simulation(
     initial_population = init_fun(),
     n_years = 1,
-    survival_fun = survival_fun,
-    breeding_fun = breeding_fun,
-    fecundity_fun = fecundity_fun,
+    survival_fun = function(ind) 1,
+    breeding_prob_fun = function(ind) 1,
+    fecundity_lambda_fun = function(ind) 1,
     inherit_fun = inherit_genotype_simple
   )
 

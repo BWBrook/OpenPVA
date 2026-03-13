@@ -38,28 +38,21 @@ For each run-year:
 5. Draw offspring counts for realized breeders (Poisson).
 6. Generate offspring records and metadata.
 
-## 4) Compatibility/deprecation contract
+## 4) Clean-break contract
 
-Compatibility is adapter-first:
+The current development line is clean-break by design:
 
-- Legacy `breeding_fun` and `fecundity_fun` remain accepted during transition.
-- Legacy channels are adapted into the new controller semantics.
-- Legacy YAML must continue to run through versioned migration/adaptation.
+- controller/scenario APIs use baseline-rate channels only,
+- YAML uses a single canonical schema (`schema_version: 3`),
+- legacy `breeding_fun` / `fecundity_fun` controller shims are intentionally
+  removed.
 
-Deprecation policy:
+Breaking changes are allowed when the repo docs, tests, and packaged examples
+move together.
 
-- No hard removal until replacement API/docs/tests are complete.
-- When deprecations begin, emit explicit warnings with migration guidance.
+## 5) YAML implications
 
-Breaking changes (must be explicitly declared):
-
-- removing legacy interface channels without wrappers,
-- changing output schema semantics without contract documentation/tests,
-- changing lifecycle ordering semantics without opt-in and migration notes.
-
-## 5) YAML v2 implications (planned)
-
-YAML v2 should expose explicit baseline reproduction fields and reproduction EV:
+Canonical YAML exposes explicit baseline reproduction fields and reproduction EV:
 
 - baseline breeding probability channels,
 - baseline fecundity lambda channels,
@@ -94,9 +87,7 @@ This shows baseline demography and yearly stochastic forcing remain separable an
 ## 7) Test requirements for implementation WPs
 
 - unit tests for new reproduction API helpers/builders,
-- adapter tests ensuring legacy interfaces preserve behavior envelopes,
 - integration tests:
-  - legacy YAML compatibility path,
-  - new YAML path,
+  - canonical YAML path,
   - deterministic seeded behavior,
   - output schema regression safety.

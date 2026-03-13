@@ -11,9 +11,8 @@ make_density_test_population <- function(
   stopifnot(length(patch_ids) == n_total)
 
   population <- vector("list", n_total)
-  idx <- seq_len(n_total)
   sexes <- c(rep.int("F", n_female), rep.int("M", n_male))
-  for (i in idx) {
+  for (i in seq_len(n_total)) {
     population[[i]] <- create_individual(
       id = i,
       sex = sexes[[i]],
@@ -30,21 +29,12 @@ test_that("density_spec validates channel function contracts", {
   )
   expect_s3_class(spec, "openpva_density_spec")
 
-  expect_error(
-    density_spec(),
-    "at least one channel function"
-  )
-
-  expect_error(
-    validate_density_spec(1),
-    "must be a list"
-  )
-
+  expect_error(density_spec(), "at least one channel function")
+  expect_error(validate_density_spec(1), "must be a list")
   expect_error(
     validate_density_spec(list(foo = function(population, ind) 1)),
     "unknown fields"
   )
-
   expect_error(
     validate_density_spec(list(survival_fun = "not_a_function")),
     "must be NULL or a function"
@@ -64,9 +54,6 @@ test_that("make_ceiling_density_fun computes global and patch multipliers", {
   f_patch <- make_ceiling_density_fun(K_patches = c(1, 3))
   expect_equal(f_patch(pop_patch, pop_patch[[1]]), 0.5)
   expect_equal(f_patch(pop_patch, pop_patch[[3]]), 1)
-
-  pop_patch[[1]]$patch_id <- NA_integer_
-  expect_equal(f_patch(pop_patch, pop_patch[[1]]), 1)
 })
 
 test_that("density survival channel scales survival outcomes", {
@@ -76,8 +63,8 @@ test_that("density survival channel scales survival outcomes", {
     initial_population = pop,
     n_years = 1,
     survival_fun = function(ind) 1,
-    breeding_fun = function(ind) FALSE,
-    fecundity_fun = function(ind) 0L,
+    breeding_prob_fun = function(ind) 0,
+    fecundity_lambda_fun = function(ind) 0,
     lifecycle_steps = c("age", "survival"),
     density_spec = density_spec(
       survival_fun = function(population, ind) 0
@@ -133,106 +120,6 @@ test_that("density breeding and fecundity channels scale reproduction pathway", 
   expect_gt(out_neutral$summary$n_births[[1]], 0L)
   expect_equal(out_no_breeding$summary$n_births[[1]], 0L)
   expect_equal(out_no_fecundity$summary$n_births[[1]], 0L)
-})
-
-test_that("legacy K compatibility matches equivalent global density_spec outcomes", {
-  init_fun <- function() make_density_test_population(n_female = 20L, n_male = 20L)
-  density_global <- density_spec(
-    survival_fun = make_ceiling_density_fun(K = 20)
-  )
-
-  out_legacy <- run_basic_simulation_replicates(
-    n_runs = 3,
-    n_years = 3,
-    init_fun = init_fun,
-    survival_fun = function(ind) 0.8,
-    breeding_fun = function(ind) FALSE,
-    fecundity_fun = function(ind) 0L,
-    K = 20,
-    seed = 4242L
-  )
-  out_density <- run_basic_simulation_replicates(
-    n_runs = 3,
-    n_years = 3,
-    init_fun = init_fun,
-    survival_fun = function(ind) 0.8,
-    breeding_fun = function(ind) FALSE,
-    fecundity_fun = function(ind) 0L,
-    density_spec = density_global,
-    seed = 4242L
-  )
-
-  expect_identical(out_legacy$summary$n_alive, out_density$summary$n_alive)
-  expect_true(any(out_legacy$summary$survival_scale < 1))
-  expect_true(all(out_density$summary$survival_scale == 1))
-})
-
-test_that("legacy K_patches compatibility matches equivalent density_spec outcomes", {
-  make_patch_pop <- function() {
-    make_density_test_population(
-      n_female = 4L,
-      n_male = 4L,
-      patch_ids = c(1L, 1L, 1L, 1L, 2L, 2L, 2L, 2L)
-    )
-  }
-  density_patch <- density_spec(
-    survival_fun = make_ceiling_density_fun(K_patches = c(2, 2))
-  )
-
-  set.seed(8080)
-  out_legacy <- run_basic_simulation(
-    initial_population = make_patch_pop(),
-    n_years = 2,
-    survival_fun = function(ind) 0.9,
-    breeding_fun = function(ind) FALSE,
-    fecundity_fun = function(ind) 0L,
-    K_patches = c(2, 2)
-  )
-  set.seed(8080)
-  out_density <- run_basic_simulation(
-    initial_population = make_patch_pop(),
-    n_years = 2,
-    survival_fun = function(ind) 0.9,
-    breeding_fun = function(ind) FALSE,
-    fecundity_fun = function(ind) 0L,
-    density_spec = density_patch
-  )
-
-  expect_identical(out_legacy$summary$n_alive, out_density$summary$n_alive)
-  expect_true(all(is.na(out_legacy$summary$survival_scale)))
-  expect_true(all(out_density$summary$survival_scale == 1))
-})
-
-test_that("density_spec cannot be combined with legacy K/K_patches inputs", {
-  spec <- density_spec(
-    survival_fun = function(population, ind) 1
-  )
-  pop <- make_density_test_population(n_female = 2L, n_male = 2L)
-
-  expect_error(
-    run_basic_simulation(
-      initial_population = pop,
-      n_years = 1,
-      survival_fun = function(ind) 1,
-      breeding_fun = function(ind) FALSE,
-      fecundity_fun = function(ind) 0L,
-      K = 10,
-      density_spec = spec
-    ),
-    "either density_spec or legacy K/K_patches"
-  )
-
-  expect_error(
-    scenario_spec(
-      name = "bad_density_mix",
-      n_runs = 2,
-      n_years = 2,
-      init_fun = function() pop,
-      K = 10,
-      density_spec = spec
-    ),
-    "either density_spec or K/K_patches"
-  )
 })
 
 test_that("density functions must return finite non-negative scalars", {

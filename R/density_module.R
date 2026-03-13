@@ -138,27 +138,6 @@ make_ceiling_density_fun <- function(K = NULL, K_patches = NULL) {
   }
 }
 
-.resolve_density_spec <- function(
-    spec = NULL,
-    K = NULL,
-    K_patches = NULL) {
-  if (!is.null(spec) && (!is.null(K) || !is.null(K_patches))) {
-    stop("Specify either density_spec or legacy K/K_patches density inputs, not both", call. = FALSE)
-  }
-
-  if (!is.null(spec)) {
-    return(validate_density_spec(spec))
-  }
-
-  if (!is.null(K) || !is.null(K_patches)) {
-    return(density_spec(
-      survival_fun = make_ceiling_density_fun(K = K, K_patches = K_patches)
-    ))
-  }
-
-  NULL
-}
-
 .eval_density_multiplier <- function(
     density_fun,
     population,

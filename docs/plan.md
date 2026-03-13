@@ -20,17 +20,14 @@ stable core API, documented scenario schema, strong tests, and reproducible demo
   - `run_basic_simulation()` / `run_basic_simulation_replicates()` support
     optional `record_population_history` capture for time-series spatial/genetic
     summaries.
-  - Reproduction baseline-rate APIs, controller draws, EV/cat channels, and
-    compatibility wrappers are implemented and regression-tested.
-  - Soft-deprecation framework for selected legacy reproduction wrappers is
-    active and migration documented.
-  - Density module is integrated across survival/breeding/fecundity channels
-    with compatibility adapters retained.
+  - Reproduction uses a single explicit baseline-rate pathway:
+    `breeding_prob_fun` + `fecundity_lambda_fun` with controller-owned draws.
+  - Density is configured explicitly through `density_spec()` and
+    channel-specific YAML `density` blocks.
 - YAML scenario status:
-  - YAML ingestion (`read_scenario_yaml()`) supports schema v1/v2/v3 with
-    additive uncertainty blocks in v3, plus density blocks, deterministic
-    seeds, mate requirement toggles, optional history capture, and lifecycle
-    function hooks (including `dispersal_fun`).
+  - YAML ingestion (`read_scenario_yaml()`) now targets a single canonical
+    `schema_version: 3` with explicit demography, density, management, and
+    uncertainty blocks.
   - Packaged spatial/genetic scenario trio added under `inst/extdata/`:
     fragmented, connected, and asymmetric flow regimes.
 - `targets` pipeline status:
@@ -41,10 +38,9 @@ stable core API, documented scenario schema, strong tests, and reproducible demo
   - Demo now includes spatial/genetic interpretation workflow guidance:
     endpoint vs time-series vs connectivity diagnostics.
 - Tests status:
-  - Canonical suite passes via `devtools::test()` (`697` pass, `0` fail).
-  - Regression coverage includes spatial/genetic time-series helpers,
-    connectivity diagnostics, deprecation behavior, YAML scenario-pack
-    compatibility, output contracts, and seeded snapshot slices.
+  - Canonical suite is being updated around the clean-break API surface.
+  - Regression coverage targets retained controller behavior, canonical YAML,
+    spatial/genetic summaries, output contracts, and seeded reproducibility.
 - Package check status:
   - Tarball-based `R CMD check --no-manual --as-cran` passes with `0` errors
     and `0` warnings (`3` known notes; see `artefacts/WP-2A.6/00check.log`).
@@ -74,8 +70,8 @@ A milestone is “reviewable” when:
 - Add regression tests for key engine behaviours.
 
 ### W2 — Scenario and YAML stability
-- Keep legacy YAML compatible.
-- Document schema and precedence rules (demography/management blocks overriding shorthand).
+- Keep one canonical YAML schema and document it clearly.
+- Tighten function resolution to OpenPVA-owned names or explicit `pkg::fun`.
 - Add tests for YAML parsing + scenario compilation + simulation run.
 
 ### W3 — Documentation and demos (Quarto)
@@ -103,9 +99,9 @@ Deliverables (in order):
    - `breeding_prob_fun` (or similar): returns p in [0,1]
    - `fecundity_lambda_fun` (or similar): returns λ ≥ 0
 3. Controller path that applies year-level reproduction EV/cats and performs Bernoulli/Poisson draws.
-4. Compatibility wrappers so legacy scenarios still run.
+4. Keep the retained public surface clean and explicit.
 5. Extend YAML schema for reproduction EV once semantics are stable.
-6. Update demos + add tests ensuring old and new paths behave as expected.
+6. Update demos + add tests ensuring the current path behaves as expected.
 
 ### W6 — Density module (post-refactor)
 Goal: a pluggable density submodule that can scale multiple vital rates (survival, breeding, fecundity),

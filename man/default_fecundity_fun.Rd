@@ -13,5 +13,5 @@ default_fecundity_fun(ind)
 Integer number of offspring (greater than or equal to zero).
 }
 \description{
-Draws a Poisson-distributed litter size for a breeding individual.
+Draws a Poisson-distributed litter size from the default fecundity lambda.
 }

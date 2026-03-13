@@ -20,17 +20,14 @@ test_that("apply_supplementation handles quotas and patch ids", {
 
 test_that("supplementation step increases population and summary tracks additions", {
   pop <- initialize_population(n = 3, max_age = 1)
-  survival_fun <- function(ind) 1
-  breeding_fun <- function(ind) FALSE
-  fecundity_fun <- function(ind) 0L
   steps <- c("age", "survival", "supplementation", "harvest")
 
   res <- run_basic_simulation(
     initial_population = pop,
     n_years = 1,
-    survival_fun = survival_fun,
-    breeding_fun = breeding_fun,
-    fecundity_fun = fecundity_fun,
+    survival_fun = function(ind) 1,
+    breeding_prob_fun = function(ind) 0,
+    fecundity_lambda_fun = function(ind) 0,
     lifecycle_steps = steps,
     supplement_quota = 2,
     supplement_patch = 3L
@@ -45,18 +42,15 @@ test_that("supplementation step increases population and summary tracks addition
 
 test_that("replicated simulations handle supplementation quotas", {
   init_fun <- function() initialize_population(n = 3, max_age = 1)
-  survival_fun <- function(ind) 1
-  breeding_fun <- function(ind) FALSE
-  fecundity_fun <- function(ind) 0L
   steps <- c("age", "survival", "supplementation")
 
   res <- run_basic_simulation_replicates(
     n_runs = 3,
     n_years = 2,
     init_fun = init_fun,
-    survival_fun = survival_fun,
-    breeding_fun = breeding_fun,
-    fecundity_fun = fecundity_fun,
+    survival_fun = function(ind) 1,
+    breeding_prob_fun = function(ind) 0,
+    fecundity_lambda_fun = function(ind) 0,
     lifecycle_steps = steps,
     supplement_quota = 1,
     supplement_patch = 1L

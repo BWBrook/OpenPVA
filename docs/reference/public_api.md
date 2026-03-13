@@ -1,11 +1,11 @@
-# Public API stability contract (1.0 line)
+# Current Public API
 
-This page defines which exported interfaces are stable under the 1.x semver
-contract and which remain experimental.
+This page lists the exported interfaces currently treated as the active
+development surface for OpenPVA.
 
-## Stable public API (1.x)
-
-Changes to these interfaces are treated as breaking unless backward compatible.
+OpenPVA is still a private, pre-release codebase. Cleanups and internal-facing
+API breaks are allowed when they improve clarity, provided the repo docs, tests,
+and examples move in lockstep.
 
 ### Core simulation and scenario interfaces
 
@@ -35,27 +35,19 @@ Changes to these interfaces are treated as breaking unless backward compatible.
 - `apply_dispersal()`
 - `default_lifecycle_steps()`
 
-### Demography table builders and validators
+### Demography rate builders and validators
 
 - `validate_survival_table()`
 - `build_survival_fun_from_table()`
 - `make_default_survival_table()`
+- `default_breeding_prob_fun()`
 - `validate_breeding_prob_table()`
 - `build_breeding_prob_fun_from_table()`
 - `make_default_breeding_prob_table()`
+- `default_fecundity_lambda_fun()`
 - `validate_fecundity_lambda_table()`
 - `build_fecundity_lambda_fun_from_table()`
 - `make_default_fecundity_lambda_table()`
-- Compatibility wrappers retained for 1.x (soft-deprecated for 2.0):
-  - `validate_breeding_table()`
-  - `build_breeding_fun_from_table()`
-  - `make_default_breeding_table()`
-  - `validate_fecundity_table()`
-  - `build_fecundity_fun_from_table()`
-  - `as_breeding_fun()`
-  - `as_breeding_prob_fun()`
-  - `as_fecundity_fun()`
-  - `as_fecundity_lambda_fun()`
 
 ### Summary/comparison interfaces
 
@@ -66,7 +58,7 @@ Changes to these interfaces are treated as breaking unless backward compatible.
 - `plot_mean_trajectory()`
 - `compare_scenarios()`
 
-## Experimental exported API (may change within 1.x)
+## Experimental or fast-moving API
 
 These remain exported for active development and may evolve with explicit
 release notes.
@@ -101,12 +93,22 @@ release notes.
   - `generate_calibration_candidates()`
   - `run_calibration_search()`
 
+## Removed legacy compatibility layer
+
+These interfaces have been intentionally removed from the supported surface in
+the current development line:
+
+- `validate_breeding_table()`
+- `build_breeding_fun_from_table()`
+- `make_default_breeding_table()`
+- `validate_fecundity_table()`
+- `build_fecundity_fun_from_table()`
+- `as_breeding_fun()`
+- `as_breeding_prob_fun()`
+- `as_fecundity_fun()`
+- `as_fecundity_lambda_fun()`
+
 ## Internal API rule
 
 Unexported functions (including names prefixed with `.`) are internal and not
-covered by semver stability promises.
-
-## Migration note
-
-For currently soft-deprecated wrappers and preferred replacements, see
-`docs/reference/migration_1x_to_2x.md`.
+covered by any public-API promise.

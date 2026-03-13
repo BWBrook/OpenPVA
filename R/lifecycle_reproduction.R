@@ -1,13 +1,13 @@
 #' Default fecundity function
 #'
-#' Draws a Poisson-distributed litter size for a breeding individual.
+#' Draws a Poisson-distributed litter size from the default fecundity lambda.
 #'
 #' @param ind Individual object.
 #'
 #' @return Integer number of offspring (greater than or equal to zero).
 #' @export
 default_fecundity_fun <- function(ind) {
-  stats::rpois(1L, lambda = 1.5)
+  stats::rpois(1L, lambda = default_fecundity_lambda_fun(ind))
 }
 
 #' Apply reproduction to a population
@@ -22,7 +22,7 @@ default_fecundity_fun <- function(ind) {
 #'   Functions may optionally accept a third `context` argument for stateful
 #'   mating controls (for example, male mate quotas).
 #' @param require_mate Logical; if `TRUE`, breeders without an assigned mate do
-#'   not produce offspring. Defaults to `FALSE` for backward compatibility.
+#'   not produce offspring.
 #' @param inherit_fun Optional function taking `(mother, father)` and returning an
 #'   allele matrix for the offspring. Defaults to `NULL`, in which case newborns
 #'   inherit no genotype (alleles remain `NULL`).

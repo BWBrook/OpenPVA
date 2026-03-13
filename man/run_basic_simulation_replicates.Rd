@@ -9,10 +9,9 @@ run_basic_simulation_replicates(
   n_years,
   init_fun,
   survival_fun = default_survival_fun,
-  breeding_fun = default_breeding_fun,
-  fecundity_fun = default_fecundity_fun,
-  K = NULL,
-  K_patches = NULL,
+  breeding_prob_fun = default_breeding_prob_fun,
+  fecundity_lambda_fun = default_fecundity_lambda_fun,
+  density_spec = NULL,
   harvest_quota = NULL,
   lifecycle_steps = default_lifecycle_steps(),
   mating_fun = default_mating_fun,
@@ -24,81 +23,75 @@ run_basic_simulation_replicates(
   env_surv_sd = 0,
   cat_surv_prob = 0,
   cat_surv_mult = 1,
-  breeding_prob_fun = NULL,
-  fecundity_lambda_fun = NULL,
   env_repro_p_sd = 0,
   env_repro_lambda_sd = 0,
   cat_repro_prob = 0,
   cat_repro_mult = 1,
   record_population_history = FALSE,
-  seed = NULL,
-  density_spec = NULL
+  seed = NULL
 )
 }
 \arguments{
-\item{n_runs}{Integer number of independent simulation runs (must be >= 1).}
+\item{n_runs}{Integer number of independent simulation runs (must be `>= 1`).}
 
-\item{n_years}{Integer number of years per run (must be >= 1).}
+\item{n_years}{Integer number of years per run (must be `>= 1`).}
 
-\item{init_fun}{Function with no arguments that returns an initial population.}
+\item{init_fun}{Function with no arguments that returns an initial
+population.}
 
-\item{survival_fun}{Function returning survival probabilities for individuals.}
+\item{survival_fun}{Function returning survival probabilities for
+individuals.}
 
-\item{breeding_fun}{Function identifying breeding-eligible individuals.}
+\item{breeding_prob_fun}{Baseline breeding-probability function returning
+values in `[0, 1]`.}
 
-\item{fecundity_fun}{Function returning offspring counts for breeders.}
+\item{fecundity_lambda_fun}{Baseline fecundity-mean function returning
+`lambda >= 0`.}
 
-\item{K}{Optional numeric carrying capacity for ceiling-based survival scaling.}
+\item{density_spec}{Optional density module specification from
+[density_spec()]. Defines channel-specific density multipliers for
+survival, breeding probability, and fecundity lambda.}
 
-\item{K_patches}{Optional numeric vector of patch-specific carrying capacities.
-Provide either `K` or `K_patches`, not both. `K`/`K_patches` are legacy
-compatibility inputs and cannot be combined with `density_spec`.}
+\item{harvest_quota}{Optional harvest quota (single value or length
+`n_years` vector). If `lifecycle_steps` omits `"harvest"`, quotas are
+ignored.}
 
-\item{harvest_quota}{Optional harvest quota (single value or length `n_years` vector). If
-`lifecycle_steps` omits `"harvest"`, quotas are ignored.}
-
-\item{lifecycle_steps}{Character vector specifying lifecycle order for each run.}
+\item{lifecycle_steps}{Character vector specifying lifecycle order for each
+run.}
 
 \item{mating_fun}{Function used for mate selection within each run.}
 
 \item{require_mate}{Logical; if `TRUE`, females without a selected mate do
-not produce offspring in reproduction steps. Defaults to `FALSE` for
-backward compatibility.}
+not produce offspring in reproduction steps.}
 
 \item{inherit_fun}{Optional inheritance function applied to newborns.}
 
-\item{dispersal_fun}{Function applied during the `"dispersal"` lifecycle step.}
+\item{dispersal_fun}{Function applied during the `"dispersal"` lifecycle
+step.}
 
-\item{supplement_quota}{Optional supplementation quota (single value or length
-`n_years` vector). Applied only if `"supplementation"` is in `lifecycle_steps`.}
+\item{supplement_quota}{Optional supplementation quota (single value or
+length `n_years` vector). Applied only if `"supplementation"` is in
+`lifecycle_steps`.}
 
 \item{supplement_patch}{Optional patch identifier assigned to all
 supplemented individuals (defaults to `NA`).}
 
 \item{env_surv_sd}{Standard deviation of a lognormal year-level multiplier on
-survival (environmental variation). Set to 0 to disable.}
+survival (environmental variation). Set to `0` to disable.}
 
 \item{cat_surv_prob}{Per-year probability of a catastrophic survival event
-(Bernoulli). Set to 0 to disable.}
+(Bernoulli). Set to `0` to disable.}
 
 \item{cat_surv_mult}{Multiplicative factor applied to survival probabilities
-in catastrophe years. Typical values lie within (0, 1]; set to 1 to make
-catastrophes neutral even if they occur.}
-
-\item{breeding_prob_fun}{Optional baseline breeding-probability function
-returning values in `[0, 1]` for controller-level reproduction draws.}
-
-\item{fecundity_lambda_fun}{Optional baseline fecundity-mean function
-returning `lambda >= 0` for controller-level reproduction draws.}
+in catastrophe years.}
 
 \item{env_repro_p_sd}{Standard deviation of a lognormal year-level multiplier
-on breeding probability in the controller reproduction pathway.}
+on breeding probability.}
 
 \item{env_repro_lambda_sd}{Standard deviation of a lognormal year-level
-multiplier on fecundity lambda in the controller reproduction pathway.}
+multiplier on fecundity lambda.}
 
-\item{cat_repro_prob}{Per-year probability of a reproduction catastrophe in
-the controller reproduction pathway.}
+\item{cat_repro_prob}{Per-year probability of a reproduction catastrophe.}
 
 \item{cat_repro_mult}{Multiplicative factor applied to breeding probability
 and fecundity lambda in reproduction catastrophe years.}
@@ -107,23 +100,23 @@ and fecundity lambda in reproduction catastrophe years.}
 a `population_history` list with per-year snapshots.}
 
 \item{seed}{Optional integer random seed. When provided, replicate runs are
-deterministic and the caller RNG state is restored on exit. The seed
-controls demographic stochasticity and any year-level EV/cat draws applied
-inside replicated runs.}
-
-\item{density_spec}{Optional density module specification from
-[density_spec()]. Defines channel-specific density multipliers for survival,
-breeding probability, and fecundity lambda.}
+deterministic and the caller RNG state is restored on exit.}
 }
 \value{
 A list with elements:
   \itemize{
-    \item `runs`: list of length `n_runs`, each containing the output of `run_basic_simulation()`.
-    \item `summary`: tibble with columns `run`, `year`, `n_alive`, `n_female_alive`, `n_male_alive`, `n_births`, `n_harvested`, `n_supplemented`, `survival_scale`, `env_surv_mult`, `cat_surv_mult`, `catastrophe`, `env_repro_p_mult`, `env_repro_lambda_mult`, `cat_repro_mult`, and `repro_catastrophe`.
-    \item `extinction`: tibble with columns `run`, `went_extinct`, `time_to_extinction`.
+    \item `runs`: list of length `n_runs`, each containing the output of
+      [run_basic_simulation()].
+    \item `summary`: tibble with columns `run`, `year`, `n_alive`,
+      `n_female_alive`, `n_male_alive`, `n_births`, `n_harvested`,
+      `n_supplemented`, `survival_scale`, `env_surv_mult`, `cat_surv_mult`,
+      `catastrophe`, `env_repro_p_mult`, `env_repro_lambda_mult`,
+      `cat_repro_mult`, and `repro_catastrophe`.
+    \item `extinction`: tibble with columns `run`, `went_extinct`,
+      `time_to_extinction`.
   }
 }
 \description{
-Executes multiple independent runs of `run_basic_simulation()` and collates
+Executes multiple independent runs of [run_basic_simulation()] and collates
 per-year summaries along with extinction metrics.
 }

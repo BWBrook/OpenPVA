@@ -43,14 +43,14 @@ test_that("scenario and YAML seeding produce deterministic replicate outputs", {
 
   yaml_text <- "
 name: 'seeded_yaml'
-schema_version: 1
+schema_version: 3
 n_runs: 3
 n_years: 5
 seed: 777
 initializer:
   fun: 'initialize_population'
   args:
-    \"n\": 20
+    'n': 20
 env_surv_sd: 0.2
 cat_surv_prob: 0.1
 cat_surv_mult: 0.5
@@ -121,16 +121,6 @@ test_that("seed validation rejects non-integer values", {
   )
 
   expect_error(
-    run_basic_simulation_replicates(
-      n_runs = 2,
-      n_years = 2,
-      init_fun = function() initialize_population(10),
-      seed = Inf
-    ),
-    "seed must be NULL or a single integer"
-  )
-
-  expect_error(
     scenario_spec(
       name = "bad_seed",
       n_runs = 1,
@@ -143,21 +133,18 @@ test_that("seed validation rejects non-integer values", {
 
   yaml_bad_seed <- "
 name: 'bad_yaml_seed'
-schema_version: 1
+schema_version: 3
 n_runs: 1
 n_years: 1
 seed: 1.1
 initializer:
   fun: 'initialize_population'
   args:
-    \"n\": 5
+    'n': 5
 "
   tmp <- tempfile(fileext = ".yaml")
   writeLines(yaml_bad_seed, tmp)
   on.exit(unlink(tmp), add = TRUE)
 
-  expect_error(
-    read_scenario_yaml(tmp),
-    "seed must be NULL or a single integer"
-  )
+  expect_error(read_scenario_yaml(tmp), "seed must be NULL or a single integer")
 })

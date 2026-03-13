@@ -26,7 +26,7 @@ Functions may optionally accept a third `context` argument for stateful
 mating controls (for example, male mate quotas).}
 
 \item{require_mate}{Logical; if `TRUE`, breeders without an assigned mate do
-not produce offspring. Defaults to `FALSE` for backward compatibility.}
+not produce offspring.}
 
 \item{inherit_fun}{Optional function taking `(mother, father)` and returning an
 allele matrix for the offspring. Defaults to `NULL`, in which case newborns

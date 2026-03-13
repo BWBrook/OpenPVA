@@ -1,5 +1,5 @@
 name: "demo_spatial_genetic_asymmetric"
-schema_version: 2
+schema_version: 3
 n_runs: 12
 n_years: 16
 seed: 20260212

@@ -1,5 +1,5 @@
 name: "demo_density_harvest"
-schema_version: 1
+schema_version: 3
 n_runs: 50
 n_years: 50
 seed: 20260302
@@ -9,15 +9,16 @@ initializer:
   args:
     "n": 100
 
-survival_fun: "default_survival_fun"
-breeding_fun: "default_breeding_fun"
-fecundity_fun: "default_fecundity_fun"
-
-K: 80
-harvest_quota: 5
+density:
+  survival:
+    model: ceiling
+    K: 80
 
 lifecycle_steps:
   - age
   - survival
   - breeding_births
   - harvest
+
+management:
+  harvest_quota: 5

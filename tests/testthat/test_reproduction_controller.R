@@ -43,30 +43,11 @@ test_that("reproduction EV and catastrophes are applied in controller pathway", 
   expect_true(any(out$summary$env_repro_lambda_mult != 1))
 })
 
-test_that("legacy reproduction pathway remains available", {
-  out <- run_basic_simulation(
-    initial_population = make_repro_test_population(),
-    n_years = 3,
-    survival_fun = function(ind) 1,
-    breeding_fun = function(ind) TRUE,
-    fecundity_fun = function(ind) 0L,
-    lifecycle_steps = c("age", "survival", "breeding_births")
-  )
-
-  expect_true(all(out$summary$n_births == 0L))
-  expect_true(all(out$summary$env_repro_p_mult == 1))
-  expect_true(all(out$summary$env_repro_lambda_mult == 1))
-  expect_true(all(out$summary$cat_repro_mult == 1))
-  expect_true(all(!out$summary$repro_catastrophe))
-})
-
 test_that("replicates with controller reproduction pathway are deterministic with seed", {
-  init_fun <- make_repro_test_population
-
   out1 <- run_basic_simulation_replicates(
     n_runs = 4,
     n_years = 6,
-    init_fun = init_fun,
+    init_fun = make_repro_test_population,
     survival_fun = function(ind) 1,
     breeding_prob_fun = function(ind) 1,
     fecundity_lambda_fun = function(ind) 1.5,
@@ -80,7 +61,7 @@ test_that("replicates with controller reproduction pathway are deterministic wit
   out2 <- run_basic_simulation_replicates(
     n_runs = 4,
     n_years = 6,
-    init_fun = init_fun,
+    init_fun = make_repro_test_population,
     survival_fun = function(ind) 1,
     breeding_prob_fun = function(ind) 1,
     fecundity_lambda_fun = function(ind) 1.5,

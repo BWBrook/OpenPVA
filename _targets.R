@@ -1,16 +1,12 @@
 # _targets.R
-
+#
 # Declarative pipeline for the basic OpenPVA demos.
-# - pop0/pop1/pop2/breeders: minimal lifecycle sanity checks.
-# - sim_basic: single-run example.
-# - sim_basic_reps & sim_basic_dense_harvest: replicated scenarios.
-# - *_summary / *_trajectory / *_plot: post-processing and reporting.
+# Functions are sourced directly from `R/` so the pipeline stays runnable from a
+# checkout without relying on `devtools::load_all()`.
 
-devtools::load_all(quiet = TRUE)
+targets::tar_source()
 
-targets::tar_option_set(
-  packages = character()
-)
+targets::tar_option_set(packages = character())
 
 list(
   # Core lifecycle sanity checks
@@ -47,7 +43,9 @@ list(
       n_runs = 50,
       n_years = 50,
       init_fun = function() initialize_population(100),
-      K = 80,
+      density_spec = density_spec(
+        survival_fun = make_ceiling_density_fun(K = 80)
+      ),
       harvest_quota = 5,
       seed = 20260303L
     )
