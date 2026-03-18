@@ -98,13 +98,13 @@ This will run the workflow defined in `_targets.R`, using the lifecycle modules 
 Before pushing changes:
 
 ```bash
-Rscript -e "devtools::test()"
+Rscript scripts/run_tests.R
 ```
 
 ### 4. Run a minimal scenario in R
 
 ```r
-devtools::load_all(quiet = TRUE)
+pkgload::load_all(quiet = TRUE)
 
 sc <- OpenPVA::scenario_spec(
   name = "readme_demo_r",
@@ -177,7 +177,17 @@ Before contributing, please read:
 Pull requests should describe:
 
 * Which modules/files are affected.
-* What tests you ran (`devtools::test()`, `targets::tar_make()`).
+* What tests you ran (`Rscript scripts/run_tests.R`, `targets::tar_make()`).
+
+The default `_targets.R` demo workload is intentionally smoke-sized for fresh
+checkouts and laptops:
+
+- `sim_basic_reps`: `20` runs x `30` years
+- `sim_basic_dense_harvest`: `15` runs x `30` years
+- `spatial_scenario_two_patch`: `5` runs x `20` years
+
+Heavier ensembles should be run explicitly in scenario or release-evidence
+workflows rather than assumed by the baseline demo pipeline.
 * Any changes to dependencies (`bootstrap_env.R`, `DESCRIPTION`).
 
 ---

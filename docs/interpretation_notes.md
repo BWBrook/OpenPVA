@@ -1021,6 +1021,8 @@ A short running summary of:
 - Current reliable baseline:
   - Package tests are green (`531` pass) with reproducibility snapshot and
     output-schema regression coverage.
+  - Default demo pipeline is now smoke-sized for fresh checkout verification on
+    laptops, including macOS, rather than tuned as a heavy benchmark path.
   - YAML schema v1/v2 (including density/reproduction channels) is documented
     and regression-tested with legacy adaptation support.
   - Seeded replicate/scenario execution is deterministic and caller RNG-safe.
@@ -1034,3 +1036,37 @@ A short running summary of:
 - Next milestone focus:
   - Priority Queue in `docs/roadmap.md` is currently exhausted through
     `WP-1.3.3`; next work requires promotion of new WPs.
+
+### [2026-03-18] macOS smoke-default pass
+
+- **Change summary**:
+  - Reduced default `_targets.R` demo replicate counts to a smoke-sized laptop
+    profile.
+  - Added package-native `scripts/run_tests.R` entrypoint and switched current
+    docs/release automation away from assuming `devtools` is installed.
+- **Artefacts inspected**:
+  - Tests: `Rscript scripts/run_tests.R` passed (`531` pass, `0` fail).
+  - Targets: Quarto render passed; full default `targets` run was observed to be
+    CPU-heavy but correct, motivating the smaller smoke defaults.
+  - Quarto: `quarto render quarto` passed.
+  - YAML scenarios: packaged examples remained available; no schema changes in
+    this pass.
+- **Observed behaviour**:
+  - Fresh macOS restore completed without manual system-library intervention.
+  - Direct tiny replicate benchmark (`2` runs x `5` years) completed quickly,
+    confirming correctness.
+  - Larger default ensemble settings consumed several minutes of single-core CPU
+    time, which is acceptable for explicit heavier runs but too slow for a
+    baseline smoke path.
+  - The spatial demo target was also resized after validation showed it
+    dominated the default pipeline runtime on laptop hardware.
+- **Domain sanity**:
+  - No demographic or extinction-behaviour regressions were observed in the
+    inspected smoke outputs.
+  - This pass changed only validation workload size and test/release invocation
+    plumbing, not simulation semantics.
+- **Follow-up tasks**:
+  - [ ] Consider a future optional parallel demo/release profile for heavier
+    ensemble validation.
+  - [ ] Re-run the resized default `targets` pipeline end-to-end and capture the
+    elapsed time in a future performance note if desired.

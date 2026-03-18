@@ -8,6 +8,13 @@ targets::tar_source()
 
 targets::tar_option_set(packages = character())
 
+demo_reps_n_runs <- 20L
+demo_reps_n_years <- 30L
+demo_dense_harvest_n_runs <- 15L
+demo_dense_harvest_n_years <- 30L
+demo_spatial_n_runs <- 5L
+demo_spatial_n_years <- 20L
+
 list(
   # Core lifecycle sanity checks
   targets::tar_target(pop0, initialize_population(50)),
@@ -31,8 +38,8 @@ list(
   targets::tar_target(
     sim_basic_reps,
     run_basic_simulation_replicates(
-      n_runs = 100,
-      n_years = 50,
+      n_runs = demo_reps_n_runs,
+      n_years = demo_reps_n_years,
       init_fun = function() initialize_population(50),
       seed = 20260302L
     )
@@ -40,8 +47,8 @@ list(
   targets::tar_target(
     sim_basic_dense_harvest,
     run_basic_simulation_replicates(
-      n_runs = 50,
-      n_years = 50,
+      n_runs = demo_dense_harvest_n_runs,
+      n_years = demo_dense_harvest_n_years,
       init_fun = function() initialize_population(100),
       density_spec = density_spec(
         survival_fun = make_ceiling_density_fun(K = 80)
@@ -88,8 +95,8 @@ list(
     {
       sc <- make_two_patch_spatial_scenario(
         name = "two_patch_targets",
-        n_runs = 10,
-        n_years = 30,
+        n_runs = demo_spatial_n_runs,
+        n_years = demo_spatial_n_years,
         initial_n = c(50L, 10L),
         K_patches = c(80, 40),
         dispersal_matrix = matrix(c(0.9, 0.1,

@@ -33,6 +33,8 @@ stable core API, documented scenario schema, strong tests, and reproducible demo
 - `targets` pipeline status:
   - Core targets remain runnable; smoke runs are used as reproducibility gates
     in artefact cycles and CI-heavy profile.
+  - Default demo targets are intentionally smoke-sized for laptop-friendly
+    fresh-checkout validation rather than heavy ensemble benchmarking.
 - Quarto demos status:
   - Quarto project renders to `outputs/quarto_site`.
   - Demo now includes spatial/genetic interpretation workflow guidance:
@@ -41,6 +43,8 @@ stable core API, documented scenario schema, strong tests, and reproducible demo
   - Canonical suite is being updated around the clean-break API surface.
   - Regression coverage targets retained controller behavior, canonical YAML,
     spatial/genetic summaries, output contracts, and seeded reproducibility.
+  - Package-native test entrypoint is `Rscript scripts/run_tests.R`, avoiding
+    an unnecessary hard dependency on `devtools` for fresh restores.
 - Package check status:
   - Tarball-based `R CMD check --no-manual --as-cran` passes with `0` errors
     and `0` warnings (`3` known notes; see `artefacts/WP-2A.6/00check.log`).

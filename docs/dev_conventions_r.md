@@ -217,7 +217,7 @@ OpenPVA uses `testthat` for unit tests.
 Run tests with:
 
 ```r
-devtools::test()
+Rscript scripts/run_tests.R
 # or
 testthat::test_dir("tests/testthat")
 ```

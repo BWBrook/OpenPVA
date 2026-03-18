@@ -28,7 +28,7 @@ echo "+ lint" | tee "$OUT_DIR/lint.log"
 Rscript -e "lints <- lintr::lint_package(); cat('n_lints=', length(lints), '\n', sep=''); print(lints); if (length(lints) > 0) quit(status = 1)" 2>&1 | tee -a "$OUT_DIR/lint.log"
 
 echo "+ tests" | tee "$OUT_DIR/tests.log"
-Rscript -e "devtools::test()" 2>&1 | tee -a "$OUT_DIR/tests.log"
+Rscript scripts/run_tests.R 2>&1 | tee -a "$OUT_DIR/tests.log"
 
 echo "+ targets smoke" | tee "$OUT_DIR/targets_smoke.log"
 Rscript -e "targets::tar_invalidate(names = c('sim_basic')); targets::tar_make(script = '_targets.R', store = '_targets', names = c('sim_basic'))" 2>&1 | tee -a "$OUT_DIR/targets_smoke.log"
@@ -55,7 +55,7 @@ fi
 echo "+ generate toy scenario outputs" | tee "$OUT_DIR/toy_scenario.log"
 OUT_DIR_ABS="$(cd "$OUT_DIR" && pwd)"
 OUT_DIR="$OUT_DIR_ABS" Rscript - <<'RS' 2>&1 | tee -a "$OUT_DIR/toy_scenario.log"
-devtools::load_all(quiet = TRUE)
+pkgload::load_all(quiet = TRUE)
 out_dir <- Sys.getenv("OUT_DIR")
 
 sc <- scenario_spec(

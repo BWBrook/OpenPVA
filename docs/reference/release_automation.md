@@ -25,7 +25,7 @@ It then runs and records:
 
 - `renv::restore()`
 - lint (`lintr::lint_package()`)
-- full tests (`devtools::test()`)
+- full tests (`Rscript scripts/run_tests.R`)
 - minimal targets smoke (`sim_basic`)
 - Quarto render
 - tarball build

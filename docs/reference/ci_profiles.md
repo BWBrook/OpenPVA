@@ -18,7 +18,7 @@ Checks:
 - dependency restore (`renv::restore()`),
 - `DESCRIPTION` `Suggests` bootstrap (conditional install of missing packages),
 - lint (`lintr::lint_package()`),
-- tests (`devtools::test()`),
+- tests (`Rscript scripts/run_tests.R`),
 - source build (`R CMD build --no-build-vignettes .`),
 - package check (`R CMD check --no-manual OpenPVA_*.tar.gz`).
 
@@ -70,7 +70,7 @@ sudo apt-get install -y libcurl4-openssl-dev libfontconfig1-dev libfreetype6-dev
 RENV_CONFIG_AUTOLOADER_ENABLED=FALSE Rscript -e "options(renv.config.pak.enabled = FALSE); renv::restore(prompt = FALSE)"
 Rscript -e "desc <- read.dcf('DESCRIPTION'); suggests <- trimws(unlist(strsplit(desc[1, 'Suggests'], ','))); suggests <- gsub('[[:space:]]*[(].*[)]$', '', suggests); suggests <- suggests[nzchar(suggests)]; missing <- suggests[!vapply(suggests, requireNamespace, FUN.VALUE = logical(1), quietly = TRUE)]; if (length(missing) > 0) install.packages(missing, repos = 'https://cloud.r-project.org')"
 Rscript -e "lints <- lintr::lint_package(); print(lints); if (length(lints) > 0) quit(status = 1)"
-Rscript -e "devtools::test()"
+Rscript scripts/run_tests.R
 R CMD build --no-build-vignettes .
 R CMD check --no-manual OpenPVA_*.tar.gz
 ```
@@ -83,9 +83,9 @@ sudo apt-get install -y libcurl4-openssl-dev libfontconfig1-dev libfreetype6-dev
 RENV_CONFIG_AUTOLOADER_ENABLED=FALSE Rscript -e "options(renv.config.pak.enabled = FALSE); renv::restore(prompt = FALSE)"
 Rscript -e "desc <- read.dcf('DESCRIPTION'); suggests <- trimws(unlist(strsplit(desc[1, 'Suggests'], ','))); suggests <- gsub('[[:space:]]*[(].*[)]$', '', suggests); suggests <- suggests[nzchar(suggests)]; missing <- suggests[!vapply(suggests, requireNamespace, FUN.VALUE = logical(1), quietly = TRUE)]; if (length(missing) > 0) install.packages(missing, repos = 'https://cloud.r-project.org')"
 Rscript -e "devtools::test(filter = 'rng_seed|output_schema_contract|scenario_yaml_demography|spatial_patches|reproducibility_snapshots')"
-Rscript -e "devtools::test()"
+Rscript scripts/run_tests.R
 Rscript - <<'EOF'
-devtools::load_all(quiet = TRUE)
+pkgload::load_all(quiet = TRUE)
 sc <- scenario_spec(
   name = "ci_uncertainty_smoke",
   n_runs = 4,
