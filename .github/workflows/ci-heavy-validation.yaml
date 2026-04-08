@@ -46,15 +46,15 @@ jobs:
 
       - name: Reproducibility regression tests
         run: >-
-          Rscript -e "devtools::test(filter = 'rng_seed|output_schema_contract|scenario_yaml_demography|spatial_patches|reproducibility_snapshots')"
+          Rscript scripts/run_tests.R "rng_seed|output_schema_contract|scenario_yaml_demography|spatial_patches|reproducibility_snapshots"
 
       - name: Full package tests
-        run: Rscript -e "devtools::test()"
+        run: Rscript scripts/run_tests.R
 
       - name: Uncertainty workflow smoke
         run: |
           Rscript - <<'EOF'
-          devtools::load_all(quiet = TRUE)
+          pkgload::load_all(quiet = TRUE)
           sc <- scenario_spec(
             name = "ci_uncertainty_smoke",
             n_runs = 4,

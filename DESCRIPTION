@@ -15,7 +15,6 @@ Imports:
     purrr,
     ggplot2
 Suggests: 
-    devtools,
     testthat,
     lintr,
     targets,
