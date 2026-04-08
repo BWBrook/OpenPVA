@@ -1,8 +1,6 @@
 # bootstrap_env.R
 
-if (!requireNamespace("renv", quietly = TRUE)) {
-  install.packages("renv", repos = "https://cloud.r-project.org")
-}
+source("scripts/install_renv.R", local = TRUE)
 
 options(renv.config.pak.enabled = FALSE)
 renv::restore(prompt = FALSE)

@@ -33,7 +33,7 @@ jobs:
             pandoc
 
       - name: Install renv
-        run: Rscript -e "install.packages('renv', repos = 'https://cloud.r-project.org')"
+        run: Rscript scripts/install_renv.R
 
       - name: Restore dependencies
         run: >-
