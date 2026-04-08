@@ -16,7 +16,7 @@ Checks:
 
 - Ubuntu system requirements install (`apt`) for R package runtime/link deps,
 - dependency restore (`renv::restore()`),
-- `DESCRIPTION` `Suggests` bootstrap (conditional install of missing packages),
+- shared `DESCRIPTION` `Suggests` bootstrap (`scripts/install_suggests.R`),
 - lint (`lintr::lint_package()`),
 - tests (`Rscript scripts/run_tests.R`),
 - source build (`R CMD build --no-build-vignettes .`),
@@ -39,6 +39,8 @@ Triggers:
 Checks:
 
 - Ubuntu system requirements install (`apt`) for R package runtime/link deps,
+- dependency restore (`renv::restore()`),
+- shared `DESCRIPTION` `Suggests` bootstrap (`scripts/install_suggests.R`),
 - reproducibility regression tests:
   - `test_rng_seed.R`
   - `test_output_schema_contract.R`
@@ -50,7 +52,6 @@ Checks:
   - ensemble serial/parallel reproducibility check,
   - PRCC sensitivity helper smoke,
   - calibration scaffold smoke,
-- `DESCRIPTION` `Suggests` bootstrap (conditional install of missing packages),
 - `targets` smoke run (forced `sim_basic`),
 - Quarto render,
 - tarball build + `R CMD check --no-manual --as-cran`.
@@ -68,7 +69,7 @@ Fast profile equivalent:
 sudo apt-get update
 sudo apt-get install -y libcurl4-openssl-dev libfontconfig1-dev libfreetype6-dev libgit2-dev libglpk-dev libx11-dev pandoc
 RENV_CONFIG_AUTOLOADER_ENABLED=FALSE Rscript -e "options(renv.config.pak.enabled = FALSE); renv::restore(prompt = FALSE)"
-Rscript -e "desc <- read.dcf('DESCRIPTION'); suggests <- trimws(unlist(strsplit(desc[1, 'Suggests'], ','))); suggests <- gsub('[[:space:]]*[(].*[)]$', '', suggests); suggests <- suggests[nzchar(suggests)]; missing <- suggests[!vapply(suggests, requireNamespace, FUN.VALUE = logical(1), quietly = TRUE)]; if (length(missing) > 0) install.packages(missing, repos = 'https://cloud.r-project.org')"
+Rscript scripts/install_suggests.R
 Rscript -e "lints <- lintr::lint_package(); print(lints); if (length(lints) > 0) quit(status = 1)"
 Rscript scripts/run_tests.R
 R CMD build --no-build-vignettes .
@@ -81,7 +82,7 @@ Heavy profile equivalent:
 sudo apt-get update
 sudo apt-get install -y libcurl4-openssl-dev libfontconfig1-dev libfreetype6-dev libgit2-dev libglpk-dev libx11-dev pandoc
 RENV_CONFIG_AUTOLOADER_ENABLED=FALSE Rscript -e "options(renv.config.pak.enabled = FALSE); renv::restore(prompt = FALSE)"
-Rscript -e "desc <- read.dcf('DESCRIPTION'); suggests <- trimws(unlist(strsplit(desc[1, 'Suggests'], ','))); suggests <- gsub('[[:space:]]*[(].*[)]$', '', suggests); suggests <- suggests[nzchar(suggests)]; missing <- suggests[!vapply(suggests, requireNamespace, FUN.VALUE = logical(1), quietly = TRUE)]; if (length(missing) > 0) install.packages(missing, repos = 'https://cloud.r-project.org')"
+Rscript scripts/install_suggests.R
 Rscript -e "devtools::test(filter = 'rng_seed|output_schema_contract|scenario_yaml_demography|spatial_patches|reproducibility_snapshots')"
 Rscript scripts/run_tests.R
 Rscript - <<'EOF'

@@ -74,7 +74,7 @@ For release-evidence automation, see `docs/reference/release_automation.md`.
 ```bash
 git clone https://github.com/BWBrook/OpenPVA.git
 cd OpenPVA
-Rscript bootstrap_env.R   # sets up renv and installs dependencies
+Rscript bootstrap_env.R   # restores renv and installs missing Suggests used in dev/CI
 ```
 
 Alternatively, in an R session:
