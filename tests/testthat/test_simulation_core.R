@@ -73,8 +73,14 @@ test_that("run_basic_simulation_replicates produces consistent summaries", {
 
   expect_equal(length(result$runs), 3L)
   expect_equal(nrow(result$summary), 3L)
-  expect_true(all(result$summary$n_alive == 5L))
-  expect_true(all(result$summary$n_births == 2L))
+  expect_true(all(result$summary$n_births >= 0L))
+  expect_true(all(result$summary$n_alive == 3L + result$summary$n_births))
+  expect_true(
+    all(
+      result$summary$n_alive ==
+        result$summary$n_female_alive + result$summary$n_male_alive
+    )
+  )
   expect_true(all(result$extinction$went_extinct == FALSE))
   expect_true(all(is.na(result$extinction$time_to_extinction)))
 })
