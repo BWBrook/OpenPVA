@@ -3,6 +3,10 @@
 OpenPVA uses two CI validation profiles so pull requests get fast feedback while
 heavier reproducibility checks still run continuously.
 
+Both workflows pin R to `4.5.3`, matching `renv.lock`. Do not leave CI on the
+floating latest R release unless the lockfile has first been refreshed and
+validated against that R line.
+
 ## `ci-fast` (PR + push gate)
 
 Workflow file: `.github/workflows/ci-fast.yaml`
