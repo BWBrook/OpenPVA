@@ -17,7 +17,7 @@ jobs:
       RENV_CONFIG_RSPM_ENABLED: "FALSE"
       R_PKG_TYPE: "source"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: r-lib/actions/setup-r@v2
         with:
