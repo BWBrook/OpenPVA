@@ -13,6 +13,8 @@ jobs:
       RENV_CONFIG_PAK_ENABLED: "FALSE"
       RENV_CONFIG_AUTOLOADER_ENABLED: "FALSE"
       RENV_CONFIG_REPOS_OVERRIDE: "https://cloud.r-project.org"
+      RENV_CONFIG_PPM_ENABLED: "FALSE"
+      RENV_CONFIG_RSPM_ENABLED: "FALSE"
       R_PKG_TYPE: "source"
     steps:
       - uses: actions/checkout@v4
@@ -39,9 +41,7 @@ jobs:
         run: Rscript scripts/install_renv.R
 
       - name: Restore dependencies
-        run: >-
-          Rscript -e "options(pkgType = 'source', renv.config.pak.enabled = FALSE);
-          renv::restore(prompt = FALSE)"
+        run: Rscript scripts/ci_restore.R
 
       - name: Ensure suggested packages
         run: Rscript scripts/install_suggests.R

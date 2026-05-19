@@ -20,8 +20,10 @@
 - Removed `use-public-rspm: true` from both GitHub Actions workflows.
 - Set `RENV_CONFIG_REPOS_OVERRIDE` to `https://cloud.r-project.org`.
 - Set `R_PKG_TYPE` to `source`.
-- Made the restore command explicit with `options(pkgType = "source",
-  renv.config.pak.enabled = FALSE)`.
+- Added `scripts/ci_restore.R` so restore explicitly clears ambient `RSPM`
+  and disables `renv` PPM/RSPM transforms before calling `renv::restore()`.
+- Updated `scripts/install_renv.R` and `scripts/install_suggests.R` so explicit
+  repo overrides take precedence over runner-provided `RSPM`.
 
 ## Rationale
 
