@@ -3,9 +3,10 @@
 OpenPVA uses two CI validation profiles so pull requests get fast feedback while
 heavier reproducibility checks still run continuously.
 
-Both workflows pin R to `4.5.3`, matching `renv.lock`. Do not leave CI on the
-floating latest R release unless the lockfile has first been refreshed and
-validated against that R line.
+Both workflows pin R to `4.5.3`, matching `renv.lock`, and restore package
+sources from CRAN. Do not leave CI on the floating latest R release, or on a
+moving binary repository, unless the lockfile has first been refreshed and
+validated against that platform.
 
 ## `ci-fast` (PR + push gate)
 
@@ -72,7 +73,7 @@ Fast profile equivalent:
 ```bash
 sudo apt-get update
 sudo apt-get install -y libcurl4-openssl-dev libfontconfig1-dev libfreetype6-dev libgit2-dev libglpk-dev libx11-dev pandoc
-RENV_CONFIG_AUTOLOADER_ENABLED=FALSE Rscript -e "options(renv.config.pak.enabled = FALSE); renv::restore(prompt = FALSE)"
+R_PKG_TYPE=source RENV_CONFIG_REPOS_OVERRIDE=https://cloud.r-project.org RENV_CONFIG_AUTOLOADER_ENABLED=FALSE Rscript -e "options(pkgType = 'source', renv.config.pak.enabled = FALSE); renv::restore(prompt = FALSE)"
 Rscript scripts/install_suggests.R
 Rscript -e "lints <- lintr::lint_package(); print(lints); if (length(lints) > 0) quit(status = 1)"
 Rscript scripts/run_tests.R
@@ -85,7 +86,7 @@ Heavy profile equivalent:
 ```bash
 sudo apt-get update
 sudo apt-get install -y libcurl4-openssl-dev libfontconfig1-dev libfreetype6-dev libgit2-dev libglpk-dev libx11-dev pandoc
-RENV_CONFIG_AUTOLOADER_ENABLED=FALSE Rscript -e "options(renv.config.pak.enabled = FALSE); renv::restore(prompt = FALSE)"
+R_PKG_TYPE=source RENV_CONFIG_REPOS_OVERRIDE=https://cloud.r-project.org RENV_CONFIG_AUTOLOADER_ENABLED=FALSE Rscript -e "options(pkgType = 'source', renv.config.pak.enabled = FALSE); renv::restore(prompt = FALSE)"
 Rscript scripts/install_suggests.R
 Rscript scripts/run_tests.R "rng_seed|output_schema_contract|scenario_yaml_demography|spatial_patches|reproducibility_snapshots"
 Rscript scripts/run_tests.R
