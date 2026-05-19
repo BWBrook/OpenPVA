@@ -24,6 +24,9 @@
   and disables `renv` PPM/RSPM transforms before calling `renv::restore()`.
 - Updated `scripts/install_renv.R` and `scripts/install_suggests.R` so explicit
   repo overrides take precedence over runner-provided `RSPM`.
+- Updated `scripts/install_renv.R` to install the exact `renv` version recorded
+  in `renv.lock`, avoiding drift to a newer restore engine before lockfile
+  restoration begins.
 
 ## Rationale
 

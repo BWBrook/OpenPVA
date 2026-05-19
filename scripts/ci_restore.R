@@ -20,4 +20,5 @@ options(
   renv.config.rspm.enabled = FALSE
 )
 
+message("Using renv ", as.character(utils::packageVersion("renv")), " for CI restore.")
 renv::restore(prompt = FALSE)
