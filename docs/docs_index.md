@@ -37,6 +37,9 @@ Use it as a starting point when orienting yourself in the project.
 - **use_cases_and_personas.md**  
   The main user personas (practitioner, modeller, student) and canonical use cases that OpenPVA is designed to support.
 
+- **q_and_a_interpretation.md**
+  Living scientist-in-the-loop Q&A and interpretation log for human testing.
+
 ---
 
 ## Reference Contracts
