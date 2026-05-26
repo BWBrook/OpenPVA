@@ -1070,3 +1070,33 @@ A short running summary of:
     ensemble validation.
   - [ ] Re-run the resized default `targets` pipeline end-to-end and capture the
     elapsed time in a future performance note if desired.
+
+### [2026-05-26] Mac dev-box adoption smoke pass
+
+- **Change summary**:
+  - Moved local validation onto Barry's Mac mini dev-box without package-code
+    changes.
+  - Added a rig-managed R `4.5.3` runtime to match `renv.lock` while leaving the
+    Homebrew R `4.6.0` install untouched.
+- **Artefacts inspected**:
+  - Tests: `PATH=/usr/local/bin:$PATH Rscript scripts/run_tests.R` passed
+    (`532` pass, `0` fail).
+  - Targets: forced `sim_basic` smoke target completed.
+  - Quarto: `quarto render quarto` produced `outputs/quarto_site/index.html`.
+  - Lint: `lintr::lint_package()` reported no lints.
+- **Observed behaviour**:
+  - `renv::restore()` is clean under R `4.5.3`.
+  - R `4.6.0` cannot restore the lockfile cleanly because pinned `Matrix`
+    `1.7-4` does not compile against R `4.6.0`; R `4.5.3` is therefore the
+    canonical local runtime for this lockfile.
+  - Official R source-package builds required Homebrew header/library paths,
+    Homebrew `gfortran`, and Homebrew `libomp` for compatibility with the
+    current Apple clang.
+- **Domain sanity**:
+  - This pass changed only machine tooling and validation runtime setup.
+  - The `sim_basic` smoke target completed with no suspicious runtime behaviour
+    observed.
+- **Follow-up tasks**:
+  - [ ] Promote the next roadmap tranche before new feature execution.
+  - [ ] Consider documenting the Mac runtime command in a developer setup
+    reference if additional Mac agents join the project.

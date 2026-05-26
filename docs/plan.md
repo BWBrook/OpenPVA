@@ -45,6 +45,8 @@ stable core API, documented scenario schema, strong tests, and reproducible demo
     spatial/genetic summaries, output contracts, and seeded reproducibility.
   - Package-native test entrypoint is `Rscript scripts/run_tests.R`, avoiding
     an unnecessary hard dependency on `devtools` for fresh restores.
+  - Mac dev-box adoption was verified on 2026-05-26 under rig-managed
+    R `4.5.3`; see `docs/log/051_macos_devbox_adoption.md`.
 - Package check status:
   - Tarball-based `R CMD check --no-manual --as-cran` passes with `0` errors
     and `0` warnings (`3` known notes; see `artefacts/WP-2A.6/00check.log`).
@@ -154,14 +156,16 @@ Success criteria:
   - Priority Queue extended to `Line 2B.x`; `WP-2B.1` through `WP-2B.6`
     completed. Queue is currently exhausted.
 - **Most recent milestone progress**:
-  - Completed `WP-0.3.1` through `WP-2A.6`, including:
+  - Completed `WP-0.3.1` through `WP-2B.6`, including:
     - bootstrap baseline and artefact/log scaffolding,
     - reproduction/density API stabilization with compatibility layers,
     - spatial/genetic output expansion from final-time summaries to
       run/year/patch time-series and connectivity diagnostics,
     - seeded regression gates for spatial/genetic snapshot slices,
     - domain-sanity spatial/genetic scenario pack in `inst/extdata/`,
-    - Quarto and reference-doc upgrades for scientific interpretation workflow.
+    - Quarto and reference-doc upgrades for scientific interpretation workflow,
+    - uncertainty ensembles, sensitivity diagnostics, bounded calibration, and
+      performance/documentation hardening through `Line 2B.x`.
 - **Immediate next steps**:
   1. Promote the next roadmap tranche into `docs/roadmap.md`.
   2. Continue autonomous execution from the first newly unchecked WP.
