@@ -1,0 +1,4 @@
++ targets smoke
++ sim_basic dispatched
+✔ sim_basic completed [183ms, 8.22 kB]
+✔ ended pipeline [516ms, 1 completed, 0 skipped]

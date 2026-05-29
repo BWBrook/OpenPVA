@@ -1,0 +1,29 @@
++ spatial_scenario_two_patch dispatched
+✔ spatial_scenario_two_patch completed [37ms, 94.96 kB]
++ sim_basic_reps dispatched
+✔ sim_basic_reps completed [9.8s, 382.86 kB]
++ pop0 dispatched
+✔ pop0 completed [0ms, 477 B]
++ sim_basic dispatched
+✔ sim_basic completed [93ms, 8.22 kB]
++ sim_basic_dense_harvest dispatched
+✔ sim_basic_dense_harvest completed [6.7s, 94.99 kB]
++ spatial_sim_two_patch dispatched
+✔ spatial_sim_two_patch completed [4.5s, 140.51 kB]
++ sim_basic_reps_extinction_summary dispatched
+✔ sim_basic_reps_extinction_summary completed [18ms, 192 B]
++ pop1 dispatched
+✔ pop1 completed [0ms, 500 B]
++ sim_basic_dense_harvest_trajectory dispatched
+✔ sim_basic_dense_harvest_trajectory completed [3ms, 645 B]
++ sim_basic_dense_harvest_extinction_summary dispatched
+✔ sim_basic_dense_harvest_extinction_summary completed [3ms, 194 B]
++ spatial_two_patch_patch_summary dispatched
+✔ spatial_two_patch_patch_summary completed [16ms, 204 B]
++ pop2 dispatched
+✔ pop2 completed [0ms, 536 B]
++ sim_basic_dense_harvest_trajectory_plot dispatched
+✔ sim_basic_dense_harvest_trajectory_plot completed [365ms, 157.49 kB]
++ breeders dispatched
+✔ breeders completed [1ms, 243 B]
+✔ ended pipeline [22.2s, 14 completed, 0 skipped]

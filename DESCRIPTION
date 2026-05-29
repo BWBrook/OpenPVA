@@ -8,7 +8,7 @@ Maintainer: Barry Brook <bwbrook@users.noreply.github.com>
 Description: A general-purpose, open-source R framework for population viability analysis. It enables transparent, modular modeling of population dynamics under demographic, genetic, environmental, and management scenarios.
 License: MIT + file LICENSE
 Encoding: UTF-8
-Depends: R (>= 4.5.0)
+Depends: R (>= 4.6.0)
 Imports: 
     dplyr, 
     tibble,

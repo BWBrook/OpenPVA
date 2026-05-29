@@ -1,5 +1,8 @@
 # 051 Mac dev-box adoption baseline
 
+> Superseded by `docs/log/052_r460_macos_readiness_sweep.md`: R `4.5.3` was a
+> transitional adoption runtime. The active OpenPVA baseline is now R `4.6.0`.
+
 ## Context
 
 - Workflow moved from the previous WSL setup onto Barry's Mac mini dev-box.

@@ -1,0 +1,20 @@
+date_utc=2026-05-29T06:09:00Z
+cwd=/Users/bwbrook/git/OpenPVA
+git_head=308d0d4
+git_branch=main
+ProductName:		macOS
+ProductVersion:		26.5
+BuildVersion:		25F71
+arm64
+Mac16,10
+10
+25769803776
+R version 4.6.0 (2026-04-24)
+renv= 1.2.3
+1.9.37
+pandoc 3.9.0.2
+Features: +server +lua
+XeTeX 3.141592653-2.6-0.999998 (TeX Live 2026/Homebrew)
+kpathsea version 6.4.2
+Docker version 29.5.2, build 79eb04c7d8
+Docker Compose version 5.1.4

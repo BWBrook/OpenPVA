@@ -39,17 +39,17 @@ quarto render quarto 2>&1 | tee -a "$OUT_DIR/quarto_render.log"
 echo "+ build source tarball" | tee "$OUT_DIR/build_stdout.log"
 R CMD build --no-build-vignettes . 2>&1 | tee -a "$OUT_DIR/build_stdout.log"
 
-LATEST_TGZ="$(ls -t OpenPVA_*.tar.gz | head -n1)"
+LATEST_TGZ="$(Rscript -e 'files <- Sys.glob("OpenPVA_*.tar.gz"); if (!length(files)) quit(status = 1); cat(files[which.max(file.info(files)[["mtime"]])])')"
 cp -f "$LATEST_TGZ" "$OUT_DIR/$LATEST_TGZ"
 
 echo "+ run R CMD check --as-cran" | tee "$OUT_DIR/check_stdout.log"
 R CMD check --no-manual --as-cran "$LATEST_TGZ" 2>&1 | tee -a "$OUT_DIR/check_stdout.log"
 cp -f OpenPVA.Rcheck/00check.log "$OUT_DIR/00check.log"
 
-if [[ -d outputs/quarto_site ]]; then
-  find outputs/quarto_site -type f | sort > "$OUT_DIR/quarto_output_manifest.txt"
+if [[ -d quarto/_site ]]; then
+  find quarto/_site -type f | sort > "$OUT_DIR/quarto_output_manifest.txt"
 else
-  echo "outputs/quarto_site not found" > "$OUT_DIR/quarto_output_manifest.txt"
+  echo "quarto/_site not found" > "$OUT_DIR/quarto_output_manifest.txt"
 fi
 
 echo "+ generate toy scenario outputs" | tee "$OUT_DIR/toy_scenario.log"
@@ -63,7 +63,9 @@ sc <- scenario_spec(
   n_runs = 5,
   n_years = 12,
   init_fun = function() initialize_population(30),
-  K = 40,
+  density_spec = density_spec(
+    survival_fun = make_ceiling_density_fun(K = 40)
+  ),
   harvest_quota = 1,
   seed = 20260209L
 )

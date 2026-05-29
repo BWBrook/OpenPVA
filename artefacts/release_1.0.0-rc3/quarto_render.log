@@ -1,0 +1,5 @@
++ quarto render
+[1/2] index.qmd
+[2/2] about.qmd
+
+Output created: _site/index.html

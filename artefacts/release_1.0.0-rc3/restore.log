@@ -1,0 +1,7 @@
++ renv restore
+ℹ Loading metadata database
+✔ Loading metadata database ... done
+
+
+ℹ No downloads are needed
+✔ 70 pkgs: kept 70 [6.8s]

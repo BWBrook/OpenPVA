@@ -1,0 +1,9 @@
+sim_basic rows=20
+sim_basic final_n_alive=375
+basic_reps p_extinct=0
+dense_harvest p_extinct=0.0666666666666667
+dense_trajectory n_rows=30, years=1..30
+spatial_patch_summary_rows=2
+trajectory_plot=outputs/sim_basic_dense_harvest_trajectory.png, exists=TRUE
+no_na_dense_trajectory=TRUE
+patch_occupancy_bounds_ok=TRUE

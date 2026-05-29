@@ -1,6 +1,6 @@
 project:
   type: website
-  output-dir: ../outputs/quarto_site
+  output-dir: _site
   render:
     - index.qmd
     - about.qmd

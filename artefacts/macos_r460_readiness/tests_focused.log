@@ -1,0 +1,30 @@
+✔ | F W  S  OK | Context
+
+⠏ |          0 | output_schema_contract
+⠙ |         12 | output_schema_contract
+⠏ |         50 | output_schema_contract
+⠧ |         58 | output_schema_contract
+⠏ |         60 | output_schema_contract
+⠦ |         67 | output_schema_contract
+✔ |         71 | output_schema_contract [1.2s]
+
+⠏ |          0 | reproducibility_snapshots
+⠸ |          4 | reproducibility_snapshots
+✔ |          5 | reproducibility_snapshots
+
+⠏ |          0 | rng_seed
+⠴ |          6 | rng_seed
+✔ |         13 | rng_seed
+
+⠏ |          0 | scenario_yaml_demography
+⠸ |         24 | scenario_yaml_demography
+✔ |         25 | scenario_yaml_demography
+
+⠏ |          0 | spatial_patches
+⠋ |         41 | spatial_patches
+✔ |         58 | spatial_patches
+
+══ Results ═════════════════════════════════════════════════════════════════════
+Duration: 1.7 s
+
+[ FAIL 0 | WARN 0 | SKIP 0 | PASS 172 ]

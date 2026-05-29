@@ -1019,7 +1019,7 @@ A short running summary of:
 - what the next milestone is.
 
 - Current reliable baseline:
-  - Package tests are green (`531` pass) with reproducibility snapshot and
+  - Package tests are green (`532` pass) with reproducibility snapshot and
     output-schema regression coverage.
   - Default demo pipeline is now smoke-sized for fresh checkout verification on
     laptops, including macOS, rather than tuned as a heavy benchmark path.
@@ -1035,7 +1035,7 @@ A short running summary of:
     formatting.
 - Next milestone focus:
   - Priority Queue in `docs/roadmap.md` is currently exhausted through
-    `WP-1.3.3`; next work requires promotion of new WPs.
+    `WP-2B.6`; next work requires promotion of new WPs.
 
 ### [2026-03-18] macOS smoke-default pass
 
@@ -1100,3 +1100,43 @@ A short running summary of:
   - [ ] Promote the next roadmap tranche before new feature execution.
   - [ ] Consider documenting the Mac runtime command in a developer setup
     reference if additional Mac agents join the project.
+
+### [2026-05-29] R 4.6.0 migration and macOS readiness sweep
+
+- **Change summary**:
+  - Migrated OpenPVA's active runtime baseline from stale R `4.5.3` pinning to
+    Homebrew R `4.6.0` on the Mac mini.
+  - Refreshed `renv.lock`, `renv/activate.R`, CI R pins, package metadata, and
+    README badge for the R `4.6.0` baseline.
+  - Moved Quarto site output to `quarto/_site` to avoid the prior external
+    output-directory warning.
+- **Artefacts inspected**:
+  - Restore: `Rscript scripts/ci_restore.R` confirmed the R `4.6.0` project
+    library is synchronized with `renv.lock`.
+  - Static checks: `lintr::lint_package()`, `actionlint`, and `shellcheck`
+    passed.
+  - Tests: focused reproducibility/schema suite passed (`172` pass); full
+    suite passed (`532` pass).
+  - Uncertainty smoke: serial/parallel ensemble parameters matched; PRCC and
+    calibration outputs were produced.
+  - Targets: default pipeline rebuilt from an empty `_targets` store (`14`
+    targets completed).
+  - Quarto: `quarto render quarto` passed with output at
+    `quarto/_site/index.html`.
+  - Package check: `R CMD check --no-manual --as-cran` passed with `0` errors,
+    `0` warnings, and `2` known notes.
+  - Release evidence: `scripts/build_release_evidence.sh rc3` completed and
+    wrote `artefacts/release_1.0.0-rc3/`.
+- **Observed behaviour**:
+  - `renv::status()` is clean after snapshotting under R `4.6.0`.
+  - The prior `Matrix` restore issue disappears once the lockfile records the
+    R `4.6.0` recommended package stack.
+- **Domain sanity**:
+  - `sim_basic` completed 20 years with final abundance `375`.
+  - Baseline replicated scenario had `p_extinct = 0`; density + harvest smoke
+    scenario had `p_extinct = 0.0666666666666667`.
+  - Dense-harvest trajectory had no missing values across years `1..30`.
+  - Spatial patch occupancy probabilities were bounded in `[0, 1]`.
+  - Release toy scenario completed with `p_extinct = 0`.
+- **Follow-up tasks**:
+  - [ ] Promote the next roadmap tranche before new feature execution.

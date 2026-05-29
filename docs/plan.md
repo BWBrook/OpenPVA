@@ -36,7 +36,7 @@ stable core API, documented scenario schema, strong tests, and reproducible demo
   - Default demo targets are intentionally smoke-sized for laptop-friendly
     fresh-checkout validation rather than heavy ensemble benchmarking.
 - Quarto demos status:
-  - Quarto project renders to `outputs/quarto_site`.
+  - Quarto project renders to `quarto/_site`.
   - Demo now includes spatial/genetic interpretation workflow guidance:
     endpoint vs time-series vs connectivity diagnostics.
 - Tests status:
@@ -45,11 +45,13 @@ stable core API, documented scenario schema, strong tests, and reproducible demo
     spatial/genetic summaries, output contracts, and seeded reproducibility.
   - Package-native test entrypoint is `Rscript scripts/run_tests.R`, avoiding
     an unnecessary hard dependency on `devtools` for fresh restores.
-  - Mac dev-box adoption was verified on 2026-05-26 under rig-managed
-    R `4.5.3`; see `docs/log/051_macos_devbox_adoption.md`.
+  - Mac dev-box adoption was moved forward on 2026-05-29 to Homebrew
+    R `4.6.0`; see `docs/log/052_r460_macos_readiness_sweep.md`.
 - Package check status:
   - Tarball-based `R CMD check --no-manual --as-cran` passes with `0` errors
-    and `0` warnings (`3` known notes; see `artefacts/WP-2A.6/00check.log`).
+    and `0` warnings (`2` known notes; see
+    `artefacts/macos_r460_readiness/00check.log` and
+    `artefacts/release_1.0.0-rc3/00check.log`).
 - Known failing tests / TODOs:
   - No known failing tests in canonical invocation.
   - Priority Queue is currently exhausted through `WP-2B.6`; next execution

@@ -1,20 +1,20 @@
 
-# OpenPVA  
+# OpenPVA
 **An Open, Modular Framework for Population Viability Analysis**
 
 ![OpenPVA logo](OpenPVA.png)
 
-[![Status: WIP](https://img.shields.io/badge/status-WIP-orange.svg)](docs/roadmap.md)  
-[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)  
-[![R version](https://img.shields.io/badge/R-4.5%2B-blue.svg)](https://cran.r-project.org/)  
-[![Reproducible](https://img.shields.io/badge/reproducible-yes-brightgreen.svg)](docs/workflow.md)  
+[![Status: WIP](https://img.shields.io/badge/status-WIP-orange.svg)](docs/roadmap.md)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![R version](https://img.shields.io/badge/R-4.6%2B-blue.svg)](https://cran.r-project.org/)
+[![Reproducible](https://img.shields.io/badge/reproducible-yes-brightgreen.svg)](docs/workflow.md)
 [![Open Source](https://img.shields.io/badge/open--source-100%25-brightgreen.svg)](LICENSE)
 
 ---
 
 ## Overview
 
-**OpenPVA** is a next-generation, open-source platform for conducting **Population Viability Analysis (PVA)**—the simulation and analysis of population dynamics, extinction risk, and management outcomes for structured biological populations.  
+**OpenPVA** is a next-generation, open-source platform for conducting **Population Viability Analysis (PVA)**—the simulation and analysis of population dynamics, extinction risk, and management outcomes for structured biological populations.
 
 Inspired by the early vision of the original GAPPS (Generalized Animal Population Projection System), OpenPVA reimagines that philosophy with modern software architecture: fully **modular**, **extensible**, and **transparent**. It is designed for ecologists, conservation biologists, and decision scientists who need a flexible but rigorous tool to simulate population trajectories under a range of biological, genetic, environmental, and management scenarios.
 
@@ -38,7 +38,7 @@ OpenPVA is being developed as a long-lived, community-maintained framework rathe
 
 OpenPVA is under **active development**.
 
-Current phase: **Phase 1 – Core Demographic Engine**  
+Current phase: **Phase 1 – Core Demographic Engine**
 (see `docs/vision_and_scope.md` and `docs/roadmap.md`)
 
 Phase 1 focuses on the core demographic engine, density feedback, harvest, replicates, and scenario/YAML tooling. Genetics, spatial structure, decision-support tooling, and GUIs remain roadmap items for later phases.
@@ -208,7 +208,7 @@ A formal software paper is forthcoming. For now, please cite as:
 
 ## Contact
 
-Lead developer: **Barry W. Brook**  
+Lead developer: **Barry W. Brook**
 Email: [barry.brook@utas.edu.au](mailto:barry.brook@utas.edu.au)
 
 ---

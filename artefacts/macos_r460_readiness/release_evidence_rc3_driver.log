@@ -1,0 +1,192 @@
+Building release evidence bundle at: artefacts/release_1.0.0-rc3
++ renv restore
+ℹ Loading metadata database
+✔ Loading metadata database ... done
+
+
+ℹ No downloads are needed
+✔ 70 pkgs: kept 70 [6.8s]
++ lint
+n_lints=0
+ℹ No lints found.
++ tests
+✔ | F W  S  OK | Context
+
+⠏ |          0 | calibration_scaffold
+⠙ |         12 | calibration_scaffold
+✔ |         15 | calibration_scaffold
+
+⠏ |          0 | demography_environment
+✔ |          9 | demography_environment
+
+⠏ |          0 | demography_reproduction_spec
+✔ |         21 | demography_reproduction_spec
+
+⠏ |          0 | demography_survival_spec
+✔ |         19 | demography_survival_spec
+
+⠏ |          0 | density_module
+✔ |         15 | density_module
+
+⠏ |          0 | genetics_core
+✔ |         43 | genetics_core
+
+⠏ |          0 | init_population
+✔ |         10 | init_population
+
+⠏ |          0 | management
+⠧ |          8 | management
+✔ |         12 | management
+
+⠏ |          0 | output_schema_contract
+⠦ |         47 | output_schema_contract
+⠧ |         58 | output_schema_contract
+⠏ |         60 | output_schema_contract
+⠴ |         66 | output_schema_contract
+✔ |         71 | output_schema_contract [1.1s]
+
+⠏ |          0 | reproducibility_snapshots
+⠸ |          4 | reproducibility_snapshots
+✔ |          5 | reproducibility_snapshots
+
+⠏ |          0 | reproduction_controller
+✔ |         15 | reproduction_controller
+
+⠏ |          0 | rng_seed
+⠹ |          3 | rng_seed
+✔ |         13 | rng_seed
+
+⠏ |          0 | scenario_yaml_demography
+✔ |         25 | scenario_yaml_demography
+
+⠏ |          0 | scenario
+✔ |         43 | scenario
+
+⠏ |          0 | sensitivity_diagnostics
+⠧ |          8 | sensitivity_diagnostics
+⠇ |          9 | sensitivity_diagnostics
+✔ |         14 | sensitivity_diagnostics
+
+⠏ |          0 | simulation_core
+⠙ |         52 | simulation_core
+✔ |         54 | simulation_core
+
+⠏ |          0 | simulation_summary
+✔ |         40 | simulation_summary
+
+⠏ |          0 | spatial_patches
+⠹ |         43 | spatial_patches
+✔ |         58 | spatial_patches
+
+⠏ |          0 | supplementation
+✔ |         16 | supplementation
+
+⠏ |          0 | uncertainty_ensemble
+⠸ |          4 | uncertainty_ensemble
+⠧ |         28 | uncertainty_ensemble
+⠏ |         30 | uncertainty_ensemble
+✔ |         34 | uncertainty_ensemble
+
+══ Results ═════════════════════════════════════════════════════════════════════
+Duration: 4.0 s
+
+[ FAIL 0 | WARN 0 | SKIP 0 | PASS 532 ]
++ targets smoke
++ sim_basic dispatched
+✔ sim_basic completed [183ms, 8.22 kB]
+✔ ended pipeline [516ms, 1 completed, 0 skipped]
++ quarto render
+[1/2] index.qmd
+[2/2] about.qmd
+
+Output created: _site/index.html
+
++ build source tarball
+* checking for file ‘./DESCRIPTION’ ... OK
+* preparing ‘OpenPVA’:
+* checking DESCRIPTION meta-information ... OK
+* checking for LF line-endings in source and make files and shell scripts
+* checking for empty or unneeded directories
+* building ‘OpenPVA_1.0.0.tar.gz’
+
++ run R CMD check --as-cran
+* using log directory ‘/Users/bwbrook/git/OpenPVA/OpenPVA.Rcheck’
+* using R version 4.6.0 (2026-04-24)
+* using platform: aarch64-apple-darwin25.4.0
+* R was compiled by
+    Apple clang version 21.0.0 (clang-2100.0.123.102)
+    GNU Fortran (Homebrew GCC 15.2.0_1) 15.2.0
+* running under: macOS Tahoe 26.5
+* using session charset: UTF-8
+* current time: 2026-05-29 06:15:48 UTC
+* using options ‘--no-manual --as-cran’
+* checking for file ‘OpenPVA/DESCRIPTION’ ... OK
+* this is package ‘OpenPVA’ version ‘1.0.0’
+* package encoding: UTF-8
+* checking CRAN incoming feasibility ... NOTE
+Maintainer: ‘Barry Brook <bwbrook@users.noreply.github.com>’
+
+New submission
+* checking package namespace information ... OK
+* checking package dependencies ... OK
+* checking if this is a source package ... OK
+* checking if there is a namespace ... OK
+* checking for executable files ... OK
+* checking for hidden files and directories ... OK
+* checking for portable file names ... OK
+* checking for sufficient/correct file permissions ... OK
+* checking whether package ‘OpenPVA’ can be installed ... OK
+* checking installed package size ... OK
+* checking package directory ... OK
+* checking for future file timestamps ... OK
+* checking DESCRIPTION meta-information ... OK
+* checking top-level files ... NOTE
+Non-standard files/directories found at top level:
+  ‘_targets.R’ ‘bootstrap_env.R’ ‘CONTRIBUTING.md’ ‘scripts’
+* checking for left-over files ... OK
+* checking index information ... OK
+* checking package subdirectories ... OK
+* checking code files for non-ASCII characters ... OK
+* checking R files for syntax errors ... OK
+* checking whether the package can be loaded ... OK
+* checking whether the package can be loaded with stated dependencies ... OK
+* checking whether the package can be unloaded cleanly ... OK
+* checking whether the namespace can be loaded with stated dependencies ... OK
+* checking whether the namespace can be unloaded cleanly ... OK
+* checking loading without being on the library search path ... OK
+* checking use of S3 registration ... OK
+* checking dependencies in R code ... OK
+* checking S3 generic/method consistency ... OK
+* checking replacement functions ... OK
+* checking foreign function calls ... OK
+* checking R code for possible problems ... OK
+* checking Rd files ... OK
+* checking Rd metadata ... OK
+* checking Rd line widths ... OK
+* checking Rd cross-references ... OK
+* checking for missing documentation entries ... OK
+* checking for code/documentation mismatches ... OK
+* checking Rd \usage sections ... OK
+* checking Rd contents ... OK
+* checking for unstated dependencies in examples ... OK
+* checking examples ... NONE
+* checking for unstated dependencies in ‘tests’ ... OK
+* checking tests ...
+  Running ‘testthat.R’
+ OK
+* checking for non-standard things in the check directory ... OK
+* checking for detritus in the temp directory ... OK
+* DONE
+
+Status: 2 NOTEs
+See
+  ‘/Users/bwbrook/git/OpenPVA/OpenPVA.Rcheck/00check.log’
+for details.
+
++ generate toy scenario outputs
+Toy extinction summary:
+# A tibble: 1 × 4
+  n_runs p_extinct mean_time_to_extinction median_time_to_extinction
+   <int>     <dbl>                   <dbl>                     <dbl>
+1      5         0                      NA                        NA
+Release evidence bundle complete: artefacts/release_1.0.0-rc3
