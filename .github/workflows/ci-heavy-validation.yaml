@@ -34,6 +34,7 @@ jobs:
             libfreetype6-dev \
             libgit2-dev \
             libglpk-dev \
+            libuv1-dev \
             libx11-dev \
             pandoc
 
