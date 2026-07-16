@@ -1166,6 +1166,9 @@ A short running summary of:
     errors or warnings.
   - Quarto: `index.html` and `about.html` rendered successfully.
   - Package check: `0` errors, `0` warnings, `2` known notes.
+  - GitHub CI: push-triggered `ci-fast` run `29474478675` at published head
+    `a814fff` completed with `status: completed`, `conclusion: success`:
+    `https://github.com/BWBrook/OpenPVA/actions/runs/29474478675`.
 - **Observed behaviour**:
   - `sim_basic` ended year `20` with abundance `375`.
   - The 20-run baseline had `p_extinct = 0`.
@@ -1178,11 +1181,16 @@ A short running summary of:
   - Spatial occupancy remained bounded in `[0, 1]`. Both patches were extinct
     in all five runs at year 20, matching the pre-existing deterministic target
     cache; this is a material smoke-scenario outcome, not a migration change.
+  - A normal fast-forward push published the R `4.6.1` baseline and libuv repair
+    at `a814fff`; the successful `ci-fast` run confirms the Ubuntu fast profile.
+    `ci-heavy` is scheduled/manual and did not run on this push.
 - **Follow-up tasks**:
   - [x] Complete independent review of the local commits and `rc4` evidence
     bundle.
   - [x] Resolve both precision findings and record orchestrator acceptance.
-  - [ ] Confirm publication at `origin/main` and the resulting GitHub CI outcome;
-    the local evidence does not claim that CI has already run under R `4.6.1`.
+  - [x] Confirm publication at `origin/main` and successful push-triggered
+    `ci-fast` run `29474478675` under R `4.6.1`.
   - [ ] Leave tag/release notes, GitHub Release, CRAN, and the pre-existing
     package-version release decision open.
+  - [ ] Define the next roadmap tranche with Barry before promoting new work
+    packages or beginning feature execution.

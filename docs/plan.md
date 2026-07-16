@@ -48,6 +48,9 @@ stable core API, documented scenario schema, strong tests, and reproducible demo
     an unnecessary hard dependency on `devtools` for fresh restores.
   - The current Mac/CI reproducibility baseline is Homebrew R `4.6.1`; see
     `docs/log/053_r461_macos_ci_readiness_closure.md`.
+  - Goal 001's R `4.6.1` baseline and libuv CI repair are published on
+    `origin/main` at `a814fff` and confirmed by successful push-triggered
+    `ci-fast` run `29474478675`.
 - Package check status:
   - Tarball-based `R CMD check --no-manual --as-cran` passes with `0` errors
     and `0` warnings (`2` known notes; see
@@ -155,11 +158,11 @@ Success criteria:
 ## 6) Current phase and next steps (agent-maintained)
 
 - **Current phase**:
-  - The R `4.6.1` baseline closure is implemented and validated locally after
+  - Goal 001's R `4.6.1` baseline closure is published and CI-confirmed after
     completion of `WP-2B.6`. Independent review returned `ACCEPT_WITH_MINOR`,
-    both precision findings are resolved, and the orchestrator accepts Goal 001
-    as publication-ready. The resulting origin state and GitHub CI outcome are
-    the next confirmation gate.
+    both precision findings are resolved, and push-triggered `ci-fast` run
+    `29474478675` succeeded at published head `a814fff`. The scheduled/manual
+    `ci-heavy` workflow did not run on the push.
 - **Most recent milestone progress**:
   - Completed `WP-0.3.1` through `WP-2B.6`, including:
     - bootstrap baseline and artefact/log scaffolding,
@@ -177,11 +180,13 @@ Success criteria:
   - Closed independent review with no Critical or Important findings by
     correcting the Quarto render destination and the lockfile/restore-workload
     package accounting, then recording orchestrator acceptance.
+  - Published the R `4.6.1` baseline and libuv restore repair to `origin/main`;
+    push-triggered `ci-fast` run `29474478675` completed successfully.
 - **Immediate next steps**:
-  1. Use publication to `origin/main` and the resulting GitHub CI outcome as the
-     final baseline confirmation gate; the local evidence does not claim that
-     GitHub CI has already run under R `4.6.1`.
+  1. Define the next roadmap tranche with Barry before promoting work packages
+     or beginning autonomous feature execution.
   2. Keep tag, release-note, GitHub Release, CRAN, and the pre-existing
      `DESCRIPTION` `1.0.0` versus `NEWS` `1.0.1-development` release decision
      separate and open.
-  3. Promote a new roadmap tranche only after baseline publication is closed.
+  3. Keep `ci-heavy` separate from the successful push confirmation; it is a
+     scheduled/manual workflow and did not run for the Goal 001 publication.

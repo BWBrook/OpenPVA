@@ -100,12 +100,18 @@
 - The orchestrator independently verified the evidence and accepts Goal 001 as
   publication-ready.
 
-## Remaining release work
+## Publication confirmation and remaining work
 
-- Origin publication and the resulting GitHub CI outcome are the next
-  confirmation gate. The local evidence does not claim that GitHub CI has
-  already run under R `4.6.1`.
+- A normal fast-forward push published
+  `a814ffffda930693c7317b7dc648f1eb5b78ba5d` to `origin/main`.
+- Push-triggered `ci-fast` run `29474478675` at head `a814fff` completed with
+  `status: completed`, `conclusion: success`:
+  `https://github.com/BWBrook/OpenPVA/actions/runs/29474478675`.
+- `ci-heavy` is scheduled/manual and did not run on the push.
 - Tag creation, release notes, GitHub Release, CRAN submission, and the
   pre-existing `DESCRIPTION` `1.0.0` versus `NEWS` `1.0.1-development` release
   decision remain open.
-- This closure pass performed no push, tag, GitHub Release, or CRAN submission.
+- Definition of the next roadmap tranche remains a separate strategic decision
+  to discuss with Barry; no work packages are promoted by this closure.
+- This final documentation pass performs no push, tag, GitHub Release, CRAN
+  submission, workflow dispatch, or project-tooling run.
