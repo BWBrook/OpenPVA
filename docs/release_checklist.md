@@ -33,4 +33,4 @@ A release is a tagged, reviewable state of the repo with reproducible behaviour.
 
 ## Automation (non-publishing)
 - [x] `scripts/build_release_evidence.sh` reproduces a release evidence bundle
-- [ ] Maintainer review completed for latest generated bundle
+- [x] Maintainer/orchestrator review completed for latest generated bundle (`rc4`)

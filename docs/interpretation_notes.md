@@ -1150,6 +1150,15 @@ A short running summary of:
     statement.
   - Replaced the stale README phase description and ignored the repository-root
     macOS `.DS_Store` file.
+- **Review and acceptance**:
+  - Independent review returned `ACCEPT_WITH_MINOR`, with no Critical or
+    Important findings.
+  - Both precision findings are resolved: the README identifies
+    `quarto/_site` as the render destination, and the closure log distinguishes
+    71 lockfile package records from the 70-package restore workload (67
+    installed, 3 retained).
+  - The orchestrator independently verified the evidence and accepts Goal 001
+    as publication-ready.
 - **Artefacts inspected**:
   - Canonical bundle: `artefacts/release_1.0.0-rc4/`.
   - Tests: `532` pass, `0` fail, `0` warn, `0` skip.
@@ -1170,6 +1179,10 @@ A short running summary of:
     in all five runs at year 20, matching the pre-existing deterministic target
     cache; this is a material smoke-scenario outcome, not a migration change.
 - **Follow-up tasks**:
-  - [ ] Independent review of the local commits and `rc4` evidence bundle.
-  - [ ] Push the accepted closure to `origin/main` after orchestrator acceptance.
-  - [ ] Leave tag/release notes and maintainer release review open.
+  - [x] Complete independent review of the local commits and `rc4` evidence
+    bundle.
+  - [x] Resolve both precision findings and record orchestrator acceptance.
+  - [ ] Confirm publication at `origin/main` and the resulting GitHub CI outcome;
+    the local evidence does not claim that CI has already run under R `4.6.1`.
+  - [ ] Leave tag/release notes, GitHub Release, CRAN, and the pre-existing
+    package-version release decision open.

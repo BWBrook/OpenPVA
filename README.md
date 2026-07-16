@@ -59,7 +59,7 @@ Key top-level elements:
 - `scripts/build_release_evidence.sh` – Non-publishing release evidence automation.
 - `tests/` – Unit tests (`testthat`).
 - `docs/` – Design and governance docs for architecture, conventions, scope, and agent behaviour.
-- `quarto/` – Quarto sources for the documentation site (rendered into `docs/` as needed).
+- `quarto/` – Quarto sources for the documentation site (rendered to `quarto/_site/`).
 - `inst/extdata/` – Packaged example inputs (e.g. demo YAML scenarios).
 - `outputs/` – Generated outputs (via targets, not ad hoc scripts).
 

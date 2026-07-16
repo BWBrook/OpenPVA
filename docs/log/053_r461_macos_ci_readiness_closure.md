@@ -28,8 +28,9 @@
 - Dependency state:
   - Local `renv::restore(prompt = FALSE)` completed with no downloads.
   - Local `renv::status()` reported no issues.
-  - A clean tracked-source export restored 67 missing packages into an empty
-    external temporary library (70 locked packages total, 3 already present),
+  - `renv.lock` contains 71 package records: `renv` plus a 70-package restore
+    workload. A clean tracked-source export installed 67 workload packages into
+    an empty external temporary library and retained 3 already-present packages,
     then reported a clean `renv::status()`.
   - Failed clean-restore layout 1 disabled project activation while overriding
     the library path. Restore returned, but the follow-up process did not attach
@@ -88,9 +89,23 @@
 
 - `artefacts/release_1.0.0-rc4/`
 
+## Independent review and acceptance
+
+- Independent review returned `ACCEPT_WITH_MINOR`, with no Critical or Important
+  findings.
+- Both precision findings are resolved: the README now names `quarto/_site` as
+  the render destination, and the restore evidence now distinguishes 71 lockfile
+  package records from the 70-package restore workload (67 installed, 3
+  retained).
+- The orchestrator independently verified the evidence and accepts Goal 001 as
+  publication-ready.
+
 ## Remaining release work
 
-- Independent review and orchestrator acceptance are still required before
-  push.
-- Tag creation and release notes remain unchecked.
-- No push, tag, GitHub Release, or CRAN submission was performed.
+- Origin publication and the resulting GitHub CI outcome are the next
+  confirmation gate. The local evidence does not claim that GitHub CI has
+  already run under R `4.6.1`.
+- Tag creation, release notes, GitHub Release, CRAN submission, and the
+  pre-existing `DESCRIPTION` `1.0.0` versus `NEWS` `1.0.1-development` release
+  decision remain open.
+- This closure pass performed no push, tag, GitHub Release, or CRAN submission.

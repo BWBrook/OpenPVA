@@ -156,8 +156,10 @@ Success criteria:
 
 - **Current phase**:
   - The R `4.6.1` baseline closure is implemented and validated locally after
-    completion of `WP-2B.6`. The queue remains exhausted, and publication is
-    awaiting independent review and orchestrator acceptance.
+    completion of `WP-2B.6`. Independent review returned `ACCEPT_WITH_MINOR`,
+    both precision findings are resolved, and the orchestrator accepts Goal 001
+    as publication-ready. The resulting origin state and GitHub CI outcome are
+    the next confirmation gate.
 - **Most recent milestone progress**:
   - Completed `WP-0.3.1` through `WP-2B.6`, including:
     - bootstrap baseline and artefact/log scaffolding,
@@ -172,9 +174,14 @@ Success criteria:
   - Refreshed the local and CI reproducibility baseline to R `4.6.1` without
     changing package compatibility (`R >= 4.6.0`) or model behaviour; fresh
     evidence is in `artefacts/release_1.0.0-rc4/`.
+  - Closed independent review with no Critical or Important findings by
+    correcting the Quarto render destination and the lockfile/restore-workload
+    package accounting, then recording orchestrator acceptance.
 - **Immediate next steps**:
-  1. Complete independent review of the local baseline commits and the `rc4`
-     evidence bundle.
-  2. Push the accepted closure to `origin/main` after orchestrator acceptance;
-     tag, release-note, and maintainer-release work remain separate open items.
+  1. Use publication to `origin/main` and the resulting GitHub CI outcome as the
+     final baseline confirmation gate; the local evidence does not claim that
+     GitHub CI has already run under R `4.6.1`.
+  2. Keep tag, release-note, GitHub Release, CRAN, and the pre-existing
+     `DESCRIPTION` `1.0.0` versus `NEWS` `1.0.1-development` release decision
+     separate and open.
   3. Promote a new roadmap tranche only after baseline publication is closed.
