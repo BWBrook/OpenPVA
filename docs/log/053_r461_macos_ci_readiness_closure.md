@@ -31,9 +31,17 @@
   - A clean tracked-source export restored 67 missing packages into an empty
     external temporary library (70 locked packages total, 3 already present),
     then reported a clean `renv::status()`.
-  - The raw clean-restore log preserves two validation-layout retries before
-    the successful external-library check. All temporary source, library, and
-    targets directories were removed.
+  - Failed clean-restore layout 1 disabled project activation while overriding
+    the library path. Restore returned, but the follow-up process did not attach
+    that library and reported that no project packages were installed.
+  - Failed clean-restore layout 2 activated an isolated library inside the
+    exported source tree. Package installation completed, but `renv::status()`
+    correctly rejected the layout after dependency discovery scanned the
+    library's own package examples and reported false missing dependencies.
+  - The corrected clean-restore rerun placed the empty isolated library outside
+    the source tree, restored the locked stack, and ended with `No issues
+    found -- the project is in a consistent state.`
+  - All temporary source, library, and targets directories were removed.
 - Static checks:
   - `actionlint .github/workflows/*.yaml`: exit `0`.
   - `shellcheck scripts/build_release_evidence.sh`: exit `0`.
@@ -41,6 +49,11 @@
 - Tests:
   - `Rscript scripts/run_tests.R`: `532` pass, `0` fail, `0` warn, `0` skip.
 - Targets:
+  - The first isolated targets invocation supplied an installed project library
+    through `RENV_PATHS_LIBRARY`; renv treated it as a root, appended a platform
+    suffix, and exited before dispatch because `targets` was unavailable.
+  - The corrected rerun disabled project activation, supplied the exact library
+    through `R_LIBS_USER`, and retained the empty external targets store.
   - A fresh full run in an isolated source tree and empty external store
     completed `14` targets with `0` skipped and no target warnings or errors.
   - Runtime was 1 minute 8.8 seconds.
@@ -77,6 +90,7 @@
 
 ## Remaining release work
 
-- Independent maintainer/orchestrator review is still required.
+- Independent review and orchestrator acceptance are still required before
+  push.
 - Tag creation and release notes remain unchecked.
 - No push, tag, GitHub Release, or CRAN submission was performed.

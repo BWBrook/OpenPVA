@@ -38,10 +38,22 @@ Observed outcomes:
   `renv::status()`.
 - A clean tracked-source export restored into an empty external temporary
   library and ended with a clean `renv::status()`; temporary directories were
-  removed. The raw log retains two validation-layout retries before the final
-  successful external-library check.
+  removed.
+- Clean-restore attempt 1 disabled project activation while overriding the
+  library path, so the follow-up process did not attach the restored library
+  and reported no installed project packages.
+- Clean-restore attempt 2 put the isolated library inside the source export;
+  restore completed, but `renv::status()` scanned package examples in that
+  library and correctly rejected the contaminated layout.
+- The corrected clean-restore rerun used an external isolated library, restored
+  the locked stack, and ended with no issues.
 - `actionlint` and `shellcheck` exited 0; `lintr` reported 0 lints.
 - Full tests: 532 pass, 0 fail, 0 warn, 0 skip.
+- Full-targets attempt 1 supplied an installed library through
+  `RENV_PATHS_LIBRARY`; renv appended a platform suffix and exited before target
+  dispatch because `targets` was unavailable.
+- The corrected targets rerun used `R_LIBS_USER` with project activation
+  disabled and retained the empty external store.
 - Fresh full targets pipeline: 14 completed, 0 skipped, with no target warnings
   or errors.
 - Quarto rendered `index.html` and `about.html` plus site assets.

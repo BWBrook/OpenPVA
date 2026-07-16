@@ -157,7 +157,7 @@ Success criteria:
 - **Current phase**:
   - The R `4.6.1` baseline closure is implemented and validated locally after
     completion of `WP-2B.6`. The queue remains exhausted, and publication is
-    awaiting independent review and an authorised push.
+    awaiting independent review and orchestrator acceptance.
 - **Most recent milestone progress**:
   - Completed `WP-0.3.1` through `WP-2B.6`, including:
     - bootstrap baseline and artefact/log scaffolding,
@@ -175,6 +175,6 @@ Success criteria:
 - **Immediate next steps**:
   1. Complete independent review of the local baseline commits and the `rc4`
      evidence bundle.
-  2. Push accepted commits to `origin/main` when explicitly authorised; tag,
-     release-note, and maintainer-release work remain separate open items.
+  2. Push the accepted closure to `origin/main` after orchestrator acceptance;
+     tag, release-note, and maintainer-release work remain separate open items.
   3. Promote a new roadmap tranche only after baseline publication is closed.

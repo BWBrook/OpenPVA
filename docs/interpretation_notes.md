@@ -1171,5 +1171,5 @@ A short running summary of:
     cache; this is a material smoke-scenario outcome, not a migration change.
 - **Follow-up tasks**:
   - [ ] Independent review of the local commits and `rc4` evidence bundle.
-  - [ ] Push accepted commits to `origin/main` when authorised.
+  - [ ] Push the accepted closure to `origin/main` after orchestrator acceptance.
   - [ ] Leave tag/release notes and maintainer release review open.
