@@ -3,7 +3,7 @@
 OpenPVA uses two CI validation profiles so pull requests get fast feedback while
 heavier reproducibility checks still run continuously.
 
-Both workflows pin R to `4.6.0`, matching `renv.lock`, and restore package
+Both workflows pin R to `4.6.1`, matching `renv.lock`, and restore package
 sources from CRAN. Do not leave CI on the floating latest R release, or on a
 moving binary repository, unless the lockfile has first been refreshed and
 validated against that platform.

@@ -1,0 +1,113 @@
++ tests
+✔ | F W  S  OK | Context
+
+⠏ |          0 | calibration_scaffold                                           
+⠇ |          9 | calibration_scaffold                                           
+⠙ |         12 | calibration_scaffold                                           
+✔ |         15 | calibration_scaffold [1.2s]
+
+⠏ |          0 | demography_environment                                         
+⠇ |          9 | demography_environment                                         
+✔ |          9 | demography_environment
+
+⠏ |          0 | demography_reproduction_spec                                   
+⠇ |         19 | demography_reproduction_spec                                   
+✔ |         21 | demography_reproduction_spec
+
+⠏ |          0 | demography_survival_spec                                       
+⠧ |         18 | demography_survival_spec                                       
+✔ |         19 | demography_survival_spec
+
+⠏ |          0 | density_module                                                 
+⠏ |         10 | density_module                                                 
+⠸ |         14 | density_module                                                 
+✔ |         15 | density_module
+
+⠏ |          0 | genetics_core                                                  
+⠙ |         22 | genetics_core                                                  
+⠙ |         42 | genetics_core                                                  
+✔ |         43 | genetics_core
+
+⠏ |          0 | init_population                                                
+✔ |         10 | init_population
+
+⠏ |          0 | management                                                     
+⠋ |          1 | management                                                     
+⠧ |          8 | management                                                     
+✔ |         12 | management
+
+⠏ |          0 | output_schema_contract                                         
+⠦ |         17 | output_schema_contract                                         
+⠦ |         27 | output_schema_contract                                         
+⠦ |         47 | output_schema_contract                                         
+⠏ |         50 | output_schema_contract                                         
+⠹ |         53 | output_schema_contract                                         
+⠧ |         58 | output_schema_contract                                         
+⠏ |         60 | output_schema_contract                                         
+⠴ |         66 | output_schema_contract                                         
+✔ |         71 | output_schema_contract [3.3s]
+
+⠏ |          0 | reproducibility_snapshots                                      
+⠹ |          3 | reproducibility_snapshots                                      
+⠸ |          4 | reproducibility_snapshots                                      
+✔ |          5 | reproducibility_snapshots
+
+⠏ |          0 | reproduction_controller                                        
+⠏ |         10 | reproduction_controller                                        
+✔ |         15 | reproduction_controller
+
+⠏ |          0 | rng_seed                                                       
+⠋ |          1 | rng_seed                                                       
+⠹ |          3 | rng_seed                                                       
+⠏ |         10 | rng_seed                                                       
+✔ |         13 | rng_seed
+
+⠏ |          0 | scenario_yaml_demography                                       
+⠇ |          9 | scenario_yaml_demography                                       
+⠋ |         21 | scenario_yaml_demography                                       
+✔ |         25 | scenario_yaml_demography
+
+⠏ |          0 | scenario                                                       
+⠧ |         18 | scenario                                                       
+⠼ |         35 | scenario                                                       
+✔ |         43 | scenario
+
+⠏ |          0 | sensitivity_diagnostics                                        
+⠧ |          8 | sensitivity_diagnostics                                        
+⠇ |          9 | sensitivity_diagnostics                                        
+✔ |         14 | sensitivity_diagnostics [2.5s]
+
+⠏ |          0 | simulation_core                                                
+⠋ |         21 | simulation_core                                                
+⠧ |         38 | simulation_core                                                
+⠧ |         48 | simulation_core                                                
+✔ |         54 | simulation_core
+
+⠏ |          0 | simulation_summary                                             
+⠇ |         19 | simulation_summary                                             
+⠦ |         27 | simulation_summary                                             
+✔ |         40 | simulation_summary
+
+⠏ |          0 | spatial_patches                                                
+⠼ |         15 | spatial_patches                                                
+⠴ |         26 | spatial_patches                                                
+⠋ |         41 | spatial_patches                                                
+⠦ |         47 | spatial_patches                                                
+⠴ |         56 | spatial_patches                                                
+✔ |         58 | spatial_patches
+
+⠏ |          0 | supplementation                                                
+⠼ |         15 | supplementation                                                
+✔ |         16 | supplementation
+
+⠏ |          0 | uncertainty_ensemble                                           
+⠸ |          4 | uncertainty_ensemble                                           
+⠧ |         18 | uncertainty_ensemble                                           
+⠇ |         19 | uncertainty_ensemble                                           
+⠏ |         30 | uncertainty_ensemble                                           
+✔ |         34 | uncertainty_ensemble [2.0s]
+
+══ Results ═════════════════════════════════════════════════════════════════════
+Duration: 13.8 s
+
+[ FAIL 0 | WARN 0 | SKIP 0 | PASS 532 ]

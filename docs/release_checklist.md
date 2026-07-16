@@ -6,10 +6,10 @@ A release is a tagged, reviewable state of the repo with reproducible behaviour.
 - [x] `docs/plan.md` current and honest
 - [x] `docs/decisions.md` updated for major changes
 - [x] `docs/interpretation_notes.md` updated for this release candidate
-- [ ] Working tree clean; meaningful commits only
+- [x] Working tree clean; meaningful commits only
 
 ## Build & test
-- [ ] `renv` restore works from clean checkout
+- [x] `renv` restore works from clean checkout
 - [x] Unit tests pass
 - [x] Integration tests pass (YAML + scenario run at minimum)
 - [x] Minimal `targets` pipeline run succeeds

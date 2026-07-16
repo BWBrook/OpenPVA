@@ -38,10 +38,14 @@ OpenPVA is being developed as a long-lived, community-maintained framework rathe
 
 OpenPVA is under **active development**.
 
-Current phase: **Phase 1 – Core Demographic Engine**
+Current phase: **Post-WP-2B.6 baseline closure**
 (see `docs/vision_and_scope.md` and `docs/roadmap.md`)
 
-Phase 1 focuses on the core demographic engine, density feedback, harvest, replicates, and scenario/YAML tooling. Genetics, spatial structure, decision-support tooling, and GUIs remain roadmap items for later phases.
+The implemented baseline now spans the core demographic engine, explicit
+reproduction and density channels, canonical YAML scenarios, genetics and
+spatial outputs, management comparisons, uncertainty ensembles, sensitivity
+diagnostics, and bounded calibration. The committed roadmap queue is complete
+through `WP-2B.6`; further feature work awaits a promoted tranche.
 
 ---
 

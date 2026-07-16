@@ -15,7 +15,7 @@ stable core API, documented scenario schema, strong tests, and reproducible demo
 - Repo structure summary:
   - Repository has a coherent R-package layout with lifecycle modules,
     scenario compilers, targets pipeline, Quarto demo content, and staged
-    artefact bundles through `artefacts/WP-2A.6/`.
+    artefact bundles through `artefacts/WP-2B.6/`.
 - Core simulation/controller status:
   - `run_basic_simulation()` / `run_basic_simulation_replicates()` support
     optional `record_population_history` capture for time-series spatial/genetic
@@ -40,18 +40,18 @@ stable core API, documented scenario schema, strong tests, and reproducible demo
   - Demo now includes spatial/genetic interpretation workflow guidance:
     endpoint vs time-series vs connectivity diagnostics.
 - Tests status:
-  - Canonical suite is being updated around the clean-break API surface.
-  - Regression coverage targets retained controller behavior, canonical YAML,
+  - The canonical suite is green under R `4.6.1` (`532` pass, `0` fail,
+    `0` warn, `0` skip).
+  - Regression coverage targets retained controller behaviour, canonical YAML,
     spatial/genetic summaries, output contracts, and seeded reproducibility.
   - Package-native test entrypoint is `Rscript scripts/run_tests.R`, avoiding
     an unnecessary hard dependency on `devtools` for fresh restores.
-  - Mac dev-box adoption was moved forward on 2026-05-29 to Homebrew
-    R `4.6.0`; see `docs/log/052_r460_macos_readiness_sweep.md`.
+  - The current Mac/CI reproducibility baseline is Homebrew R `4.6.1`; see
+    `docs/log/053_r461_macos_ci_readiness_closure.md`.
 - Package check status:
   - Tarball-based `R CMD check --no-manual --as-cran` passes with `0` errors
     and `0` warnings (`2` known notes; see
-    `artefacts/macos_r460_readiness/00check.log` and
-    `artefacts/release_1.0.0-rc3/00check.log`).
+    `artefacts/release_1.0.0-rc4/00check.log`).
 - Known failing tests / TODOs:
   - No known failing tests in canonical invocation.
   - Priority Queue is currently exhausted through `WP-2B.6`; next execution
@@ -155,8 +155,9 @@ Success criteria:
 ## 6) Current phase and next steps (agent-maintained)
 
 - **Current phase**:
-  - Priority Queue extended to `Line 2B.x`; `WP-2B.1` through `WP-2B.6`
-    completed. Queue is currently exhausted.
+  - The R `4.6.1` baseline closure is implemented and validated locally after
+    completion of `WP-2B.6`. The queue remains exhausted, and publication is
+    awaiting independent review and an authorised push.
 - **Most recent milestone progress**:
   - Completed `WP-0.3.1` through `WP-2B.6`, including:
     - bootstrap baseline and artefact/log scaffolding,
@@ -168,7 +169,12 @@ Success criteria:
     - Quarto and reference-doc upgrades for scientific interpretation workflow,
     - uncertainty ensembles, sensitivity diagnostics, bounded calibration, and
       performance/documentation hardening through `Line 2B.x`.
+  - Refreshed the local and CI reproducibility baseline to R `4.6.1` without
+    changing package compatibility (`R >= 4.6.0`) or model behaviour; fresh
+    evidence is in `artefacts/release_1.0.0-rc4/`.
 - **Immediate next steps**:
-  1. Promote the next roadmap tranche into `docs/roadmap.md`.
-  2. Continue autonomous execution from the first newly unchecked WP.
-  3. Maintain artefact/log/decision discipline for each promoted WP.
+  1. Complete independent review of the local baseline commits and the `rc4`
+     evidence bundle.
+  2. Push accepted commits to `origin/main` when explicitly authorised; tag,
+     release-note, and maintainer-release work remain separate open items.
+  3. Promote a new roadmap tranche only after baseline publication is closed.

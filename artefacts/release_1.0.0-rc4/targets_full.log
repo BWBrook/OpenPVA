@@ -1,0 +1,71 @@
+# Bootstrapping renv 1.2.3 ---------------------------------------------------
+- Using renv 1.2.3 from global package cache
+- One or more packages recorded in the lockfile are not installed.
+- Use `renv::status()` for more details.
+Error in loadNamespace(x) : there is no package called ‘targets’
+Calls: loadNamespace -> withRestarts -> withOneRestart -> doWithOneRestart
+Execution halted
+
+RETRY WITH EXPLICIT PROJECT LIBRARY
++ spatial_scenario_two_patch dispatched
+✔ spatial_scenario_two_patch completed [117ms, 95.06 kB]
++ sim_basic_reps dispatched
+✔ sim_basic_reps completed [35.7s, 382.86 kB]
++ pop0 dispatched
+✔ pop0 completed [0ms, 477 B]
++ sim_basic dispatched
+✔ sim_basic completed [273ms, 8.22 kB]
++ sim_basic_dense_harvest dispatched
+✔ sim_basic_dense_harvest completed [18.7s, 94.99 kB]
++ spatial_sim_two_patch dispatched
+✔ spatial_sim_two_patch completed [11.5s, 140.58 kB]
++ sim_basic_reps_extinction_summary dispatched
+✔ sim_basic_reps_extinction_summary completed [41ms, 193 B]
++ pop1 dispatched
+✔ pop1 completed [1ms, 501 B]
++ sim_basic_dense_harvest_trajectory dispatched
+✔ sim_basic_dense_harvest_trajectory completed [6ms, 646 B]
++ sim_basic_dense_harvest_extinction_summary dispatched
+✔ sim_basic_dense_harvest_extinction_summary completed [7ms, 197 B]
++ spatial_two_patch_patch_summary dispatched
+✔ spatial_two_patch_patch_summary completed [41ms, 205 B]
++ pop2 dispatched
+✔ pop2 completed [0ms, 536 B]
++ sim_basic_dense_harvest_trajectory_plot dispatched
+✔ sim_basic_dense_harvest_trajectory_plot completed [687ms, 157.49 kB]
++ breeders dispatched
+✔ breeders completed [1ms, 245 B]
+✔ ended pipeline [1m 8.8s, 14 completed, 0 skipped]
+targets_recorded=144
+# A tibble: 144 × 3
+   name                             error warnings
+   <chr>                            <chr> <chr>   
+ 1 .clone_population                <NA>  <NA>    
+ 2 %||%                             <NA>  <NA>    
+ 3 .resolve_function_reference      <NA>  <NA>    
+ 4 .validate_yaml_keys              <NA>  <NA>    
+ 5 make_ceiling_density_fun         <NA>  <NA>    
+ 6 .normalize_quota_vector          <NA>  <NA>    
+ 7 .validate_spatial_summary_inputs <NA>  <NA>    
+ 8 .eval_density_multiplier         <NA>  <NA>    
+ 9 demo_reps_n_years                <NA>  <NA>    
+10 .summary_rows_to_tibble          <NA>  <NA>    
+# ℹ 134 more rows
+pipeline_targets=14
+# A tibble: 14 × 3
+   name                                       error warnings
+   <chr>                                      <chr> <chr>   
+ 1 spatial_scenario_two_patch                 <NA>  <NA>    
+ 2 sim_basic_reps                             <NA>  <NA>    
+ 3 pop0                                       <NA>  <NA>    
+ 4 sim_basic                                  <NA>  <NA>    
+ 5 sim_basic_dense_harvest                    <NA>  <NA>    
+ 6 spatial_sim_two_patch                      <NA>  <NA>    
+ 7 sim_basic_reps_extinction_summary          <NA>  <NA>    
+ 8 pop1                                       <NA>  <NA>    
+ 9 sim_basic_dense_harvest_trajectory         <NA>  <NA>    
+10 sim_basic_dense_harvest_extinction_summary <NA>  <NA>    
+11 spatial_two_patch_patch_summary            <NA>  <NA>    
+12 pop2                                       <NA>  <NA>    
+13 sim_basic_dense_harvest_trajectory_plot    <NA>  <NA>    
+14 breeders                                   <NA>  <NA>    

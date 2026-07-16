@@ -1,0 +1,7 @@
+R=R version 4.6.1 (2026-06-24)
+R_HOME=/opt/homebrew/Cellar/r/4.6.1/lib/R
+Rscript=/opt/homebrew/bin/Rscript
+platform=aarch64-apple-darwin25.4.0
+renv=1.2.3
+project_library=/Users/bwbrook/Library/Caches/org.R-project.R/R/renv/library/OpenPVA-efa394d1/macos/R-4.6/aarch64-apple-darwin25.4.0
+lockfile_R=4.6.1

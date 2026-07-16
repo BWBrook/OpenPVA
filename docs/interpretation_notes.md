@@ -1140,3 +1140,36 @@ A short running summary of:
   - Release toy scenario completed with `p_extinct = 0`.
 - **Follow-up tasks**:
   - [ ] Promote the next roadmap tranche before new feature execution.
+
+### [2026-07-16] R 4.6.1 Mac/CI reproducibility closure
+
+- **Change summary**:
+  - Advanced only the tested runtime baseline from R `4.6.0` to R `4.6.1` in
+    `renv.lock` and both CI workflows; locked package versions were unchanged.
+  - Preserved package compatibility at `R >= 4.6.0` and the README's R `4.6+`
+    statement.
+  - Replaced the stale README phase description and ignored the repository-root
+    macOS `.DS_Store` file.
+- **Artefacts inspected**:
+  - Canonical bundle: `artefacts/release_1.0.0-rc4/`.
+  - Tests: `532` pass, `0` fail, `0` warn, `0` skip.
+  - Fresh full targets pipeline: `14` completed, `0` skipped, with no target
+    errors or warnings.
+  - Quarto: `index.html` and `about.html` rendered successfully.
+  - Package check: `0` errors, `0` warnings, `2` known notes.
+- **Observed behaviour**:
+  - `sim_basic` ended year `20` with abundance `375`.
+  - The 20-run baseline had `p_extinct = 0`.
+  - The 15-run density/harvest smoke had `p_extinct = 1/15` and mean extinction
+    time `21`; its 30-row trajectory had no missing values.
+  - The seeded release toy completed 5 runs with `p_extinct = 0`.
+- **Domain sanity**:
+  - Fresh outputs match the deterministic R `4.6.0` baseline observations; no
+    scientific, API, schema, or package-version behaviour changed.
+  - Spatial occupancy remained bounded in `[0, 1]`. Both patches were extinct
+    in all five runs at year 20, matching the pre-existing deterministic target
+    cache; this is a material smoke-scenario outcome, not a migration change.
+- **Follow-up tasks**:
+  - [ ] Independent review of the local commits and `rc4` evidence bundle.
+  - [ ] Push accepted commits to `origin/main` when authorised.
+  - [ ] Leave tag/release notes and maintainer release review open.

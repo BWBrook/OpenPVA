@@ -1,0 +1,635 @@
+$ RENV_PATHS_LIBRARY=<tmp>/library Rscript scripts/install_renv.R
+$ RENV_PATHS_LIBRARY=<tmp>/library Rscript scripts/ci_restore.R
+Using renv 1.2.3 for CI restore.
+The following package(s) will be updated:
+
+# Repository -----------------------------------------------------------------
+- xfun   [0.58 -> 0.57]
+
+- Querying repositories for available source packages ... Done!
+# Installing packages --------------------------------------------------------
+[32m✔[0m xfun 0.57                                [copied from cache]
+Successfully installed 1 package in 43 milliseconds.
+$ RENV_PATHS_LIBRARY=<tmp>/library Rscript -e renv::status()
+There are no packages installed in the project library.
+Use `renv::restore()` to install the packages defined in lockfile.
+
+RETRY WITH PROJECT AUTOLOADER AND ISOLATED LIBRARY2
+$ RENV_PATHS_LIBRARY=<tmp>/library2 Rscript -e renv::restore()
+- One or more packages recorded in the lockfile are not installed.
+- Use `renv::status()` for more details.
+- Querying repositories for available source packages ... Done!
+The following package(s) will be installed:
+- pak [0.11.0]
+These packages will be installed into "/private/tmp/openpva-r461-clean-pDRTFfTi/library2/macos/R-4.6/aarch64-apple-darwin25.4.0".
+
+# Downloading packages -------------------------------------------------------
+[?25l  (0/1) Downloading: pak                                                                                                                                        [32m✔[0m pak 0.11.0                               [3.9 MB in 0.49s]
+                                                                                Successfully downloaded 1 package in 0.78 seconds.
+
+# Installing packages --------------------------------------------------------
+  (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                           (0/1) Installing: pak                                                                                                                                         [32m✔[0m pak 0.11.0                               [built from source in 2.5m]
+Successfully installed 1 package in 150 seconds.
+[?25h
+✔ Updated metadata database: 298.40 kB in 5 files.
+
+ℹ Updating metadata database
+✔ Updating metadata database ... done
+
+ 
+→ Package library at '/private/tmp/openpva-r461-clean-pDRTFfTi/library2/macos/R-4.6/aarch64-apple-darwin25.4.0'.
+→ Will install 67 packages.
+→ All 67 packages (41.82 MB) are cached.
++ backports      1.5.1  👷🏿‍♀️🔧
++ base64enc      0.1-6  👷🏽‍♂️🔧
++ base64url      1.4    👷🏽‍♂️🔧
++ brio           1.1.5  👷🏽‍♂️🔧
++ bslib          0.11.0 👷🏼‍♀️
++ cachem         1.1.0  👷‍♀️🔧
++ callr          3.7.6  👷🏾‍♀️
++ cli            3.6.6  👷‍♀️🔧
++ cpp11          0.5.5  👷
++ crayon         1.5.3  👷🏼‍♀️
++ data.table     1.18.4 👷🏿‍♂️🔧
++ desc           1.4.3  👷🏿‍♂️
++ diffobj        0.3.6  👷🏽‍♀️🔧
++ digest         0.6.39 👷🏼‍♂️🔧
++ dplyr          1.2.1  👷‍♀️🔧
++ evaluate       1.0.5  👷‍♀️
++ farver         2.1.2  👷‍♂️🔧
++ fastmap        1.2.0  👷🏽🔧
++ fontawesome    0.5.3  👷🏽
++ fs             2.1.0  👷🏻🔧
++ generics       0.1.4  👷🏽‍♂️
++ ggplot2        4.0.3  👷🏼‍♀️
++ glue           1.8.1  👷🏿‍♂️🔧
++ gtable         0.3.6  👷🏻‍♀️
++ highr          0.12   👷🏼‍♀️
++ htmltools      0.5.9  👷🏼🔧
++ igraph         2.3.1  👷🏽🔧
++ isoband        0.3.0  👷🏼🔧
++ jquerylib      0.1.4  👷
++ jsonlite       2.0.0  👷🏽‍♂️🔧
++ knitr          1.51   👷🏻
++ labeling       0.4.3  👷
++ lifecycle      1.0.5  👷🏾
++ magrittr       2.0.5  👷🏾🔧
++ memoise        2.0.1  👷🏾‍♂️
++ mime           0.13   👷🏼‍♀️🔧
++ pillar         1.11.1 👷‍♂️
++ pkgbuild       1.4.8  👷🏾‍♂️
++ pkgconfig      2.0.3  👷🏽‍♀️
++ pkgload        1.5.2  👷🏼‍♂️
++ praise         1.0.0  👷🏼
++ prettyunits    1.2.0  👷🏾‍♀️
++ processx       3.9.0  👷🏻‍♀️🔧
++ ps             1.9.3  👷🏻‍♂️🔧
++ purrr          1.2.2  👷🏿🔧
++ R6             2.6.1  👷🏿
++ rappdirs       0.3.4  👷🏾🔧
++ RColorBrewer   1.1-3  👷🏻‍♂️
++ rlang          1.2.0  👷🏼🔧
++ rmarkdown      2.31   👷🏻‍♂️
++ rprojroot      2.1.1  👷🏾
++ S7             0.2.2  👷🔧
++ sass           0.4.10 👷🏼🔧
++ scales         1.4.0  👷🏻‍♀️
++ secretbase     1.2.2  👷🏼‍♀️🔧
++ targets        1.12.0 👷🏽‍♂️
++ testthat       3.3.2  👷🏾‍♀️🔧
++ tibble         3.3.1  👷‍♀️🔧
++ tidyselect     1.2.1  👷🏻‍♂️🔧
++ tinytex        0.59   👷🏻‍♀️
++ utf8           1.2.6  👷🔧
++ vctrs          0.7.3  👷🏾‍♀️🔧
++ viridisLite    0.4.3  👷🏽‍♀️
++ waldo          0.6.2  👷🏿
++ withr          3.0.2  👷‍♀️
++ xfun           0.57   👷‍♀️🔧
++ yaml           2.3.12 👷🏻🔧
+ℹ No downloads are needed, 67 pkgs (41.82 MB) are cached
+✔ Got secretbase 1.2.2 (source) (43.20 kB)
+✔ Got tinytex 0.59 (source) (37.50 kB)
+✔ Got pkgload 1.5.2 (source) (88.12 kB)
+✔ Got callr 3.7.6 (source) (104.36 kB)
+✔ Got withr 3.0.2 (source) (103.24 kB)
+✔ Got xfun 0.57 (source) (172.72 kB)
+✔ Got rlang 1.2.0 (source) (780.86 kB)
+✔ Got igraph 2.3.1 (source) (5.21 MB)
+ℹ Building secretbase 1.2.2
+ℹ Building rlang 1.2.0
+ℹ Building withr 3.0.2
+ℹ Building xfun 0.57
+ℹ Building backports 1.5.1
+ℹ Building RColorBrewer 1.1-3
+ℹ Building R6 2.6.1
+ℹ Building S7 0.2.2
+ℹ Building base64enc 0.1-6
+ℹ Building brio 1.1.5
+✔ Built base64enc 0.1-6 (3.5s)
+ℹ Building fastmap 1.2.0
+✔ Built R6 2.6.1 (3.8s)
+ℹ Building cli 3.6.6
+✔ Built brio 1.1.5 (4s)
+ℹ Building digest 0.6.39
+✔ Built withr 3.0.2 (4.6s)
+ℹ Building fs 2.1.0
+✔ Built backports 1.5.1 (4.7s)
+ℹ Building jsonlite 2.0.0
+✔ Built RColorBrewer 1.1-3 (4.8s)
+ℹ Building mime 0.13
+✔ Built secretbase 1.2.2 (5.9s)
+ℹ Building rappdirs 0.3.4
+✔ Built S7 0.2.2 (7.4s)
+ℹ Building cpp11 0.5.5
+✔ Built mime 0.13 (4s)
+ℹ Building crayon 1.5.3
+✔ Built rappdirs 0.3.4 (4.1s)
+ℹ Building data.table 1.18.4
+✔ Built cpp11 0.5.5 (3.1s)
+ℹ Building ps 1.9.3
+✔ Built xfun 0.57 (12s)
+ℹ Building generics 0.1.4
+✔ Built fastmap 1.2.0 (9.7s)
+ℹ Building glue 1.8.1
+✔ Built crayon 1.5.3 (5.2s)
+ℹ Building magrittr 2.0.5
+✔ Built generics 0.1.4 (3.2s)
+ℹ Building pkgconfig 2.0.3
+✔ Built jsonlite 2.0.0 (10.7s)
+ℹ Building utf8 1.2.6
+✔ Built pkgconfig 2.0.3 (2.2s)
+ℹ Building evaluate 1.0.5
+✔ Built magrittr 2.0.5 (3.6s)
+ℹ Building farver 2.1.2
+✔ Built glue 1.8.1 (4.7s)
+ℹ Building labeling 0.4.3
+✔ Built digest 0.6.39 (15.4s)
+ℹ Building viridisLite 0.4.3
+✔ Built labeling 0.4.3 (2.9s)
+ℹ Building yaml 2.3.12
+✔ Built evaluate 1.0.5 (4.1s)
+ℹ Building rprojroot 2.1.1
+✔ Built viridisLite 0.4.3 (2.5s)
+ℹ Building prettyunits 1.2.0
+✔ Built utf8 1.2.6 (7.7s)
+ℹ Building praise 1.0.0
+✔ Built rprojroot 2.1.1 (3.4s)
+✔ Built praise 1.0.0 (2s)
+✔ Installed secretbase 1.2.2  (136ms)
+✔ Installed withr 3.0.2  (215ms)
+✔ Installed xfun 0.57  (253ms)
+✔ Installed backports 1.5.1  (147ms)
+ℹ Building tinytex 0.59
+✔ Built prettyunits 1.2.0 (3.4s)
+ℹ Building base64url 1.4
+ℹ Building highr 0.12
+✔ Built ps 1.9.3 (16.2s)
+✔ Installed RColorBrewer 1.1-3  (24ms)
+✔ Installed R6 2.6.1  (57ms)
+✔ Installed S7 0.2.2  (75ms)
+✔ Installed base64enc 0.1-6  (46ms)
+✔ Installed brio 1.1.5  (154ms)
+✔ Installed fastmap 1.2.0  (31ms)
+✔ Installed digest 0.6.39  (68ms)
+✔ Installed jsonlite 2.0.0  (44ms)
+✔ Installed mime 0.13  (58ms)
+✔ Installed rappdirs 0.3.4  (59ms)
+✔ Built highr 0.12 (2.7s)
+✔ Installed cpp11 0.5.5  (110ms)
+✔ Installed crayon 1.5.3  (164ms)
+ℹ Building diffobj 0.3.6
+✔ Installed ps 1.9.3  (297ms)
+ℹ Building processx 3.9.0
+✔ Built base64url 1.4 (3.5s)
+✔ Installed base64url 1.4  (161ms)
+✔ Installed generics 0.1.4  (103ms)
+✔ Installed glue 1.8.1  (38ms)
+✔ Installed magrittr 2.0.5  (77ms)
+✔ Installed pkgconfig 2.0.3  (26ms)
+✔ Installed utf8 1.2.6  (27ms)
+✔ Built tinytex 0.59 (4.6s)
+✔ Installed evaluate 1.0.5  (194ms)
+✔ Installed tinytex 0.59  (294ms)
+✔ Installed labeling 0.4.3  (280ms)
+✔ Installed viridisLite 0.4.3  (102ms)
+✔ Installed highr 0.12  (137ms)
+✔ Installed rprojroot 2.1.1  (162ms)
+✔ Installed prettyunits 1.2.0  (208ms)
+✔ Installed praise 1.0.0  (215ms)
+✔ Built yaml 2.3.12 (11.4s)
+✔ Installed yaml 2.3.12  (38ms)
+ℹ Building knitr 1.51
+✔ Built rlang 1.2.0 (35.1s)
+✔ Installed rlang 1.2.0  (45ms)
+ℹ Building cachem 1.1.0
+ℹ Building htmltools 0.5.9
+✔ Built cli 3.6.6 (32.1s)
+✔ Installed cli 3.6.6  (45ms)
+ℹ Building lifecycle 1.0.5
+✔ Built fs 2.1.0 (31.9s)
+ℹ Building desc 1.4.3
+ℹ Building isoband 0.3.0
+✔ Built cachem 1.1.0 (5.1s)
+✔ Installed cachem 1.1.0  (29ms)
+ℹ Building memoise 2.0.1
+✔ Built lifecycle 1.0.5 (4.4s)
+✔ Installed fs 2.1.0  (31ms)
+✔ Installed lifecycle 1.0.5  (34ms)
+ℹ Building vctrs 0.7.3
+✔ Built processx 3.9.0 (11.7s)
+ℹ Building gtable 0.3.6
+✔ Built memoise 2.0.1 (3.1s)
+✔ Installed memoise 2.0.1  (34ms)
+✔ Installed processx 3.9.0  (25ms)
+ℹ Building callr 3.7.6
+✔ Built desc 1.4.3 (7.5s)
+✔ Installed desc 1.4.3  (41ms)
+✔ Built htmltools 0.5.9 (10.5s)
+✔ Installed htmltools 0.5.9  (30ms)
+ℹ Building jquerylib 0.1.4
+ℹ Building sass 0.4.10
+✔ Built gtable 0.3.6 (5.2s)
+ℹ Building fontawesome 0.5.3
+✔ Built jquerylib 0.1.4 (4.2s)
+✔ Installed jquerylib 0.1.4  (41ms)
+✔ Installed gtable 0.3.6  (38ms)
+✔ Built knitr 1.51 (18.6s)
+✔ Installed knitr 1.51  (99ms)
+✔ Built fontawesome 0.5.3 (5.6s)
+✔ Installed fontawesome 0.5.3  (52ms)
+✔ Built diffobj 0.3.6 (23.9s)
+✔ Installed diffobj 0.3.6  (77ms)
+ℹ Building waldo 0.6.2
+✔ Built callr 3.7.6 (10.8s)
+✔ Installed callr 3.7.6  (51ms)
+ℹ Building pkgbuild 1.4.8
+✔ Built waldo 0.6.2 (4s)
+✔ Installed waldo 0.6.2  (55ms)
+✔ Built farver 2.1.2 (40.4s)
+✔ Installed farver 2.1.2  (53ms)
+ℹ Building scales 1.4.0
+✔ Built pkgbuild 1.4.8 (4.6s)
+✔ Installed pkgbuild 1.4.8  (43ms)
+ℹ Building pkgload 1.5.2
+✔ Built isoband 0.3.0 (27.1s)
+✔ Installed isoband 0.3.0  (49ms)
+✔ Built pkgload 1.5.2 (5.5s)
+✔ Installed pkgload 1.5.2  (61ms)
+ℹ Building testthat 3.3.2
+✔ Built data.table 1.18.4 (57.1s)
+✔ Installed data.table 1.18.4  (128ms)
+✔ Built scales 1.4.0 (9.8s)
+✔ Installed scales 1.4.0  (62ms)
+✔ Built vctrs 0.7.3 (44.9s)
+✔ Installed vctrs 0.7.3  (61ms)
+ℹ Building igraph 2.3.1
+ℹ Building pillar 1.11.1
+ℹ Building tidyselect 1.2.1
+ℹ Building ggplot2 4.0.3
+ℹ Building purrr 1.2.2
+✔ Built tidyselect 1.2.1 (4.1s)
+✔ Installed tidyselect 1.2.1  (52ms)
+✔ Built pillar 1.11.1 (7s)
+✔ Installed pillar 1.11.1  (62ms)
+ℹ Building tibble 3.3.1
+✔ Built purrr 1.2.2 (8.1s)
+✔ Installed purrr 1.2.2  (51ms)
+✔ Built tibble 3.3.1 (9.1s)
+✔ Installed tibble 3.3.1  (56ms)
+ℹ Building dplyr 1.2.1
+✔ Built testthat 3.3.2 (42.8s)
+✔ Installed testthat 3.3.2  (48ms)
+✔ Built ggplot2 4.0.3 (30s)
+✔ Installed ggplot2 4.0.3  (103ms)
+✔ Built dplyr 1.2.1 (14.3s)
+✔ Installed dplyr 1.2.1  (70ms)
+✔ Built sass 0.4.10 (2m 45.4s)
+✔ Installed sass 0.4.10  (61ms)
+ℹ Building bslib 0.11.0
+✔ Built bslib 0.11.0 (8.6s)
+✔ Installed bslib 0.11.0  (392ms)
+ℹ Building rmarkdown 2.31
+✔ Built rmarkdown 2.31 (7.3s)
+✔ Installed rmarkdown 2.31  (130ms)
+✔ Built igraph 2.3.1 (3m 14.5s)
+✔ Installed igraph 2.3.1  (73ms)
+ℹ Building targets 1.12.0
+✔ Built targets 1.12.0 (18.7s)
+✔ Installed targets 1.12.0  (78ms)
+✔ 38 pkgs + 32 deps: kept 3, added 67, dld 8 (6.54 MB) [5m 25.9s]
+$ RENV_PATHS_LIBRARY=<tmp>/library2 Rscript -e renv::status()
+
+NOTE: Dependency discovery took 16 seconds during snapshot using current .renvignore specifications.
+Consider modifying .renvignore or switching to explicit snapshots.
+See `?renv::dependencies` for more information.
+
+- The project is out-of-sync -- use `renv::status()` for details.
+A large number of files (4383 in total) have been discovered.
+It may take renv a long time to scan these files for dependencies.
+Consider using .renvignore to ignore irrelevant files.
+See `?renv::dependencies` for more information.
+Set `options(renv.config.dependencies.limit = Inf)` to disable this warning.
+
+The following package(s) are used in this project, but are not installed:
+- animation
+- async
+- bench
+- biglm
+- bit64
+- blob
+- brand.yml
+- broom
+- bsicons
+- chiflights22
+- cliapp
+- colourpicker
+- commonmark
+- cpp11test
+- curl
+- DBI
+- DiagrammeR
+- docopt
+- downlit
+- DT
+- formattable
+- future
+- ggridges
+- gt
+- here
+- hexbin
+- histoslider
+- hms
+- htmlwidgets
+- httr
+- Lahman
+- leaflet
+- litedown
+- lobstr
+- lubridate
+- markdown
+- microbenchmark
+- mirai
+- munsell
+- nycflights13
+- openssl
+- parsedate
+- pkgcache
+- pkgsearch
+- plotly
+- profvis
+- rbenchmark
+- reactable
+- readr
+- reshape2
+- rggobi
+- rgl
+- rsconnect
+- RSQLite
+- shiny
+- styler
+- thematic
+- tidyr
+- xml2
+- xmlparsedata
+- zeallot
+
+See `?renv::status` for advice on resolving these issues.
+
+RETRY WITH PROJECT AUTOLOADER AND EXTERNAL ISOLATED LIBRARY
+$ RENV_PATHS_LIBRARY=<external-tmp> Rscript -e renv::restore()
+# Bootstrapping renv 1.2.3 ---------------------------------------------------
+- Using renv 1.2.3 from global package cache
+- One or more packages recorded in the lockfile are not installed.
+- Use `renv::status()` for more details.
+The following package(s) will be installed:
+- pak [0.11.0]
+These packages will be installed into "/private/tmp/openpva-r461-library-UcSjXsh0/macos/R-4.6/aarch64-apple-darwin25.4.0".
+
+# Installing packages --------------------------------------------------------
+[32m✔[0m pak 0.11.0                               [linked from cache]
+Successfully installed 1 package in 5.3 milliseconds.
+ℹ Loading metadata database
+✔ Loading metadata database ... done
+
+ 
+→ Package library at '/private/tmp/openpva-r461-library-UcSjXsh0/macos/R-4.6/aarch64-apple-darwin25.4.0'.
+→ Will install 67 packages.
+→ All 67 packages (41.82 MB) are cached.
++ backports      1.5.1  👷🏿🔧
++ base64enc      0.1-6  👷🏻‍♀️🔧
++ base64url      1.4    👷‍♀️🔧
++ brio           1.1.5  👷🏽‍♀️🔧
++ bslib          0.11.0 👷🏽‍♀️
++ cachem         1.1.0  👷🏾‍♂️🔧
++ callr          3.7.6  👷🏻‍♂️
++ cli            3.6.6  👷🏼‍♀️🔧
++ cpp11          0.5.5  👷🏻
++ crayon         1.5.3  👷‍♂️
++ data.table     1.18.4 👷🏼‍♂️🔧
++ desc           1.4.3  👷🏾‍♂️
++ diffobj        0.3.6  👷🏾‍♀️🔧
++ digest         0.6.39 👷🏿🔧
++ dplyr          1.2.1  👷🏿‍♀️🔧
++ evaluate       1.0.5  👷🏿‍♂️
++ farver         2.1.2  👷🏿🔧
++ fastmap        1.2.0  👷🔧
++ fontawesome    0.5.3  👷🏻‍♀️
++ fs             2.1.0  👷🏾‍♂️🔧
++ generics       0.1.4  👷🏼‍♀️
++ ggplot2        4.0.3  👷🏼
++ glue           1.8.1  👷🏻🔧
++ gtable         0.3.6  👷🏿‍♂️
++ highr          0.12   👷‍♂️
++ htmltools      0.5.9  👷🏾‍♂️🔧
++ igraph         2.3.1  👷🏿‍♀️🔧
++ isoband        0.3.0  👷‍♀️🔧
++ jquerylib      0.1.4  👷
++ jsonlite       2.0.0  👷🏽🔧
++ knitr          1.51   👷🏻
++ labeling       0.4.3  👷🏿
++ lifecycle      1.0.5  👷🏿‍♀️
++ magrittr       2.0.5  👷🏿‍♂️🔧
++ memoise        2.0.1  👷🏾‍♀️
++ mime           0.13   👷🏿‍♀️🔧
++ pillar         1.11.1 👷🏽
++ pkgbuild       1.4.8  👷🏽‍♀️
++ pkgconfig      2.0.3  👷🏿‍♀️
++ pkgload        1.5.2  👷‍♀️
++ praise         1.0.0  👷🏻
++ prettyunits    1.2.0  👷🏾‍♂️
++ processx       3.9.0  👷‍♀️🔧
++ ps             1.9.3  👷🏻‍♀️🔧
++ purrr          1.2.2  👷‍♀️🔧
++ R6             2.6.1  👷🏼
++ rappdirs       0.3.4  👷🏼🔧
++ RColorBrewer   1.1-3  👷🏼‍♂️
++ rlang          1.2.0  👷🏻🔧
++ rmarkdown      2.31   👷🏼
++ rprojroot      2.1.1  👷🏿‍♂️
++ S7             0.2.2  👷🏾‍♂️🔧
++ sass           0.4.10 👷‍♀️🔧
++ scales         1.4.0  👷🏿‍♀️
++ secretbase     1.2.2  👷🔧
++ targets        1.12.0 👷🏾‍♂️
++ testthat       3.3.2  👷‍♀️🔧
++ tibble         3.3.1  👷🏻‍♂️🔧
++ tidyselect     1.2.1  👷🏼‍♂️🔧
++ tinytex        0.59   👷🏾‍♂️
++ utf8           1.2.6  👷🏿‍♂️🔧
++ vctrs          0.7.3  👷🏼‍♂️🔧
++ viridisLite    0.4.3  👷‍♂️
++ waldo          0.6.2  👷
++ withr          3.0.2  👷🏽‍♀️
++ xfun           0.57   👷🏾‍♂️🔧
++ yaml           2.3.12 👷🏼‍♂️🔧
+ℹ No downloads are needed, 67 pkgs (41.82 MB) are cached
+✔ Installed R6 2.6.1  (174ms)
+✔ Installed RColorBrewer 1.1-3  (186ms)
+✔ Installed S7 0.2.2  (247ms)
+✔ Installed backports 1.5.1  (262ms)
+✔ Installed base64enc 0.1-6  (274ms)
+✔ Installed base64url 1.4  (286ms)
+✔ Installed callr 3.7.6  (328ms)
+✔ Installed processx 3.9.0  (340ms)
+✔ Installed ps 1.9.3  (349ms)
+✔ Installed cachem 1.1.0  (394ms)
+✔ Installed fastmap 1.2.0  (114ms)
+✔ Installed cli 3.6.6  (68ms)
+✔ Installed cpp11 0.5.5  (83ms)
+✔ Installed digest 0.6.39  (37ms)
+✔ Installed fs 2.1.0  (36ms)
+✔ Installed htmltools 0.5.9  (32ms)
+✔ Installed bslib 0.11.0  (324ms)
+✔ Installed jquerylib 0.1.4  (80ms)
+✔ Installed jsonlite 2.0.0  (99ms)
+✔ Installed lifecycle 1.0.5  (68ms)
+✔ Installed memoise 2.0.1  (71ms)
+✔ Installed mime 0.13  (69ms)
+✔ Installed rappdirs 0.3.4  (104ms)
+✔ Installed sass 0.4.10  (99ms)
+✔ Installed brio 1.1.5  (73ms)
+✔ Installed crayon 1.5.3  (67ms)
+✔ Installed desc 1.4.3  (68ms)
+✔ Installed data.table 1.18.4  (183ms)
+✔ Installed dplyr 1.2.1  (85ms)
+✔ Installed generics 0.1.4  (76ms)
+✔ Installed glue 1.8.1  (111ms)
+✔ Installed magrittr 2.0.5  (106ms)
+✔ Installed pillar 1.11.1  (77ms)
+✔ Installed pkgconfig 2.0.3  (69ms)
+✔ Installed tibble 3.3.1  (98ms)
+✔ Installed tidyselect 1.2.1  (108ms)
+✔ Installed utf8 1.2.6  (74ms)
+✔ Installed vctrs 0.7.3  (79ms)
+✔ Installed diffobj 0.3.6  (101ms)
+✔ Installed evaluate 1.0.5  (100ms)
+✔ Installed farver 2.1.2  (74ms)
+✔ Installed fontawesome 0.5.3  (66ms)
+✔ Installed ggplot2 4.0.3  (121ms)
+✔ Installed gtable 0.3.6  (117ms)
+✔ Installed isoband 0.3.0  (72ms)
+✔ Installed labeling 0.4.3  (70ms)
+✔ Installed scales 1.4.0  (101ms)
+✔ Installed viridisLite 0.4.3  (81ms)
+✔ Installed highr 0.12  (33ms)
+✔ Installed knitr 1.51  (82ms)
+✔ Installed yaml 2.3.12  (49ms)
+✔ Installed pkgbuild 1.4.8  (31ms)
+✔ Installed praise 1.0.0  (29ms)
+✔ Installed igraph 2.3.1  (72ms)
+✔ Installed pkgload 1.5.2  (32ms)
+✔ Installed rlang 1.2.0  (44ms)
+✔ Installed rprojroot 2.1.1  (41ms)
+✔ Installed prettyunits 1.2.0  (30ms)
+✔ Installed purrr 1.2.2  (38ms)
+✔ Installed rmarkdown 2.31  (113ms)
+✔ Installed secretbase 1.2.2  (30ms)
+✔ Installed targets 1.12.0  (52ms)
+✔ Installed tinytex 0.59  (27ms)
+✔ Installed testthat 3.3.2  (59ms)
+✔ Installed waldo 0.6.2  (29ms)
+✔ Installed withr 3.0.2  (35ms)
+✔ Installed xfun 0.57  (37ms)
+✔ 40 pkgs + 30 deps: kept 3, added 67 [20.2s]
+$ RENV_PATHS_LIBRARY=<external-tmp> Rscript -e renv::status()
+
+NOTE: Dependency discovery took 15 seconds during snapshot using current .renvignore specifications.
+Consider modifying .renvignore or switching to explicit snapshots.
+See `?renv::dependencies` for more information.
+
+- The project is out-of-sync -- use `renv::status()` for details.
+A large number of files (4383 in total) have been discovered.
+It may take renv a long time to scan these files for dependencies.
+Consider using .renvignore to ignore irrelevant files.
+See `?renv::dependencies` for more information.
+Set `options(renv.config.dependencies.limit = Inf)` to disable this warning.
+
+The following package(s) are used in this project, but are not installed:
+- animation
+- async
+- bench
+- biglm
+- bit64
+- blob
+- brand.yml
+- broom
+- bsicons
+- chiflights22
+- cliapp
+- colourpicker
+- commonmark
+- cpp11test
+- curl
+- DBI
+- DiagrammeR
+- docopt
+- downlit
+- DT
+- formattable
+- future
+- ggridges
+- gt
+- here
+- hexbin
+- histoslider
+- hms
+- htmlwidgets
+- httr
+- Lahman
+- leaflet
+- litedown
+- lobstr
+- lubridate
+- markdown
+- microbenchmark
+- mirai
+- munsell
+- nycflights13
+- openssl
+- parsedate
+- pkgcache
+- pkgsearch
+- plotly
+- profvis
+- rbenchmark
+- reactable
+- readr
+- reshape2
+- rggobi
+- rgl
+- rsconnect
+- RSQLite
+- shiny
+- styler
+- thematic
+- tidyr
+- xml2
+- xmlparsedata
+- zeallot
+
+See `?renv::status` for advice on resolving these issues.
+
+FINAL STATUS AFTER REMOVING FAILED IN-TREE LIBRARIES
+$ RENV_PATHS_LIBRARY=<external-tmp> Rscript -e renv::status()
+No issues found -- the project is in a consistent state.
