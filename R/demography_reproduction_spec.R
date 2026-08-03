@@ -215,8 +215,8 @@ validate_fecundity_lambda_table <- function(tbl) {
   )
 
   tbl$lambda <- as.numeric(tbl$lambda)
-  if (any(is.na(tbl$lambda))) {
-    stop("lambda must be numeric and non-missing", call. = FALSE)
+  if (any(!is.finite(tbl$lambda))) {
+    stop("lambda must be numeric, finite, and non-missing", call. = FALSE)
   }
   if (any(tbl$lambda < 0)) {
     stop("lambda must be non-negative", call. = FALSE)

@@ -292,17 +292,12 @@ run_basic_simulation_replicates <- function(
     cat_repro_mult = 1,
     record_population_history = FALSE,
     seed = NULL) {
-  if (!is.numeric(n_runs) || length(n_runs) != 1L || n_runs < 1) {
-    stop("n_runs must be a single numeric value greater than or equal to 1", call. = FALSE)
-  }
-  if (!is.numeric(n_years) || length(n_years) != 1L || n_years < 1) {
-    stop("n_years must be a single numeric value greater than or equal to 1", call. = FALSE)
-  }
+  n_runs <- .normalize_positive_count(n_runs, "n_runs")
+  n_years <- .normalize_positive_count(n_years, "n_years")
   if (!is.function(init_fun)) {
     stop("init_fun must be a function returning an initial population", call. = FALSE)
   }
 
-  n_runs <- as.integer(n_runs)
   seed <- .normalize_optional_seed(seed)
   run_results <- .with_optional_seed(seed, {
     lapply(seq_len(n_runs), function(run_id) {
@@ -366,8 +361,13 @@ run_basic_simulation_replicates <- function(
     cat_repro_prob,
     cat_repro_mult,
     record_population_history) {
-  if (!is.numeric(n_years) || length(n_years) != 1L || n_years < 0) {
-    stop("n_years must be a single non-negative numeric value", call. = FALSE)
+  if (!is.numeric(n_years) || length(n_years) != 1L || !is.finite(n_years) ||
+      n_years < 0 || n_years != floor(n_years)) {
+    stop("n_years must be a single non-negative integer", call. = FALSE)
+  }
+  n_years_int <- suppressWarnings(as.integer(n_years))
+  if (is.na(n_years_int)) {
+    stop("n_years must be a single non-negative integer", call. = FALSE)
   }
   if (!is.function(survival_fun)) {
     stop("survival_fun must be a function", call. = FALSE)
@@ -399,11 +399,10 @@ run_basic_simulation_replicates <- function(
     stop("record_population_history must be a single logical value", call. = FALSE)
   }
 
-  n_years <- as.integer(n_years)
   .validate_lifecycle_steps(lifecycle_steps)
 
   list(
-    n_years = n_years,
+    n_years = n_years_int,
     survival_fun = survival_fun,
     breeding_prob_fun = breeding_prob_fun,
     fecundity_lambda_fun = fecundity_lambda_fun,
@@ -437,13 +436,16 @@ run_basic_simulation_replicates <- function(
   if (!is.numeric(value)) {
     stop(label, " must be numeric or integer", call. = FALSE)
   }
-  if (any(value < 0, na.rm = TRUE)) {
-    stop(label, " values must be non-negative", call. = FALSE)
+  if (any(!is.finite(value)) || any(value < 0) || any(value != floor(value))) {
+    stop(label, " values must be finite non-negative integers", call. = FALSE)
   }
   if (!length(value) %in% c(1L, n_years)) {
     stop(label, " must have length 1 or length equal to n_years", call. = FALSE)
   }
-  out <- as.integer(round(value))
+  out <- suppressWarnings(as.integer(value))
+  if (anyNA(out)) {
+    stop(label, " values must be representable as integers", call. = FALSE)
+  }
   if (length(out) == 1L && n_years > 0L) {
     out <- rep.int(out, n_years)
   }
@@ -452,7 +454,7 @@ run_basic_simulation_replicates <- function(
 
 .normalize_non_negative_numeric <- function(value, label) {
   value <- as.numeric(value)
-  if (length(value) != 1L || is.na(value) || value < 0) {
+  if (length(value) != 1L || !is.finite(value) || value < 0) {
     stop(label, " must be a single non-negative numeric value", call. = FALSE)
   }
   value
@@ -460,7 +462,7 @@ run_basic_simulation_replicates <- function(
 
 .normalize_probability <- function(value, label) {
   value <- as.numeric(value)
-  if (length(value) != 1L || is.na(value) || value < 0 || value > 1) {
+  if (length(value) != 1L || !is.finite(value) || value < 0 || value > 1) {
     stop(label, " must be within [0, 1]", call. = FALSE)
   }
   value
@@ -507,7 +509,7 @@ run_basic_simulation_replicates <- function(
   population_pre_survival <- population
   survival_fun_year <- function(ind) {
     p_base <- survival_fun(ind)
-    if (!is.numeric(p_base) || length(p_base) != 1L || is.na(p_base) || p_base < 0 || p_base > 1) {
+    if (!is.numeric(p_base) || length(p_base) != 1L || !is.finite(p_base) || p_base < 0 || p_base > 1) {
       stop("survival_fun must return a single numeric value in [0, 1]", call. = FALSE)
     }
     density_mult <- .eval_density_multiplier(
@@ -541,7 +543,7 @@ run_basic_simulation_replicates <- function(
 
   p_eff <- vapply(candidate_breeders, function(ind) {
     p_base <- breeding_prob_fun(ind)
-    if (!is.numeric(p_base) || length(p_base) != 1L || is.na(p_base) || p_base < 0 || p_base > 1) {
+    if (!is.numeric(p_base) || length(p_base) != 1L || !is.finite(p_base) || p_base < 0 || p_base > 1) {
       stop("breeding_prob_fun must return a single numeric value in [0, 1]", call. = FALSE)
     }
     density_mult <- .eval_density_multiplier(
@@ -562,7 +564,7 @@ run_basic_simulation_replicates <- function(
   breeders <- candidate_breeders[breed_draw]
   offspring_draws <- vapply(breeders, function(ind) {
     lambda_base <- fecundity_lambda_fun(ind)
-    if (!is.numeric(lambda_base) || length(lambda_base) != 1L || is.na(lambda_base) || lambda_base < 0) {
+    if (!is.numeric(lambda_base) || length(lambda_base) != 1L || !is.finite(lambda_base) || lambda_base < 0) {
       stop("fecundity_lambda_fun must return a single non-negative numeric value", call. = FALSE)
     }
     density_mult <- .eval_density_multiplier(
@@ -573,6 +575,9 @@ run_basic_simulation_replicates <- function(
     )
     lambda_year <- lambda_base * density_mult *
       year_modifiers$env_repro_lambda_mult * year_modifiers$cat_repro_mult
+    if (!is.finite(lambda_year) || lambda_year < 0) {
+      stop("effective fecundity lambda must be a finite non-negative numeric value", call. = FALSE)
+    }
     stats::rpois(1L, max(0, lambda_year))
   }, integer(1))
   names(offspring_draws) <- vapply(breeders, function(ind) as.character(ind$id), character(1))

@@ -10,8 +10,15 @@
 #' @return A list with `population` (updated) and `n_added` (actual number added).
 #' @export
 apply_supplementation <- function(population, n_add, patch_id = NULL) {
+  if (!is.numeric(n_add) || length(n_add) != 1L || !is.finite(n_add) ||
+      n_add < 0 || n_add != floor(n_add)) {
+    stop("n_add must be a finite non-negative integer")
+  }
   n_add <- suppressWarnings(as.integer(n_add))
-  if (length(n_add) != 1L || is.na(n_add) || n_add <= 0L) {
+  if (is.na(n_add)) {
+    stop("n_add must be representable as an integer")
+  }
+  if (n_add == 0L) {
     return(list(population = population, n_added = 0L))
   }
 

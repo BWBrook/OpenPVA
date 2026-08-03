@@ -16,12 +16,6 @@ demo_spatial_n_runs <- 5L
 demo_spatial_n_years <- 20L
 
 list(
-  # Core lifecycle sanity checks
-  targets::tar_target(pop0, initialize_population(50)),
-  targets::tar_target(pop1, age_individuals(pop0)),
-  targets::tar_target(pop2, apply_survival(pop1, default_survival_fun)),
-  targets::tar_target(breeders, determine_breeding(pop2, default_breeding_fun)),
-
   # Single-run demonstration
   targets::tar_target(
     sim_basic,

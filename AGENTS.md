@@ -67,8 +67,10 @@ Lifecycle steps are functions that accept and return populations (and related ob
 
 - ageing: `age_individuals(population)`
 - survival: `apply_survival(population, survival_fun)`
-- breeding selection: `determine_breeding(population, breeding_fun)`
-- reproduction: `apply_reproduction(population, breeders, fecundity_fun, mating_fun, inherit_fun)`
+- breeding selection: controller-owned Bernoulli draws from the baseline
+  `breeding_prob_fun(ind)` channel
+- reproduction: controller-owned Poisson draws from the baseline
+  `fecundity_lambda_fun(ind)` channel, followed by mating and inheritance
 - harvest: `apply_harvest_quota(population, n_remove)`
 - supplementation: `apply_supplementation(population, n_add, patch_id)`
 - spatial: `initialize_patches(...)`, `apply_dispersal(population, dispersal_fun)`
@@ -89,33 +91,38 @@ Do not redesign controllers without a clear design doc + tests.
 Scenarios exist as R-level specs (e.g. a scenario object with `init_fun`, demography functions, management, EV/cats, etc.).
 YAML scenarios are parsed and compiled into the R scenario spec.
 
-Backwards compatibility matters:
-- Legacy YAML should continue to work.
-- New schema features should be additive and versioned/documented.
+The current development line is a deliberate clean break:
+- YAML scenarios require the canonical `schema_version: 3` contract.
+- Reproduction uses the baseline-rate channels `breeding_prob_fun` and
+  `fecundity_lambda_fun`; the controller owns Bernoulli/Poisson draws.
+- Density is configured through explicit `density_spec()` channels (including
+  `make_ceiling_density_fun()` when a carrying-capacity modifier is wanted).
+- Compatibility claims require named tests and documentation. Do not promise
+  hypothetical legacy YAML or controller support merely because an older
+  roadmap entry described it.
 
 ---
 
 ## 3) Current “big rocks” (what matters next)
 
-The architecture is mature, but two areas are still conceptually weak:
+The current line has two locked foundations:
 
-1. **Reproduction semantics & EV/cats on reproduction**
-   - Current pattern is “logical breeding predicate + realised counts,” which is awkward for reproduction EV/cats.
-   - Next major refactor is to separate:
-     - baseline *probabilities/means* from demography,
-     - stochastic draws in the controller,
-     - year-level EV/cats modifiers,
-     - demographic stochasticity.
-   - Goal is a clean interface such as:
-     - `p_breed_base(ind)` in [0,1]
-     - `lambda_base(ind)` ≥ 0
-     - controller performs Bernoulli/Poisson draws using year-level multipliers.
+1. **Rate-based reproduction and EV/cats**
+   - `breeding_prob_fun(ind)` supplies a baseline probability in `[0, 1]`.
+   - `fecundity_lambda_fun(ind)` supplies a baseline mean `>= 0`.
+   - The controller applies density and year-level modifiers, then owns the
+     Bernoulli/Poisson draws. See `docs/design/reproduction_ev_semantics.md`.
 
-2. **General density module**
-   - Density dependence currently affects survival only (K / K_patches scaling).
-   - After reproduction refactor, implement a modular density system that can scale multiple vital rates.
+2. **Channel-specific density**
+   - `density_spec()` can scale survival, breeding probability, and fecundity
+     lambda through explicit channel functions.
+   - `K`/`K_patches` belong to `make_ceiling_density_fun()` and YAML ceiling
+     blocks, not to `scenario_spec()` arguments or density shorthand.
 
-These must be done carefully with tests and compatibility wrappers.
+Keep these contracts synchronized across implementation, tests, YAML fixtures,
+and current-facing examples. Historical roadmap text may describe prior
+compatibility work, but it is not evidence that the old interface remains
+supported.
 
 ---
 
@@ -140,16 +147,14 @@ For any significant change (especially refactors), add tests:
 
 Treat tests as *guardrails* for refactors.
 
-### 4.3 Backwards compatibility strategy
+### 4.3 Compatibility and migration claims
 
-Breaking changes must be deliberate:
-
-- Prefer “new interface + adaptors” over “silently changing semantics.”
-- If you introduce new functions (e.g. `breeding_prob_fun`, `fecundity_lambda_fun`), keep old ones as wrappers for a while.
-- If something must be deprecated:
-  - create clear deprecation warnings,
-  - document migration in docs,
-  - update demos and YAML examples.
+The current controller/YAML contract is clean-break and schema-v3 only.
+Compatibility is not inferred from an old roadmap entry or a retained
+low-level helper. Any compatibility claim must name the supporting tests and
+documentation; otherwise update the example or reject the old input clearly.
+When a future breaking change is proposed, document it first and move tests,
+demos, and YAML fixtures together.
 
 ---
 

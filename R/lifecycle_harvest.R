@@ -9,15 +9,20 @@
 #'   `n_harvested` (actual number removed).
 #' @export
 apply_harvest_quota <- function(population, n_remove) {
+  if (!is.numeric(n_remove) || length(n_remove) != 1L ||
+      !is.finite(n_remove) || n_remove < 0 || n_remove != floor(n_remove)) {
+    stop("n_remove must be a finite non-negative integer")
+  }
+  n_remove <- suppressWarnings(as.integer(n_remove))
+  if (is.na(n_remove)) {
+    stop("n_remove must be representable as an integer")
+  }
+
   if (!length(population)) {
     return(list(population = population, n_harvested = 0L))
   }
 
-  if (!is.numeric(n_remove) || length(n_remove) != 1L) {
-    stop("n_remove must be a single numeric value")
-  }
-
-  if (n_remove <= 0) {
+  if (n_remove == 0L) {
     return(list(population = population, n_harvested = 0L))
   }
 
@@ -28,7 +33,7 @@ apply_harvest_quota <- function(population, n_remove) {
     return(list(population = population, n_harvested = 0L))
   }
 
-  n_effective <- min(length(alive_indices), as.integer(floor(n_remove)))
+  n_effective <- min(length(alive_indices), n_remove)
   if (n_effective <= 0) {
     return(list(population = population, n_harvested = 0L))
   }

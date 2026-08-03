@@ -18,7 +18,7 @@ In scope for 2B:
 Out of scope for 2B:
 - Full Bayesian inference workflows.
 - Observation model/likelihood frameworks for detection error.
-- Breaking redesign of existing lifecycle/controller interfaces.
+- Further redesign beyond the locked rate-based controller contract.
 
 ## 2) Modifier composition order
 
@@ -44,10 +44,10 @@ superseded by a new decision entry.
 
 ## 4) Compatibility and schema strategy
 
-- Uncertainty remains opt-in and additive in 1.x.
+- Uncertainty remains opt-in and additive within canonical schema v3.
 - Existing deterministic behavior remains default when uncertainty is omitted.
-- YAML support will be additive via schema v3 `uncertainty` block with explicit
-  migration tests from v2/defaults.
+- YAML parsing requires schema v3; older schema migration is not a current
+  compatibility promise.
 
 ## 5) Validation outputs (minimum contract)
 

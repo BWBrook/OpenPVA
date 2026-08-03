@@ -126,31 +126,19 @@ generate_calibration_candidates <- function(
     out <- tibble::as_tibble(grid_df)
   } else {
     n_candidates <- .normalize_positive_count(n_candidates, "n_candidates")
-    if (!is.null(seed)) {
-      had_rng <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-      if (had_rng) {
-        old_rng <- get(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-      }
-      on.exit({
-        if (had_rng) {
-          assign(".Random.seed", old_rng, envir = .GlobalEnv)
-        } else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
-          rm(".Random.seed", envir = .GlobalEnv)
+    draw_list <- .with_optional_seed(seed, {
+      draw_list <- vector("list", length(parameter_space))
+      names(draw_list) <- names(parameter_space)
+      for (param in names(parameter_space)) {
+        spec <- parameter_space[[param]]
+        draws <- stats::runif(n_candidates, min = spec$lower, max = spec$upper)
+        if (spec$integer) {
+          draws <- as.integer(round(draws))
         }
-      }, add = TRUE)
-      set.seed(seed)
-    }
-
-    draw_list <- vector("list", length(parameter_space))
-    names(draw_list) <- names(parameter_space)
-    for (param in names(parameter_space)) {
-      spec <- parameter_space[[param]]
-      draws <- stats::runif(n_candidates, min = spec$lower, max = spec$upper)
-      if (spec$integer) {
-        draws <- as.integer(round(draws))
+        draw_list[[param]] <- draws
       }
-      draw_list[[param]] <- draws
-    }
+      draw_list
+    })
     out <- tibble::as_tibble(draw_list)
   }
 

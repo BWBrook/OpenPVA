@@ -1,0 +1,148 @@
+manifest_version: 1
+as_of: "2026-08-03"
+scope:
+  root: artefacts/
+  tracked_file_count: 1133
+  action: classification_only
+  matching_rule: most_specific_path_glob_wins
+  dispositions:
+    - retain
+    - simplify
+    - delete-candidate
+    - defer
+
+families:
+  - id: canonical_release_evidence
+    path_globs:
+      - artefacts/release_1.0.0-rc4/**
+    disposition: retain
+    rationale: Latest release-candidate proof bundle and the repository's named canonical release evidence.
+    named_consumer:
+      status: active
+      references:
+        - docs/plan.md
+        - docs/interpretation_notes.md
+        - docs/log/053_r461_macos_ci_readiness_closure.md
+
+  - id: superseded_release_candidates
+    path_globs:
+      - artefacts/release_1.0.0-rc1/**
+      - artefacts/release_1.0.0-rc2/**
+      - artefacts/release_1.0.0-rc3/**
+    disposition: simplify
+    rationale: Superseded release proof retained for provenance; consolidate only after checking historical references.
+    named_consumer:
+      status: historical_only
+      references:
+        - docs/interpretation_notes.md
+        - docs/log/053_r461_macos_ci_readiness_closure.md
+
+  - id: current_wp2b_evidence
+    path_globs:
+      - artefacts/WP-2B.1/**
+      - artefacts/WP-2B.2/**
+      - artefacts/WP-2B.3/**
+      - artefacts/WP-2B.4/**
+      - artefacts/WP-2B.5/**
+      - artefacts/WP-2B.6/**
+    disposition: retain
+    rationale: Current uncertainty, sensitivity, calibration, and parallel-reproducibility evidence remains named by the active plan and interpretation records.
+    named_consumer:
+      status: active
+      references:
+        - docs/plan.md
+        - docs/roadmap.md
+        - docs/interpretation_notes.md
+        - docs/reference/uncertainty_validation_contract.md
+
+  - id: macos_readiness_evidence
+    path_globs:
+      - artefacts/macos_r460_readiness/**
+    disposition: retain
+    rationale: Host and R 4.6.1 readiness evidence used by the current CI/readiness record.
+    named_consumer:
+      status: active
+      references:
+        - docs/log/053_r461_macos_ci_readiness_closure.md
+
+  - id: older_wp_evidence
+    path_globs:
+      - artefacts/WP-0.*/**
+      - artefacts/WP-1.*/**
+      - artefacts/WP-2A.*/**
+    disposition: defer
+    rationale: Historical work-package evidence is still cited by roadmap and log entries; no cleanup decision is made here.
+    named_consumer:
+      status: historical_only
+      references:
+        - docs/roadmap.md
+        - docs/log/
+        - docs/interpretation_notes.md
+
+  - id: repeated_rcmdcheck_snapshots
+    path_globs:
+      - artefacts/WP-0.3.2/OpenPVA.Rcheck/**
+      - artefacts/WP-0.3.3/OpenPVA.Rcheck/**
+      - artefacts/WP-0.3.4/OpenPVA.Rcheck/**
+      - artefacts/WP-0.3.4/..Rcheck/**
+      - artefacts/WP-0.4.1/OpenPVA.Rcheck/**
+      - artefacts/WP-0.4.2/OpenPVA.Rcheck/**
+    disposition: simplify
+    rationale: Repeated generated R CMD check trees are high-volume snapshots; retain until one representative policy is approved.
+    named_consumer:
+      status: none_identified
+      references: []
+
+  - id: generated_logs
+    path_globs:
+      - artefacts/**/*.log
+      - artefacts/**/*.out
+      - artefacts/**/*.rout
+    exclude_globs:
+      - artefacts/release_1.0.0-rc4/**
+      - artefacts/WP-2B.*/**
+      - artefacts/macos_r460_readiness/**
+    disposition: delete-candidate
+    rationale: Generated command logs are reproducible from source and commonly duplicated; delete only after consumer and release-proof checks.
+    named_consumer:
+      status: none_identified
+      references: []
+
+  - id: generated_csv_outputs
+    path_globs:
+      - artefacts/**/*.csv
+    exclude_globs:
+      - artefacts/release_1.0.0-rc4/**
+      - artefacts/WP-2B.*/**
+      - artefacts/macos_r460_readiness/**
+    disposition: simplify
+    rationale: Generated tabular outputs may be reproducible but some are cited as WP evidence; retain named examples and consolidate duplicates only after review.
+    named_consumer:
+      status: mixed
+      references:
+        - docs/interpretation_notes.md
+        - docs/roadmap.md
+
+  - id: generated_r_objects
+    path_globs:
+      - artefacts/**/*.rds
+      - artefacts/**/*.RData
+      - artefacts/**/*.rda
+    exclude_globs:
+      - artefacts/release_1.0.0-rc4/**
+      - artefacts/WP-2B.*/**
+      - artefacts/macos_r460_readiness/**
+    disposition: delete-candidate
+    rationale: Serialized outputs are bulky and reproducible; remove only with a provenance replacement or named-consumer check.
+    named_consumer:
+      status: none_identified
+      references: []
+
+  - id: standalone_miscellaneous
+    path_globs:
+      - artefacts/**
+    disposition: defer
+    rationale: Catch-all for paths not covered above; classify explicitly before any mutation.
+    named_consumer:
+      status: unknown
+      references: []

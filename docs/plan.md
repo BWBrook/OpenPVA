@@ -40,7 +40,7 @@ stable core API, documented scenario schema, strong tests, and reproducible demo
   - Demo now includes spatial/genetic interpretation workflow guidance:
     endpoint vs time-series vs connectivity diagnostics.
 - Tests status:
-  - The canonical suite is green under R `4.6.1` (`532` pass, `0` fail,
+  - The canonical suite is green under R `4.6.1` (`561` pass, `0` fail,
     `0` warn, `0` skip).
   - Regression coverage targets retained controller behaviour, canonical YAML,
     spatial/genetic summaries, output contracts, and seeded reproducibility.
@@ -101,23 +101,19 @@ A milestone is “reviewable” when:
   - minimal `targets` run,
   - optional Quarto render smoke test.
 
-### W5 — Reproduction refactor (P5: semantics + EV)
-Goal: move from “boolean breeder + realised counts” toward “baseline probabilities/means + controller draws”.
-Deliverables (in order):
+### W5 — Reproduction rate contract (completed)
+The current line uses `breeding_prob_fun` and `fecundity_lambda_fun` baseline
+channels, with controller-owned Bernoulli/Poisson draws and reproduction
+EV/cat modifiers. The clean-break contract is documented in
+`docs/design/reproduction_ev_semantics.md`; maintenance work should preserve
+the named tests, YAML schema-v3 path, and output semantics.
 
-1. Design doc: `docs/design/reproduction_ev_semantics.md`
-2. New interfaces:
-   - `breeding_prob_fun` (or similar): returns p in [0,1]
-   - `fecundity_lambda_fun` (or similar): returns λ ≥ 0
-3. Controller path that applies year-level reproduction EV/cats and performs Bernoulli/Poisson draws.
-4. Keep the retained public surface clean and explicit.
-5. Extend YAML schema for reproduction EV once semantics are stable.
-6. Update demos + add tests ensuring the current path behaves as expected.
-
-### W6 — Density module (post-refactor)
-Goal: a pluggable density submodule that can scale multiple vital rates (survival, breeding, fecundity),
-works with spatial structure, EV/cats, and management.
-Deliverable starts with `docs/design/density_module.md`.
+### W6 — Density channel contract (completed)
+The current line uses explicit `density_spec()` channels for survival, breeding,
+and fecundity, including the `make_ceiling_density_fun()` constructor for
+global or patch capacities. The contract is documented in
+`docs/design/density_module.md`; maintenance work should preserve channel
+ordering and finite multiplier validation.
 
 ## 5) Milestones
 
@@ -129,28 +125,30 @@ Success criteria:
 - Demo renders (or minimal subset).
 - Docs/plan, docs/log, docs/decisions, docs/interpretation updated.
 
-### M1 — Reproduction refactor design locked
-Success criteria:
+### M1 — Reproduction refactor design locked (closed; historical)
+Closure record:
 - `docs/design/reproduction_ev_semantics.md` exists and is coherent.
-- Decision recorded in `docs/decisions.md` about interface approach and compatibility strategy.
-- A small toy implementation exists behind a feature flag or alternate controller path (not breaking mainline yet).
+- The interface and compatibility boundary are recorded in `docs/decisions.md`.
+- The current clean-break controller supersedes the deferred feature-flag or
+  alternate-path design.
 
-### M2 — Reproduction refactor implemented + validated
-Success criteria:
+### M2 — Reproduction refactor implemented + validated (closed; historical)
+Closure record:
 - New interfaces implemented.
 - Controller draws moved into controller.
 - Reproduction EV parameters supported (R-level).
-- Legacy scenarios still run (or clear breaking-change notes if PI approved).
+- The current contract is clean-break; legacy scenarios are not promised, and
+  the breaking boundary is documented in the reproduction design note.
 - Tests and demos updated.
 
-### M3 — YAML reproduction EV support
-Success criteria:
+### M3 — YAML reproduction EV support (closed; historical)
+Closure record:
 - YAML schema extended.
 - YAML parser builds new interfaces.
 - Tests cover YAML + reproduction EV + simulation behaviour.
 
-### M4 — Density module (minimal viable)
-Success criteria:
+### M4 — Density module (minimal viable; closed; historical)
+Closure record:
 - Density modifiers interface implemented.
 - At least one density function (e.g. ceiling/logistic) works for survival + reproduction.
 - Tests and demos cover it.
@@ -166,7 +164,8 @@ Success criteria:
 - **Most recent milestone progress**:
   - Completed `WP-0.3.1` through `WP-2B.6`, including:
     - bootstrap baseline and artefact/log scaffolding,
-    - reproduction/density API stabilization with compatibility layers,
+    - clean-break rate-based reproduction and explicit density channel
+      contracts,
     - spatial/genetic output expansion from final-time summaries to
       run/year/patch time-series and connectivity diagnostics,
     - seeded regression gates for spatial/genetic snapshot slices,

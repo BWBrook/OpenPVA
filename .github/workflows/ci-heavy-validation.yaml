@@ -47,10 +47,6 @@ jobs:
       - name: Ensure suggested packages
         run: Rscript scripts/install_suggests.R
 
-      - name: Reproducibility regression tests
-        run: >-
-          Rscript scripts/run_tests.R "rng_seed|output_schema_contract|scenario_yaml_demography|spatial_patches|reproducibility_snapshots"
-
       - name: Full package tests
         run: Rscript scripts/run_tests.R
 
@@ -73,9 +69,10 @@ jobs:
           ens_parallel <- run_scenario_ensemble(sc, spec, n_draws = 6, seed = 20260408L, parallel = TRUE, n_cores = 2L)
           stopifnot(identical(ens_serial$sampled_parameters, ens_parallel$sampled_parameters))
           prcc <- summarise_sensitivity_prcc(ens_serial)
+          base_output <- run_scenario(sc)$sim_output
           obs <- c(
-            p_extinction = summarise_extinction(run_scenario(sc)$sim_output, threshold = 0)$p_extinct,
-            mean_final_n_alive = summarise_final_abundance(run_scenario(sc)$sim_output)$overall$mean_final_n_alive
+            p_extinction = summarise_extinction(base_output, threshold = 0)$p_extinct,
+            mean_final_n_alive = summarise_final_abundance(base_output)$overall$mean_final_n_alive
           )
           cand <- generate_calibration_candidates(
             list(

@@ -1,18 +1,19 @@
 # Design: density dependence module
 
-Status: DECISION LOCKED (WP-1.1.1)
+Status: DECISION LOCKED + CHANNEL PATH IMPLEMENTED (WP-1.1.1 / WP-1.1.2)
 
 ## 1) Goal
 
-Generalize density dependence from survival-only `K`/`K_patches` scaling into a
-modular channel system that can scale:
+The current density implementation generalizes the earlier survival-only
+`K`/`K_patches` idea into a modular channel system that can scale:
 
 - survival probability,
 - breeding probability,
 - fecundity lambda.
 
-The design must preserve backward compatibility for existing scenarios while
-making density composition explicit and auditable.
+The current line is a clean break: density composition must be explicit and
+auditable through `density_spec()`. Any compatibility claim requires named
+tests and documentation rather than an implicit promise for older scenarios.
 
 ## 2) Core semantic model
 
@@ -67,30 +68,29 @@ An R-level density spec should support channel-specific functions:
 
 Each function returns a single finite numeric multiplier `>= 0`.
 
-Compatibility adapters map legacy fields:
-
-- `K` -> global ceiling scale on survival channel,
-- `K_patches` -> patch ceiling scale on survival channel.
+The explicit constructor `make_ceiling_density_fun()` accepts `K` or
+`K_patches` and returns a channel function. These values are not
+`scenario_spec()` arguments; callers attach the constructor through
+`density_spec()`.
 
 ## 6) Compatibility and migration
 
-Compatibility strategy is adapter-first:
+The current controller and YAML line is clean-break:
 
-- Existing scenarios using `K`/`K_patches` remain valid.
-- Legacy behavior is preserved by internally constructing equivalent survival
-  density multipliers.
-- New density channels are opt-in unless explicitly configured.
+- `scenario_spec()` has no `K` or `K_patches` parameters.
+- YAML accepts only explicit `density.survival`, `density.breeding`, and
+  `density.fecundity` channel blocks; shorthand density fields are rejected.
+- Existing compatibility claims require named tests and documentation. The
+  historical `K`/`K_patches` behavior is represented by the explicit ceiling
+  constructor rather than an implicit scenario adapter.
 
-Potentially breaking behavior remains deferred to a future major release unless
-explicitly versioned and documented under semver policy.
+## 7) YAML implications
 
-## 7) YAML implications (next WP)
-
-YAML support is handled in WP-1.1.3. Planned principles:
-
-- additive schema fields for density channels,
-- explicit migration/adaptation path from legacy `K`/`K_patches`,
-- regression tests for parsing and behavior preservation.
+Canonical schema v3 exposes density through explicit channel blocks. Each
+channel may use a constant multiplier, a function reference, or a ceiling
+model with `K` or `K_patches`; top-level and shorthand density fields are not
+accepted. See `docs/reference/yaml_schema_v1.md` (the filename is historical;
+the documented contract is schema v3).
 
 ## 8) Test requirements
 
@@ -99,7 +99,7 @@ YAML support is handled in WP-1.1.3. Planned principles:
   - global and patch ceiling density function behavior.
 - Integration tests:
   - channel effects on survival/reproduction outputs,
-  - legacy `K`/`K_patches` parity behavior,
+  - explicit ceiling constructor behavior for global and patch capacities,
   - seeded deterministic behavior with density active.
 
 ## 9) Out-of-scope for this design lock

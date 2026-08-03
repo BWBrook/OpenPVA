@@ -339,10 +339,15 @@ print.openpva_scenario <- function(x, ...) {
   }
   for (field in c("n_runs", "n_years")) {
     value <- scenario[[field]]
-    if (!is.numeric(value) || length(value) != 1L || value <= 0) {
-      stop(field, " must be a positive numeric value", call. = FALSE)
+    if (!is.numeric(value) || length(value) != 1L || !is.finite(value) ||
+        value <= 0 || value != floor(value)) {
+      stop(field, " must be a single positive integer", call. = FALSE)
     }
-    scenario[[field]] <- as.integer(value)
+    value_int <- suppressWarnings(as.integer(value))
+    if (is.na(value_int)) {
+      stop(field, " must be a single positive integer", call. = FALSE)
+    }
+    scenario[[field]] <- value_int
   }
   if (!is.function(scenario$init_fun)) {
     stop("init_fun must be a function", call. = FALSE)
@@ -378,10 +383,8 @@ print.openpva_scenario <- function(x, ...) {
       is.na(record_population_history)) {
     stop("record_population_history must be a single logical value", call. = FALSE)
   }
-  if (!is.null(scenario$supplement_quota) &&
-      !length(scenario$supplement_quota) %in% c(1L, scenario$n_years)) {
-    stop("supplement_quota must be NULL or numeric of length 1 or n_years", call. = FALSE)
-  }
+  .validate_quota_contract(scenario$harvest_quota, "harvest_quota", scenario$n_years)
+  .validate_quota_contract(scenario$supplement_quota, "supplement_quota", scenario$n_years)
   if (!is.null(scenario$supplement_patch)) {
     scenario$supplement_patch <- as.integer(scenario$supplement_patch)
   }
@@ -410,4 +413,22 @@ print.openpva_scenario <- function(x, ...) {
   }
   .validate_lifecycle_steps(scenario$lifecycle_steps)
   invisible(scenario)
+}
+
+.validate_quota_contract <- function(value, label, n_years) {
+  if (is.null(value)) {
+    return(invisible(NULL))
+  }
+  if (!is.numeric(value) || !length(value) || any(!is.finite(value)) ||
+      any(value < 0) || any(value != floor(value))) {
+    stop(label, " must contain finite non-negative integer values", call. = FALSE)
+  }
+  if (!length(value) %in% c(1L, n_years)) {
+    stop(label, " must be NULL or numeric of length 1 or n_years", call. = FALSE)
+  }
+  value_int <- suppressWarnings(as.integer(value))
+  if (anyNA(value_int)) {
+    stop(label, " values must be representable as integers", call. = FALSE)
+  }
+  invisible(value)
 }

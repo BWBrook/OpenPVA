@@ -44,8 +44,9 @@ For each vital-rate calculation, OpenPVA applies:
 
 ## YAML integration
 
-YAML scenarios configure density through a top-level `density` block. See
-`docs/reference/yaml_schema_v1.md` for field-level schema details.
+YAML scenarios configure density through a top-level `density` block in
+canonical schema v3. See `docs/reference/yaml_schema_v1.md` for field-level
+schema details (the filename is retained for historical links).
 
 ## Notes on `survival_scale` summary field
 

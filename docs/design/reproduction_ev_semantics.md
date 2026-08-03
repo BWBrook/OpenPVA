@@ -2,9 +2,9 @@
 
 Status: DECISION LOCKED + CONTROLLER PATH IMPLEMENTED (WP-0.5.4)
 
-## 1) Problem statement
+## 1) Historical problem statement
 
-Legacy reproduction flow currently mixes structural rules and stochastic outcomes:
+The pre-rate reproduction flow mixed structural rules and stochastic outcomes:
 
 - `breeding_fun(ind)` as boolean eligibility.
 - `fecundity_fun(ind)` as realized integer count.
@@ -56,8 +56,11 @@ Canonical YAML exposes explicit baseline reproduction fields and reproduction EV
 
 - baseline breeding probability channels,
 - baseline fecundity lambda channels,
-- year-level reproduction EV/cat configuration,
-- compatibility migration from v1/legacy.
+- year-level reproduction EV/cat configuration.
+
+The current parser accepts only this canonical schema-v3 form. Older YAML and
+the historical controller shims are not compatibility promises; any future
+migration requires named tests and documentation.
 
 ## 6) Worked example
 

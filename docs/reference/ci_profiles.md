@@ -46,13 +46,7 @@ Checks:
 - Ubuntu system requirements install (`apt`) for R package runtime/link deps,
 - dependency restore (`renv::restore()`),
 - shared `DESCRIPTION` `Suggests` bootstrap (`scripts/install_suggests.R`),
-- reproducibility regression tests:
-  - `test_rng_seed.R`
-  - `test_output_schema_contract.R`
-  - `test_scenario_yaml_demography.R`
-  - `test_spatial_patches.R`
-  - `test_reproducibility_snapshots.R`
-- full package tests,
+- one full package test invocation (`Rscript scripts/run_tests.R`),
 - bounded uncertainty workflow smoke:
   - ensemble serial/parallel reproducibility check,
   - PRCC sensitivity helper smoke,
@@ -88,7 +82,6 @@ sudo apt-get update
 sudo apt-get install -y libcurl4-openssl-dev libfontconfig1-dev libfreetype6-dev libgit2-dev libglpk-dev libuv1-dev libx11-dev pandoc
 RENV_CONFIG_AUTOLOADER_ENABLED=FALSE Rscript scripts/ci_restore.R
 Rscript scripts/install_suggests.R
-Rscript scripts/run_tests.R "rng_seed|output_schema_contract|scenario_yaml_demography|spatial_patches|reproducibility_snapshots"
 Rscript scripts/run_tests.R
 Rscript - <<'EOF'
 pkgload::load_all(quiet = TRUE)
@@ -107,9 +100,10 @@ ens_serial <- run_scenario_ensemble(sc, spec, n_draws = 6, seed = 20260408L, par
 ens_parallel <- run_scenario_ensemble(sc, spec, n_draws = 6, seed = 20260408L, parallel = TRUE, n_cores = 2L)
 stopifnot(identical(ens_serial$sampled_parameters, ens_parallel$sampled_parameters))
 prcc <- summarise_sensitivity_prcc(ens_serial)
+base_output <- run_scenario(sc)$sim_output
 obs <- c(
-  p_extinction = summarise_extinction(run_scenario(sc)$sim_output, threshold = 0)$p_extinct,
-  mean_final_n_alive = summarise_final_abundance(run_scenario(sc)$sim_output)$overall$mean_final_n_alive
+  p_extinction = summarise_extinction(base_output, threshold = 0)$p_extinct,
+  mean_final_n_alive = summarise_final_abundance(base_output)$overall$mean_final_n_alive
 )
 cand <- generate_calibration_candidates(
   list(

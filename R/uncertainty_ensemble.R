@@ -33,22 +33,10 @@ sample_uncertainty_parameters <- function(uncertainty_spec, n_draws, seed = NULL
   n_draws <- .normalize_positive_count(n_draws, "n_draws")
   seed <- .normalize_optional_seed(seed)
 
-  if (!is.null(seed)) {
-    had_rng <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-    if (had_rng) {
-      old_rng <- get(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-    }
-    on.exit({
-      if (had_rng) {
-        assign(".Random.seed", old_rng, envir = .GlobalEnv)
-      } else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
-        rm(".Random.seed", envir = .GlobalEnv)
-      }
-    }, add = TRUE)
-    set.seed(seed)
-  }
-
-  draws <- lapply(uncertainty_spec, .draw_uncertainty_values, n_draws = n_draws)
+  draws <- .with_optional_seed(
+    seed,
+    lapply(uncertainty_spec, .draw_uncertainty_values, n_draws = n_draws)
+  )
   out <- tibble::tibble(draw_id = seq_len(n_draws))
   for (param in names(draws)) {
     out[[param]] <- draws[[param]]
