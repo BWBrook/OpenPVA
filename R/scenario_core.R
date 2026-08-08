@@ -1,332 +1,134 @@
-#' Create a simulation scenario specification
+#' Construct a process-based simulation scenario
 #'
-#' Defines a reusable scenario that can be executed with [run_scenario()].
+#' @param name Scenario name.
+#' @param n_runs Number of independent replicate streams.
+#' @param n_steps Number of lifecycle intervals per replicate.
+#' @param init_fun Function with no arguments returning either a population list
+#'   or a [pva_state()]. It runs inside the replicate RNG stream.
+#' @param processes Direct ordered list of [pva_process()] objects.
+#' @param seed Optional root integer seed. When `NULL`, a root seed is drawn
+#'   inside a caller-restoring RNG scope.
+#' @param dt Positive interval duration supplied in process context.
+#' @param initial_census Optional census/observer process run once in the
+#'   distinct `initial` phase at `time = 0`.
+#' @param record_population_history Whether to retain state snapshots after each
+#'   interval.
 #'
-#' @param name Scenario name (character scalar).
-#' @param n_runs Number of replicate runs.
-#' @param n_years Number of years per run.
-#' @param init_fun Function that initialises a population when called.
-#' @param survival_fun Function returning survival probabilities.
-#' @param breeding_prob_fun Baseline breeding-probability function returning
-#'   values in `[0, 1]`.
-#' @param fecundity_lambda_fun Baseline fecundity-mean function returning
-#'   `lambda >= 0`.
-#' @param density_spec Optional density specification created by
-#'   [density_spec()].
-#' @param harvest_quota Optional harvest quota (scalar or length `n_years`).
-#' @param lifecycle_steps Character vector describing the lifecycle order.
-#' @param mating_fun Function used for mate selection.
-#' @param require_mate Logical; if `TRUE`, females without a selected mate do
-#'   not produce offspring in reproduction steps.
-#' @param inherit_fun Optional function for generating offspring genotypes.
-#' @param dispersal_fun Function controlling movement between patches.
-#' @param supplement_quota Optional numeric scalar or vector (length `n_years`)
-#'   giving supplementation quotas for the `"supplementation"` lifecycle step.
-#' @param supplement_patch Optional patch identifier assigned to all added
-#'   individuals (defaults to `NA`).
-#' @param env_surv_sd Standard deviation of a lognormal year-level multiplier on
-#'   survival.
-#' @param cat_surv_prob Per-year probability of a catastrophic survival event.
-#' @param cat_surv_mult Multiplicative factor applied to survival probabilities
-#'   in catastrophe years.
-#' @param env_repro_p_sd Standard deviation of a lognormal year-level multiplier
-#'   on breeding probability.
-#' @param env_repro_lambda_sd Standard deviation of a lognormal year-level
-#'   multiplier on fecundity lambda.
-#' @param cat_repro_prob Per-year probability of a reproduction catastrophe.
-#' @param cat_repro_mult Multiplicative factor applied to breeding probability
-#'   and fecundity lambda in reproduction catastrophe years.
-#' @param record_population_history Logical; if `TRUE`, each run stores per-year
-#'   population snapshots in `population_history`.
-#' @param seed Optional integer random seed forwarded to
-#'   [run_basic_simulation_replicates()].
-#' @param uncertainty_spec Optional uncertainty specification list compatible
-#'   with [sample_uncertainty_parameters()].
-#'
-#' @return An object of class `openpva_scenario`.
+#' @return An `openpva_scenario`.
 #' @export
 scenario_spec <- function(
     name,
     n_runs,
-    n_years,
+    n_steps,
     init_fun,
-    survival_fun = default_survival_fun,
-    breeding_prob_fun = default_breeding_prob_fun,
-    fecundity_lambda_fun = default_fecundity_lambda_fun,
-    density_spec = NULL,
-    harvest_quota = NULL,
-    lifecycle_steps = default_lifecycle_steps(),
-    mating_fun = default_mating_fun,
-    require_mate = FALSE,
-    inherit_fun = NULL,
-    dispersal_fun = default_dispersal_fun,
-    supplement_quota = NULL,
-    supplement_patch = NULL,
-    env_surv_sd = 0,
-    cat_surv_prob = 0,
-    cat_surv_mult = 1,
-    env_repro_p_sd = 0,
-    env_repro_lambda_sd = 0,
-    cat_repro_prob = 0,
-    cat_repro_mult = 1,
-    record_population_history = FALSE,
+    processes,
     seed = NULL,
-    uncertainty_spec = NULL) {
+    dt = 1,
+    initial_census = NULL,
+    record_population_history = FALSE) {
   scenario <- list(
     name = name,
     n_runs = n_runs,
-    n_years = n_years,
+    n_steps = n_steps,
     init_fun = init_fun,
-    survival_fun = survival_fun,
-    breeding_prob_fun = breeding_prob_fun,
-    fecundity_lambda_fun = fecundity_lambda_fun,
-    density_spec = density_spec,
-    harvest_quota = harvest_quota,
-    lifecycle_steps = lifecycle_steps,
-    mating_fun = mating_fun,
-    require_mate = require_mate,
-    inherit_fun = inherit_fun,
-    dispersal_fun = dispersal_fun,
-    supplement_quota = supplement_quota,
-    supplement_patch = supplement_patch,
-    env_surv_sd = env_surv_sd,
-    cat_surv_prob = cat_surv_prob,
-    cat_surv_mult = cat_surv_mult,
-    env_repro_p_sd = env_repro_p_sd,
-    env_repro_lambda_sd = env_repro_lambda_sd,
-    cat_repro_prob = cat_repro_prob,
-    cat_repro_mult = cat_repro_mult,
-    record_population_history = record_population_history,
+    processes = processes,
     seed = seed,
-    uncertainty_spec = uncertainty_spec
+    dt = dt,
+    initial_census = initial_census,
+    record_population_history = record_population_history
   )
   scenario <- .validate_scenario(scenario)
   class(scenario) <- c("openpva_scenario", "list")
   scenario
 }
 
-#' Run a simulation scenario
+#' Execute a process-based scenario
 #'
-#' Executes a scenario created by [scenario_spec()] via
-#' [run_basic_simulation_replicates()].
+#' Replicate streams are preassigned with L'Ecuyer-CMRG before work is sent to
+#' either serial or parallel execution. Both the caller's RNG kind and
+#' `.Random.seed` are restored on success and error.
 #'
-#' @param scenario An object created by [scenario_spec()].
+#' @param scenario Object from [scenario_spec()].
+#' @param parallel Whether to use two or more local fork workers.
+#' @param workers Number of local workers when `parallel = TRUE`.
 #'
-#' @return A list with elements `scenario` and `sim_output`.
+#' @return A list containing the scenario and `sim_output`. `sim_output` holds
+#'   ordered per-run results, combined events, census rows and stream
+#'   provenance.
 #' @export
-run_scenario <- function(scenario) {
+run_scenario <- function(scenario, parallel = FALSE, workers = 2L) {
   if (!inherits(scenario, "openpva_scenario")) {
-    stop("`scenario` must be created by scenario_spec().", call. = FALSE)
+    stop("scenario must be created by scenario_spec()", call. = FALSE)
   }
   scenario <- .validate_scenario(scenario)
-  sim_output <- run_basic_simulation_replicates(
-    n_runs = scenario$n_runs,
-    n_years = scenario$n_years,
-    init_fun = scenario$init_fun,
-    survival_fun = scenario$survival_fun,
-    breeding_prob_fun = scenario$breeding_prob_fun,
-    fecundity_lambda_fun = scenario$fecundity_lambda_fun,
-    density_spec = scenario$density_spec,
-    harvest_quota = scenario$harvest_quota,
-    lifecycle_steps = scenario$lifecycle_steps,
-    mating_fun = scenario$mating_fun,
-    require_mate = scenario$require_mate,
-    inherit_fun = scenario$inherit_fun,
-    dispersal_fun = scenario$dispersal_fun,
-    supplement_quota = scenario$supplement_quota,
-    supplement_patch = scenario$supplement_patch,
-    env_surv_sd = scenario$env_surv_sd,
-    cat_surv_prob = scenario$cat_surv_prob,
-    cat_surv_mult = scenario$cat_surv_mult,
-    env_repro_p_sd = scenario$env_repro_p_sd,
-    env_repro_lambda_sd = scenario$env_repro_lambda_sd,
-    cat_repro_prob = scenario$cat_repro_prob,
-    cat_repro_mult = scenario$cat_repro_mult,
-    record_population_history = scenario$record_population_history,
-    seed = scenario$seed
-  )
+  if (!is.logical(parallel) || length(parallel) != 1L || is.na(parallel)) {
+    stop("parallel must be one non-missing logical value", call. = FALSE)
+  }
+  workers <- .normalize_positive_count(workers, "workers")
+  if (parallel && workers < 2L) {
+    stop("workers must be at least 2 when parallel = TRUE", call. = FALSE)
+  }
+
+  sim_output <- .with_rng_restored({
+    root_seed <- scenario$seed
+    if (is.null(root_seed)) {
+      root_seed <- sample.int(.Machine$integer.max, 1L)
+    }
+    RNGkind("L'Ecuyer-CMRG")
+    set.seed(root_seed)
+    streams <- .make_replicate_streams(scenario$n_runs)
+
+    run_one <- function(run_id) {
+      .with_replicate_stream(streams[[run_id]], {
+        .run_process_replicate(
+          scenario = scenario,
+          run_id = run_id,
+          root_seed = root_seed,
+          stream = streams[[run_id]]
+        )
+      })
+    }
+
+    runs <- if (parallel) {
+      if (.Platform$OS.type == "windows") {
+        stop("parallel process execution requires fork support", call. = FALSE)
+      }
+      parallel::mclapply(
+        seq_len(scenario$n_runs),
+        run_one,
+        mc.cores = min(workers, scenario$n_runs),
+        mc.preschedule = TRUE,
+        mc.set.seed = FALSE
+      )
+    } else {
+      lapply(seq_len(scenario$n_runs), run_one)
+    }
+
+    list(
+      runs = runs,
+      events = dplyr::bind_rows(lapply(runs, `[[`, "events")),
+      census = dplyr::bind_rows(lapply(runs, `[[`, "census")),
+      provenance = list(
+        root_seed = as.integer(root_seed),
+        rng_kind = "L'Ecuyer-CMRG",
+        streams = streams,
+        process_plan = .build_process_plan(scenario$processes)
+      )
+    )
+  })
+
   list(scenario = scenario, sim_output = sim_output)
-}
-
-#' Construct a simple genetics-enabled scenario
-#'
-#' Provides a convenience wrapper that initialises genotypes, applies
-#' inbreeding-aware survival, and enables genotype inheritance for each run.
-#'
-#' @param name Scenario name.
-#' @param n_runs Number of replicate runs.
-#' @param n_years Number of years per run.
-#' @param initial_n Initial population size for each run.
-#' @param n_loci Number of loci per individual.
-#' @param n_alleles Number of possible allele states per locus.
-#' @param mutation_rate Mutation probability per allele during inheritance.
-#' @param beta_F Strength of inbreeding depression passed to
-#'   [make_inbreeding_survival_fun()].
-#' @param harvest_quota Optional harvest quota (scalar or length `n_years`).
-#' @param lifecycle_steps Character vector describing the lifecycle order.
-#' @param seed Optional integer random seed forwarded to
-#'   [scenario_spec()].
-#'
-#' @return An `openpva_scenario` ready to run with [run_scenario()].
-#' @export
-make_simple_genetic_scenario <- function(
-    name,
-    n_runs,
-    n_years,
-    initial_n,
-    n_loci = 10L,
-    n_alleles = 2L,
-    mutation_rate = 0,
-    beta_F = 0.5,
-    harvest_quota = NULL,
-    lifecycle_steps = default_lifecycle_steps(),
-    seed = NULL) {
-  .assert_positive_int <- function(value, label) {
-    if (!is.numeric(value) || length(value) != 1L || value <= 0) {
-      stop(label, " must be a positive numeric value", call. = FALSE)
-    }
-  }
-  .assert_positive_int(n_runs, "n_runs")
-  .assert_positive_int(n_years, "n_years")
-  .assert_positive_int(initial_n, "initial_n")
-  .assert_positive_int(n_loci, "n_loci")
-  .assert_positive_int(n_alleles, "n_alleles")
-
-  mutation_rate <- as.numeric(mutation_rate)
-  if (length(mutation_rate) != 1L || is.na(mutation_rate) ||
-      mutation_rate < 0 || mutation_rate > 1) {
-    stop("mutation_rate must be within [0, 1]", call. = FALSE)
-  }
-  beta_F <- as.numeric(beta_F)
-  if (length(beta_F) != 1L || is.na(beta_F) || beta_F < 0) {
-    stop("beta_F must be a non-negative numeric value", call. = FALSE)
-  }
-
-  init_fun <- function() {
-    pop <- initialize_population(initial_n)
-    initialize_genotypes(pop, n_loci = n_loci, n_alleles = n_alleles)
-  }
-  survival_fun <- make_inbreeding_survival_fun(default_survival_fun, beta = beta_F)
-  inherit_fun <- function(mother, father) {
-    inherit_genotype_simple(
-      mother = mother,
-      father = father,
-      mutation_rate = mutation_rate,
-      n_alleles = n_alleles
-    )
-  }
-
-  scenario_spec(
-    name = name,
-    n_runs = n_runs,
-    n_years = n_years,
-    init_fun = init_fun,
-    survival_fun = survival_fun,
-    breeding_prob_fun = default_breeding_prob_fun,
-    fecundity_lambda_fun = default_fecundity_lambda_fun,
-    harvest_quota = harvest_quota,
-    lifecycle_steps = lifecycle_steps,
-    mating_fun = default_mating_fun,
-    inherit_fun = inherit_fun,
-    dispersal_fun = default_dispersal_fun,
-    seed = seed
-  )
-}
-
-#' Construct a simple two-patch spatial scenario
-#'
-#' Builds a scenario with two patches, patch-specific carrying capacities, and
-#' Markov dispersal.
-#'
-#' @param name Scenario name.
-#' @param n_runs Number of replicate runs.
-#' @param n_years Number of years per run.
-#' @param initial_n Integer vector of length 2 giving starting individuals per
-#'   patch.
-#' @param K_patches Numeric vector of length 2 giving patch-specific carrying
-#'   capacities.
-#' @param dispersal_matrix 2x2 matrix of movement probabilities (rows origin,
-#'   columns destination).
-#' @param survival_fun Function returning survival probabilities.
-#' @param breeding_prob_fun Baseline breeding probability function.
-#' @param fecundity_lambda_fun Baseline fecundity mean function.
-#' @param harvest_quota Optional harvest quota.
-#' @param lifecycle_steps Character vector describing the lifecycle order.
-#' @param seed Optional integer random seed forwarded to [scenario_spec()].
-#'
-#' @return An `openpva_scenario`.
-#' @export
-make_two_patch_spatial_scenario <- function(
-    name,
-    n_runs,
-    n_years,
-    initial_n = c(50L, 50L),
-    K_patches = c(80, 80),
-    dispersal_matrix = matrix(c(0.9, 0.1,
-                                0.1, 0.9),
-                              nrow = 2, byrow = TRUE),
-    survival_fun = default_survival_fun,
-    breeding_prob_fun = default_breeding_prob_fun,
-    fecundity_lambda_fun = default_fecundity_lambda_fun,
-    harvest_quota = NULL,
-    lifecycle_steps = c("age", "survival", "dispersal", "breeding_births", "harvest"),
-    seed = NULL) {
-  .assert_positive_int <- function(value, label) {
-    if (!is.numeric(value) || length(value) != 1L || value <= 0) {
-      stop(label, " must be a positive numeric value", call. = FALSE)
-    }
-  }
-  .assert_positive_int(n_runs, "n_runs")
-  .assert_positive_int(n_years, "n_years")
-  if (length(initial_n) != 2L || any(initial_n < 0)) {
-    stop("initial_n must be a length-2 vector with non-negative entries", call. = FALSE)
-  }
-  if (length(K_patches) != 2L || any(K_patches <= 0)) {
-    stop("K_patches must be a length-2 vector with values > 0", call. = FALSE)
-  }
-
-  init_fun <- function() {
-    total_n <- sum(as.integer(initial_n))
-    pop <- initialize_population(n = total_n)
-    patch_ids <- c(
-      rep.int(1L, initial_n[1]),
-      rep.int(2L, initial_n[2])
-    )
-    initialize_patches(pop, patch_ids = patch_ids)
-  }
-
-  scenario_spec(
-    name = name,
-    n_runs = n_runs,
-    n_years = n_years,
-    init_fun = init_fun,
-    survival_fun = survival_fun,
-    breeding_prob_fun = breeding_prob_fun,
-    fecundity_lambda_fun = fecundity_lambda_fun,
-    density_spec = density_spec(
-      survival_fun = make_ceiling_density_fun(K_patches = K_patches)
-    ),
-    harvest_quota = harvest_quota,
-    lifecycle_steps = lifecycle_steps,
-    mating_fun = default_mating_fun,
-    dispersal_fun = make_markov_dispersal_fun(dispersal_matrix),
-    seed = seed
-  )
 }
 
 #' @export
 print.openpva_scenario <- function(x, ...) {
-  cat(
-    sprintf(
-      "<Scenario %s | runs: %d | years: %d | density: %s | harvest: %s | steps: %s>\n",
-      x$name,
-      as.integer(x$n_runs),
-      as.integer(x$n_years),
-      if (is.null(x$density_spec)) "none" else "set",
-      if (is.null(x$harvest_quota)) "NULL" else "set",
-      paste(x$lifecycle_steps, collapse = " -> ")
-    )
-  )
+  cat(sprintf(
+    "<OpenPVA scenario '%s' | runs: %d | steps: %d | processes: %s>\n",
+    x$name,
+    x$n_runs,
+    x$n_steps,
+    paste(vapply(x$processes, `[[`, character(1), "name"), collapse = " -> ")
+  ))
   invisible(x)
 }
 
@@ -334,101 +136,170 @@ print.openpva_scenario <- function(x, ...) {
   if (!is.list(scenario)) {
     stop("scenario must be a list", call. = FALSE)
   }
-  if (!is.character(scenario$name) || length(scenario$name) != 1L || !nzchar(scenario$name)) {
-    stop("Scenario `name` must be a non-empty character scalar", call. = FALSE)
+  if (!is.character(scenario$name) || length(scenario$name) != 1L ||
+      is.na(scenario$name) || !nzchar(scenario$name)) {
+    stop("scenario name must be a non-empty character scalar", call. = FALSE)
   }
-  for (field in c("n_runs", "n_years")) {
-    value <- scenario[[field]]
-    if (!is.numeric(value) || length(value) != 1L || !is.finite(value) ||
-        value <= 0 || value != floor(value)) {
-      stop(field, " must be a single positive integer", call. = FALSE)
-    }
-    value_int <- suppressWarnings(as.integer(value))
-    if (is.na(value_int)) {
-      stop(field, " must be a single positive integer", call. = FALSE)
-    }
-    scenario[[field]] <- value_int
-  }
+  scenario$n_runs <- .normalize_positive_count(scenario$n_runs, "n_runs")
+  scenario$n_steps <- .normalize_positive_count(scenario$n_steps, "n_steps")
   if (!is.function(scenario$init_fun)) {
     stop("init_fun must be a function", call. = FALSE)
   }
-  if (!is.function(scenario$survival_fun)) {
-    stop("survival_fun must be a function", call. = FALSE)
+  scenario$processes <- validate_processes(scenario$processes)
+  scenario$seed <- .normalize_optional_seed(scenario$seed)
+  scenario$dt <- as.numeric(scenario$dt)
+  if (length(scenario$dt) != 1L || !is.finite(scenario$dt) || scenario$dt <= 0) {
+    stop("dt must be one positive numeric value", call. = FALSE)
   }
-  if (!is.function(scenario$breeding_prob_fun)) {
-    stop("breeding_prob_fun must be a function", call. = FALSE)
+  if (!is.null(scenario$initial_census)) {
+    scenario$initial_census <- .validate_process(scenario$initial_census)
+    if (length(scenario$initial_census$writes) || !is.null(scenario$initial_census$creates)) {
+      stop("initial_census must be a non-creating observer process", call. = FALSE)
+    }
   }
-  if (!is.function(scenario$fecundity_lambda_fun)) {
-    stop("fecundity_lambda_fun must be a function", call. = FALSE)
+  if (!is.logical(scenario$record_population_history) ||
+      length(scenario$record_population_history) != 1L ||
+      is.na(scenario$record_population_history)) {
+    stop("record_population_history must be one non-missing logical value", call. = FALSE)
   }
-  if (!is.null(scenario$density_spec)) {
-    scenario$density_spec <- validate_density_spec(scenario$density_spec)
-  }
-  if (!is.function(scenario$mating_fun)) {
-    stop("mating_fun must be a function", call. = FALSE)
-  }
-  if (!is.null(scenario$inherit_fun) && !is.function(scenario$inherit_fun)) {
-    stop("inherit_fun must be NULL or a function", call. = FALSE)
-  }
-  if (!is.function(scenario$dispersal_fun)) {
-    stop("dispersal_fun must be a function", call. = FALSE)
-  }
-  require_mate <- scenario$require_mate %||% FALSE
-  if (!is.logical(require_mate) || length(require_mate) != 1L || is.na(require_mate)) {
-    stop("require_mate must be a single logical value", call. = FALSE)
-  }
-  record_population_history <- scenario$record_population_history %||% FALSE
-  if (!is.logical(record_population_history) ||
-      length(record_population_history) != 1L ||
-      is.na(record_population_history)) {
-    stop("record_population_history must be a single logical value", call. = FALSE)
-  }
-  .validate_quota_contract(scenario$harvest_quota, "harvest_quota", scenario$n_years)
-  .validate_quota_contract(scenario$supplement_quota, "supplement_quota", scenario$n_years)
-  if (!is.null(scenario$supplement_patch)) {
-    scenario$supplement_patch <- as.integer(scenario$supplement_patch)
-  }
-  scenario$env_surv_sd <- .normalize_non_negative_numeric(scenario$env_surv_sd %||% 0, "env_surv_sd")
-  scenario$cat_surv_prob <- .normalize_probability(scenario$cat_surv_prob %||% 0, "cat_surv_prob")
-  scenario$cat_surv_mult <- .normalize_non_negative_numeric(scenario$cat_surv_mult %||% 1, "cat_surv_mult")
-  scenario$env_repro_p_sd <- .normalize_non_negative_numeric(
-    scenario$env_repro_p_sd %||% 0,
-    "env_repro_p_sd"
-  )
-  scenario$env_repro_lambda_sd <- .normalize_non_negative_numeric(
-    scenario$env_repro_lambda_sd %||% 0,
-    "env_repro_lambda_sd"
-  )
-  scenario$cat_repro_prob <- .normalize_probability(
-    scenario$cat_repro_prob %||% 0,
-    "cat_repro_prob"
-  )
-  scenario$cat_repro_mult <- .normalize_non_negative_numeric(
-    scenario$cat_repro_mult %||% 1,
-    "cat_repro_mult"
-  )
-  scenario$seed <- .normalize_optional_seed(scenario$seed %||% NULL)
-  if (!is.null(scenario$uncertainty_spec)) {
-    scenario$uncertainty_spec <- .validate_uncertainty_spec(scenario$uncertainty_spec)
-  }
-  .validate_lifecycle_steps(scenario$lifecycle_steps)
-  invisible(scenario)
+  scenario
 }
 
-.validate_quota_contract <- function(value, label, n_years) {
-  if (is.null(value)) {
-    return(invisible(NULL))
+.run_process_replicate <- function(scenario, run_id, root_seed, stream) {
+  initial <- scenario$init_fun()
+  state <- if (.is_pva_state(initial)) initial else pva_state(initial)
+  validate_processes(scenario$processes, state)
+  if (!is.null(scenario$initial_census)) {
+    validate_processes(list(scenario$initial_census), state)
   }
-  if (!is.numeric(value) || !length(value) || any(!is.finite(value)) ||
-      any(value < 0) || any(value != floor(value))) {
-    stop(label, " must contain finite non-negative integer values", call. = FALSE)
+
+  execution_id <- paste0(scenario$name, ":run-", run_id)
+  stream_record <- list(root_seed = as.integer(root_seed), stream = stream)
+  event_batches <- list()
+  if (!is.null(scenario$initial_census)) {
+    initial_result <- execute_processes(
+      state = state,
+      processes = list(scenario$initial_census),
+      run = run_id,
+      time = 0L,
+      dt = scenario$dt,
+      stream_provenance = stream_record,
+      execution_id = execution_id,
+      phase = "initial"
+    )
+    state <- initial_result$state
+    event_batches[[length(event_batches) + 1L]] <- initial_result$events
   }
-  if (!length(value) %in% c(1L, n_years)) {
-    stop(label, " must be NULL or numeric of length 1 or n_years", call. = FALSE)
+
+  history <- if (scenario$record_population_history) vector("list", scenario$n_steps) else NULL
+  for (time in seq.int(0L, scenario$n_steps - 1L)) {
+    interval_result <- execute_processes(
+      state = state,
+      processes = scenario$processes,
+      run = run_id,
+      time = time,
+      dt = scenario$dt,
+      stream_provenance = stream_record,
+      execution_id = execution_id,
+      phase = "interval"
+    )
+    state <- interval_result$state
+    event_batches[[length(event_batches) + 1L]] <- interval_result$events
+    if (scenario$record_population_history) {
+      history[[time + 1L]] <- .clone_state(state)
+    }
   }
-  value_int <- suppressWarnings(as.integer(value))
-  if (anyNA(value_int)) {
-    stop(label, " values must be representable as integers", call. = FALSE)
+  events <- dplyr::bind_rows(event_batches)
+  list(
+    state = state,
+    population = state$population,
+    events = events,
+    census = events[events$event_type == "census", , drop = FALSE],
+    population_history = history,
+    provenance = list(
+      run = as.integer(run_id),
+      root_seed = as.integer(root_seed),
+      initial_stream = stream,
+      final_stream = get(".Random.seed", envir = .GlobalEnv, inherits = FALSE),
+      process_plan = .build_process_plan(scenario$processes)
+    )
+  )
+}
+
+.is_pva_state <- function(value) {
+  is.list(value) && all(c("population", "globals", "next_id") %in% names(value))
+}
+
+.make_replicate_streams <- function(n_runs) {
+  streams <- vector("list", n_runs)
+  streams[[1L]] <- get(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
+  if (n_runs > 1L) {
+    for (index in 2:n_runs) {
+      streams[[index]] <- parallel::nextRNGStream(streams[[index - 1L]])
+    }
   }
-  invisible(value)
+  streams
+}
+
+.with_replicate_stream <- function(stream, expr) {
+  expr <- substitute(expr)
+  evaluation_env <- parent.frame()
+  .with_rng_restored({
+    RNGkind("L'Ecuyer-CMRG")
+    assign(".Random.seed", stream, envir = .GlobalEnv)
+    eval(expr, envir = evaluation_env)
+  })
+}
+
+.with_rng_restored <- function(expr) {
+  expr <- substitute(expr)
+  old_kind <- RNGkind()
+  had_seed <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
+  if (had_seed) {
+    old_seed <- get(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
+  }
+  on.exit({
+    do.call(RNGkind, as.list(old_kind))
+    if (had_seed) {
+      assign(".Random.seed", old_seed, envir = .GlobalEnv)
+    } else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
+      rm(".Random.seed", envir = .GlobalEnv)
+    }
+  }, add = TRUE)
+  eval(expr, envir = parent.frame())
+}
+
+.with_optional_seed <- function(seed, expr) {
+  expr <- substitute(expr)
+  evaluation_env <- parent.frame()
+  if (is.null(seed)) {
+    return(eval(expr, envir = evaluation_env))
+  }
+  .with_rng_restored({
+    set.seed(seed)
+    eval(expr, envir = evaluation_env)
+  })
+}
+
+.normalize_optional_seed <- function(seed) {
+  if (is.null(seed)) {
+    return(NULL)
+  }
+  if (!is.numeric(seed) || length(seed) != 1L || !is.finite(seed) ||
+      seed < 0 || seed != floor(seed)) {
+    stop("seed must be NULL or a single integer", call. = FALSE)
+  }
+  seed <- suppressWarnings(as.integer(seed))
+  if (is.na(seed)) {
+    stop("seed must be representable as an integer", call. = FALSE)
+  }
+  seed
+}
+
+.clone_state <- function(state) {
+  list(
+    population = lapply(state$population, function(ind) ind),
+    globals = lapply(state$globals, function(value) value),
+    next_id = state$next_id
+  )
 }

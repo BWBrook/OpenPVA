@@ -10,7 +10,6 @@
 #'
 #' @return A tibble with columns `n_runs`, `p_extinct`, `mean_time_to_extinction`,
 #'   and `median_time_to_extinction`.
-#' @export
 summarise_extinction <- function(sim_output, threshold = 0) {
   threshold <- as.numeric(threshold)
   if (length(threshold) != 1L || is.na(threshold) || threshold < 0) {
@@ -114,7 +113,6 @@ summarise_extinction <- function(sim_output, threshold = 0) {
 #' @param sim_output A list returned by `run_basic_simulation_replicates()`.
 #'
 #' @return A tibble with columns `year`, `mean_n_alive`, `sd_n_alive`, and `p_extant`.
-#' @export
 compute_mean_trajectory <- function(sim_output) {
   if (is.null(sim_output$summary)) {
     stop("sim_output$summary is missing")
@@ -148,7 +146,6 @@ compute_mean_trajectory <- function(sim_output) {
 #'
 #' @return A list with two tibbles: `per_run` (one row per run) and `overall`
 #'   (across-run averages).
-#' @export
 summarise_harvest_yield <- function(sim_output) {
   summary_tbl <- sim_output$summary
   if (is.null(summary_tbl)) {
@@ -206,7 +203,6 @@ summarise_harvest_yield <- function(sim_output) {
 #'   - `overall`: one-row tibble with `n_runs`, `floor_threshold`,
 #'     `mean_final_n_alive`, `median_final_n_alive`, `q05_final_n_alive`,
 #'     `q95_final_n_alive`, `p_final_below_floor`, and `p_any_below_floor`.
-#' @export
 summarise_final_abundance <- function(sim_output, floor = 0) {
   floor <- as.numeric(floor)
   if (length(floor) != 1L || is.na(floor) || floor < 0) {

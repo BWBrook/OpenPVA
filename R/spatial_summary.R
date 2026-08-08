@@ -13,7 +13,6 @@
 #'
 #' @return A tibble with columns `patch_id`, `n_runs`, `mean_n_alive`,
 #'   `p_occupied`, `n_extinct`, and `alive_only`.
-#' @export
 summarise_patch_occupancy_final <- function(sim_output, n_patches, alive_only = TRUE) {
   if (is.null(sim_output$runs) || !length(sim_output$runs)) {
     stop("sim_output must contain a non-empty 'runs' element", call. = FALSE)
@@ -81,7 +80,6 @@ summarise_patch_occupancy_final <- function(sim_output, n_patches, alive_only = 
 #'
 #' @return A tibble with columns `patch_id`, `n_runs`, `mean_n_genotyped`,
 #'   `p_patch_genotyped`, `mean_heterozygosity`, `mean_Fhat`, and `alive_only`.
-#' @export
 summarise_patch_genetic_diversity_final <- function(sim_output, n_patches, alive_only = TRUE) {
   if (is.null(sim_output$runs) || !length(sim_output$runs)) {
     stop("sim_output must contain a non-empty 'runs' element", call. = FALSE)
@@ -254,7 +252,6 @@ summarise_patch_genetic_diversity_final <- function(sim_output, n_patches, alive
 #'     `occupied`, `alive_only`.
 #'   - `overall`: tibble with columns `year`, `patch_id`, `n_runs`,
 #'     `mean_n_alive`, `p_occupied`, `n_extinct`, `alive_only`.
-#' @export
 summarise_patch_occupancy_timeseries <- function(sim_output, n_patches, alive_only = TRUE) {
   n_patches <- .validate_spatial_summary_inputs(sim_output, n_patches, alive_only)
   histories <- .extract_population_histories(sim_output)
@@ -311,7 +308,6 @@ summarise_patch_occupancy_timeseries <- function(sim_output, n_patches, alive_on
 #'   - `overall`: tibble with columns `year`, `patch_id`, `n_runs`,
 #'     `mean_n_genotyped`, `p_patch_genotyped`, `mean_heterozygosity`,
 #'     `mean_Fhat`, `alive_only`.
-#' @export
 summarise_patch_genetic_diversity_timeseries <- function(sim_output, n_patches, alive_only = TRUE) {
   n_patches <- .validate_spatial_summary_inputs(sim_output, n_patches, alive_only)
   histories <- .extract_population_histories(sim_output)
@@ -411,7 +407,6 @@ summarise_patch_genetic_diversity_timeseries <- function(sim_output, n_patches, 
 #'     `delta_n_alive`, `alive_only`.
 #'   - `turnover`: tibble with `run`, `year`, `patch_id`, `colonized`,
 #'     `extirpated`, `alive_only`.
-#' @export
 summarise_patch_connectivity_timeseries <- function(sim_output, n_patches, alive_only = TRUE) {
   n_patches <- .validate_spatial_summary_inputs(sim_output, n_patches, alive_only)
   histories <- .extract_population_histories(sim_output)

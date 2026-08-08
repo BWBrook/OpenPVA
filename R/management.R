@@ -12,7 +12,6 @@
 #'   risk metrics. Defaults to `extinction_threshold`.
 #'
 #' @return A tibble with one row per scenario containing the selected metrics.
-#' @export
 compare_scenarios <- function(
   scenarios,
   extinction_threshold = 0,

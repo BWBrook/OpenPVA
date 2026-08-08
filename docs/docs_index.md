@@ -1,86 +1,50 @@
-# OpenPVA Documentation Index
+# OpenPVA documentation index
 
-This file lists the key documentation modules in `docs/` and their purpose.
+## Start here
 
-Use it as a starting point when orienting yourself in the project.
+1. `vision_and_scope.md` — authoritative North Star and scope.
+2. `overview_openpva.md` — concise product and workflow overview.
+3. `architecture_core.md` — active core architecture and responsibility boundaries.
+4. `design/canonical_grizzly_reference_model.md` — first scientific acceptance
+   benchmark.
+5. `design/lifecycle_process_contract.md` — active lean extension contract.
+6. `design/realignment_gap_map.md` — current-to-target classification and route.
 
----
+## Evidence and heritage
 
-## Core Conceptual Docs
+- `gapps_heritage.md` — observation/inference/design-choice synthesis.
+- `literature/gapps_evidence_review.md` — search provenance, applications,
+  limitations and unresolved sources.
+- `../references/gapps.bib` — verified GAPPS bibliography.
 
-- **overview_openpva.md**  
-  High-level description of what OpenPVA is, why it exists, and what problems it is meant to solve.
+## Active goal packet
 
-- **architecture_core.md**  
-  The core architectural model: individuals, populations, lifecycle modules, simulation controllers, and how `renv`/`targets` fit in.
+- `goals/002-generic-process-execution/Goal.md`
+- `goals/002-generic-process-execution/Plan.md`
+- `goals/002-generic-process-execution/Runbook.md`
+- `goals/002-generic-process-execution/Log.md`
 
-- **gapps_heritage.md**  
-  The conceptual heritage from GAPPS and which ideas are deliberately carried forward or left behind.
+Goal 001 remains the accepted strategic record under
+`goals/001-north-star-realignment/`.
 
-- **roadmap_and_scope.md**  
-  Development phases, current focus, and what is in/out of scope at this stage.
+## Current implementation and governance
 
----
+- `reference/public_api.md` and `reference/output_schema.md` describe the active
+  process engine. `reference/yaml_schema_v1.md` is retained migration evidence;
+  YAML execution is deferred to Stage 4.
+- `design/density_module.md` and `design/reproduction_ev_semantics.md` record
+  current process-specific contracts.
+- `plan.md` records current realignment priority.
+- `decisions.md` records active and historical decisions.
+- `roadmap.md` and `log/` are historical delivery records; do not infer current
+  product direction from completed work packages.
 
-## Development Conventions and Agent Guidance
+## Development and workflow
 
-- **dev_conventions_r.md**  
-  R coding standards, package usage, environment management, and workflow conventions for OpenPVA.
+- `dev_conventions_r.md` — R conventions.
+- `agent_guidelines_codex.md` — repository guidance for agents.
+- `workflow.md` — development workflow.
+- `release_checklist.md` and `reference/ci_profiles.md` — release/CI procedures.
+- `use_cases_and_personas.md` — user context; subordinate to the North Star.
 
-- **agent_guidelines_codex.md**  
-  Behavioural rules and expectations for automated coding agents (Codex, ChatGPT, etc.) working in this repo.
-
----
-
-## Users and Use Cases
-
-- **use_cases_and_personas.md**  
-  The main user personas (practitioner, modeller, student) and canonical use cases that OpenPVA is designed to support.
-
-- **q_and_a_interpretation.md**
-  Living scientist-in-the-loop Q&A and interpretation log for human testing.
-
----
-
-## Reference Contracts
-
-- **reference/public_api.md**  
-  Current exported API surface and removed legacy interfaces.
-
-- **reference/output_schema.md**  
-  Required structure of simulation and summary outputs used for regression tests.
-
-- **reference/yaml_schema_v1.md**  
-  YAML schema contract and migration notes.
-
-- **reference/ci_profiles.md**  
-  CI profile split (`ci-fast` and `ci-heavy-validation`) and local-equivalent
-  command chains.
-
-- **reference/release_automation.md**  
-  Non-publishing release evidence automation workflow and script usage.
-
-- **reference/migration_1x_to_2x.md**
-  Summary of legacy interfaces intentionally removed from the current
-  development line.
-
-- **reference/spatial_genetic_outputs.md**
-  Guidance on final-time vs time-series vs connectivity spatial/genetic
-  summaries and interpretation caveats.
-
----
-
-## This Index
-
-- **docs_index.md**  
-  You are here. A minimal overview of the documentation landscape.
-
-If you are new to the project, a good reading order is:
-
-1. `overview_openpva.md`  
-2. `architecture_core.md`  
-3. `gapps_heritage.md`  
-4. `dev_conventions_r.md`  
-5. `roadmap_and_scope.md`  
-6. `use_cases_and_personas.md`  
-7. `agent_guidelines_codex.md` (if you are an automated agent)
+No document should describe the project as currently in an early fixed Phase 1.

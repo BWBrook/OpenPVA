@@ -166,7 +166,6 @@ generate_calibration_candidates <- function(
 #'     \item `best_fit`: one-row tibble for the minimum objective score.
 #'     \item `observed_targets`: one-row tibble of observed targets used.
 #'   }
-#' @export
 run_calibration_search <- function(
     scenario,
     candidates,

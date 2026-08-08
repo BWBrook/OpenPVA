@@ -1,235 +1,185 @@
-# OpenPVA Core Architecture
+# OpenPVA core architecture
 
-This document describes the **core architectural concepts** of OpenPVA. It is intended for developers, contributors, and automated coding agents working inside the repository.
+## Authority and status
 
-The goal is to ensure that any new code aligns with the intended mental model of how OpenPVA works.
+`vision_and_scope.md` defines the product. This document explains the active
+core architecture. `design/lifecycle_process_contract.md` is its normative
+contract; later stages add scientific processes and reconnect workflows without
+changing this execution seam.
 
----
+## Architectural centre
 
-## High-Level Design
+OpenPVA executes an ordered biological program supplied by the modeller:
 
-OpenPVA is structured as a **modular simulation engine** implemented in R. At the highest level, it consists of:
-
-- **State objects**: individuals and populations
-- **Lifecycle process modules**: functions that transform population state
-- **Simulation controller**: orchestrates processes through time
-- **Pipelines and environment management**: `targets` for workflows, `renv` for reproducibility
-
-Everything else (genetics, spatial structure, management, validation) is layered on top of this core.
-
----
-
-## Core Concepts
-
-### 1. Individual
-
-An **individual** is the basic unit of simulation in OpenPVA. In the initial implementation, individuals are represented as **named lists** with standard fields:
-
-- `id` — unique integer identifier
-- `sex` — character, typically `"M"` or `"F"`
-- `age` — integer, age in years or time steps
-- `alive` — logical, living status
-- `alleles` — `NULL` or a 2 × L integer matrix representing two haplotypes across L loci
-- `F` — numeric inbreeding coefficient, computed as \(1 -\) heterozygosity when `alleles` exist (may be `NA` otherwise; missing values are treated as zero by default)
-- `patch_id` — integer or `NA`, indicating the spatial patch membership used by spatial/density modules
-
-Example (conceptual):
-
-```r
-ind <- list(
-  id = 1L,
-  sex = "F",
-  age = 4L,
-  alive = TRUE,
-  alleles = rbind(
-    c(1L, 2L, 1L),
-    c(2L, 1L, 2L)
-  ),
-  F = 0
-)
+```text
+model specification
+  -> preflight validation
+  -> engine executes ordered processes
+  -> next state + structured events
+  -> trajectories, diagnostics, summaries and provenance
 ```
 
-Lists are chosen for **flexibility and simplicity**. Later implementations may layer S3/R6 classes or alternative backends on top of this representation, but all code should treat individuals as **opaque objects with a documented interface**, not as rigid class instances.
+The engine has no closed list of biological event types. Ageing, reproduction,
+survival, dispersal, genetics, harvest, observation and a project-specific
+process all compose through the same execution seam.
 
-Individuals lacking genotype data may have `F` set to `NA` (or 0). Inbreeding-aware survival helpers interpret missing values as zero, ensuring legacy demographic runs remain unaffected until genetics are explicitly enabled.
+## Responsibilities
 
----
+### Modeller
 
-### 2. Population
+- scientific question, estimand and inference scale;
+- population and observation models;
+- process order and parameters;
+- parameter evidence and uncertainty;
+- validation, sensitivity and decision criteria.
 
-A **population** is a collection of individuals, typically a list of individual objects:
+### Engine
 
-```r
-population <- list(ind1, ind2, ind3, ...)
-```
+- validate process objects, parameters and field dependencies;
+- hold run/time/process context read-only for processes;
+- govern RNG, replication, stable identifiers and provenance;
+- execute processes in declared order;
+- collect events and attach failure context;
+- enforce state/result and accounting contracts.
 
-Later, we may support alternative representations (e.g. tibbles, data.tables) as long as they satisfy the same conceptual interface. Lifecycle modules should treat “population” as:
+### Process
 
-- A mutable object representing all individuals at a given time
-- The **input and output** of lifecycle process functions
+- implement one documented biological, management or observation transformation;
+- declare required and written fields;
+- use explicit parameters and engine context;
+- return state plus events;
+- avoid files, plotting, environment installation, hidden global state and time
+  advancement.
 
-In more complex models, populations may also carry **metadata** (e.g. spatial patch membership, global counters, tracking variables), implemented as attributes or as a higher-level wrapper (e.g. a list with `individuals` and `meta` slots).
+### Analysis workflow
 
----
+`targets`, `renv`, Quarto and project scripts orchestrate data preparation,
+parameter estimation, simulation, diagnostics and reporting. They are consumers
+of the engine, not lifecycle-process machinery.
 
-### 3. Lifecycle Process Modules
+## Core values
 
-Lifecycle processes are the **heart** of OpenPVA. Each process is implemented as a function (or small family of functions) that:
+### State
 
-- Takes a **population state** (and possibly other parameters) as input
-- Returns a **modified population state** as output
-- Is conceptually responsible for *one* part of the life cycle
+Stage 1 state is a named list containing:
 
-Examples of lifecycle processes include:
+- `population`: an ordered list of persistent individual records;
+- `globals`: deliberately shared dynamic model state;
+- `next_id`: engine-owned identifier allocation.
 
-- `age_individuals()` — increments age for all living individuals
-- `apply_survival()` — updates `alive` status based on a survival probability function
-- `determine_breeding()` — identifies breeding-eligible individuals
-- Future: `apply_reproduction()`, `apply_dispersal()`, `apply_harvest()`, `apply_genetic_update()`, etc.
+Population identity is append-only: an existing record retains its list
+position and `id`; death or removal changes `alive`; a birth or introduction
+appends a record with the next consecutive engine ID. Physical deletion,
+reordering, or mutation of an existing ID fails. A creator may declare the
+structural `population` write needed to append, but changes to existing records
+still require granular `population.<field>` declarations. Core names and exact
+types are reserved and validated; ordinary named attributes remain allowed
+without a central type registry. Birth and introduction processes must
+initialize every downstream-required field or fail immediately.
 
-Design principles for lifecycle modules:
+### Context
 
-- **Single responsibility**: each function should modify one aspect of the population state.
-- **Composability**: modules should be easy to sequence in different orders.
-- **Purity where feasible**: minimise side effects. A lifecycle module should not write files, plot figures, or alter global state.
+Context contains run identity, interval time, `dt`, process
+name/position/occurrence, replicate-stream provenance and failure identifiers.
+It is read-only. This prevents a biological process from silently changing
+execution semantics.
 
-All IO, plotting, and reporting should be handled in higher-level scripts or `targets` pipelines, *not* inside lifecycle modules.
+### Process and result
 
----
+A process is an ordinary function wrapped with a small validated metadata list:
+name, parameters, required fields and written fields. A result contains the next
+state and structured events. A minimal S3 tag can improve printing and
+validation; inheritance is not the protocol.
 
-### 4. Simulation Controller (Scheduler)
+### Lifecycle
 
-The simulation controller is responsible for stepping the model forward in time. Conceptually:
+A lifecycle is a direct ordered list of processes. Processes can be added,
+replaced, repeated, reordered or omitted subject to preflight and runtime
+contracts. Third-party constructors return conforming objects; no controller
+edit or registry entry is required.
 
-1. Initialise the population at time `t = 0`
-2. For each time step:
-   - Apply lifecycle processes in a defined order
-   - Record summary statistics if required
-   - Update time and continue until stopping conditions are met
+## Scientific contracts
 
-At a code level, this can be implemented as a function that takes:
+### Time and event order
 
-- An initial population
-- A list or sequence of lifecycle modules
-- Simulation parameters (number of runs, time horizon, random seeds, etc.)
+Event order is model structure. Step `t` represents interval `t -> t+1`;
+processes and events use label `t`, and time advances after the ordered list.
+Apart from an optional initial `t = 0` census, a census is an ordinary observer
+whose exact position defines pre/post-management semantics. There is no implicit
+census.
 
-For example (conceptual pseudocode):
+### Randomness
 
-```r
-run_simulation <- function(population, processes, n_years, ...) {
-  for (year in seq_len(n_years)) {
-    for (process in processes) {
-      population <- process(population, ...)
-    }
-    # optional: record metrics here
-  }
-  population
-}
-```
+The engine preassigns one independent L'Ecuyer-CMRG stream per replicate and
+scopes/restores R RNG state. Processes use ordinary R RNG calls but cannot call
+`set.seed()`. Sequential draws follow lifecycle order, so reordering is a model
+change and may change downstream draws. Replicate preassignment must make serial
+and parallel results identical. Per-process substreams are deferred.
 
-In practice, simulations may be orchestrated by **targets pipelines**, with each simulation run built as a target.
+### State and accounting
 
----
+Each run/year must reconcile starting population, births, introductions, deaths
+and ending population. IDs remain unique; required fields remain valid; no
+process writes engine-owned context.
 
-### 5. Demography, Genetics, Spatial Modules
+### Expected-value validation
 
-These are not different “kinds” of engines, but **modules acting on the same population state**.
+Stage 1 remains a stochastic individual-based engine. It does not require a
+second aggregate/fractional population representation or native deterministic
+process mode. Under exactly matched assumptions, an independent life-table or
+matrix expected-value oracle tests whether simulated means converge within
+stated Monte Carlo error. Native deterministic execution is deferred until a
+demonstrated scientific use requires it.
 
-- **Demographic modules**: ageing, survival, reproduction, density dependence, catastrophes, harvest, supplementation.
-- **Genetic modules**: assign alleles, calculate inbreeding coefficients, model genetic drift and diversity, apply inbreeding depression.
-- **Spatial modules**: assign individuals to patches or coordinates, model dispersal, apply spatial variation in vital rates.
+### Events and outputs
 
-Density feedback can now be specified either as a single global carrying capacity (`K`) or as per-patch capacities (`K_patches`). Patch-level regulation uses each individual's `patch_id` to apply independent survival scaling within each patch, while the global `survival_scale` summary is set to `NA` because no single value applies.
+The process supplies `event_type`; the engine validates it and stamps `run`,
+`time`, `phase`, `process_index`, `process_name`, and `process_occurrence`.
+Optional fields include `individual_id`, `value`, and documented
+process-specific columns. Aggregate detail is the default and individual detail
+is opt-in, but core accounting events cannot be suppressed. Summary functions
+remain outside biological processes and preserve replicate-level evidence.
 
-Spatial processes now include a dispersal module (`apply_dispersal()`) that updates `patch_id` based on a `dispersal_fun`. The lifecycle pipeline accepts an optional `"dispersal"` step, allowing users to place movement anywhere in the yearly sequence.
+## Optional domains
 
-Management-facing helpers expose extinction probabilities (including quasi-extinction thresholds), harvest yields, and a simple `compare_scenarios()` wrapper so different strategies can be evaluated side by side using common decision metrics.
+Density, spatial movement, genetics, management and observation are optional
+processes over the same state. No feature is automatically scientifically
+appropriate. Each process documents assumptions, required evidence, scale and
+validation.
 
-Supplementation/translocation is modelled as an optional "supplementation" lifecycle step that adds individuals via `apply_supplementation()`, with per-year quotas threaded through controllers and scenarios for basic rescue experiments.
+Patch-aware birth is a key invariant: if downstream processes require
+`patch_id`, reproduction must initialize it according to a declared rule. The
+Stage 1 preflight and immediate post-creation checks enforce that invariant.
 
-Environmental variation and catastrophes on survival are supported via simple year-level multipliers: a lognormal environmental factor with mean 1 on the original scale (`env_surv_sd`) and an optional Bernoulli catastrophe with a survival multiplier (`cat_surv_prob`, `cat_surv_mult`).
+## Extension and package boundary
 
-Baseline survival, breeding eligibility, and fecundity can be expressed as tables (in R or YAML) and compiled into lifecycle functions via the demography spec builders, providing a transparent, declarative way to set vital-rate schedules.
+A community package should need only to:
 
-Each of these modules should follow the same core interface: operate on a population, return a modified population, and avoid side effects.
+1. import the public process/result constructors and validators;
+2. implement an ordinary R function;
+3. declare requirements, writes and parameters;
+4. test its transformation and event accounting;
+5. return the process in a user's ordered list.
 
-We will progressively build these modules in phases. Early development focuses on **demography**, with genetics and spatial structure layered in afterwards.
+OpenPVA must not require community modules to register names globally, modify
+the controller, submit to the core repository, or subclass a deep hierarchy.
 
----
+## Current architecture gap
 
-## Pipelines, Reproducibility, and Environment Management
+Current code validates six lifecycle labels and dispatches through conditional
+branches. Reordering is supported, but extension is not. The retained,
+redesigned, repaired and removed components are specified in
+`design/realignment_gap_map.md`.
 
-OpenPVA is designed to be used within **reproducible pipelines** rather than as ad hoc script fragments.
+## Reference benchmark
 
-### 1. `renv`: Environment Management
+`design/canonical_grizzly_reference_model.md` supplies the first acceptance
+test. It covers structured two-sex demography, maternal dependency, stochastic
+events, human-caused mortality, alternate ordering, expected-value oracle
+checks, accounting events and extension without controller edits.
 
-The R package **renv** is used to pin package versions and ensure that simulations can be reproduced on other machines.
+## Explicit exclusions
 
-- `bootstrap_env.R` is the *only* place that should call `renv::init()` or install packages.
-- Package dependencies should be declared there and tracked via `renv.lock`.
-- Package code should never call `install.packages()` or perform environment management.
-
-### 2. `targets`: Pipeline Orchestration
-
-The **targets** package is used to define declarative workflows:
-
-- `_targets.R` declares targets for:
-  - Reading input data
-  - Initialising populations
-  - Running simulations
-  - Summarising and plotting outputs
-- Lifecycle modules and simulation controllers are called from within targets, not the other way around.
-- `targets::tar_make()` runs the pipeline and caches results.
-
-This approach ensures:
-
-- Clear dependency graphs
-- Automatic caching and incremental recomputation
-- Reproducibility via `renv` + `targets`
-
----
-
-## Extensibility and Plugin Design
-
-OpenPVA is intended as a **framework**, not a closed codebase. Contributors should be able to:
-
-- Add new lifecycle modules (e.g. a new survival function with environmental covariates)
-- Add new simulation controllers (e.g. alternative scheduling strategies)
-- Add new analysis modules (e.g. extinction risk summaries, sensitivity analyses)
-
-To support this:
-
-- Core modules live in `R/` with clear, minimal APIs.
-- New modules should:
-  - Take and return standard population objects
-  - Accept parameters as arguments, not via global state
-  - Be documented and tested
-- Where sensible, we may define **interfaces** (e.g. function signatures, expected fields) for particular kinds of modules, so that multiple implementations can be used interchangeably.
-
-An example pattern is to treat each process as a function of the form:
-
-```r
-process(population, params, state)
-```
-
-Where:
-
-- `population` is the current population object
-- `params` is a list of static parameters
-- `state` is a list of dynamic variables shared across processes (e.g. year index, global counters)
-
-We will refine this interface as the engine matures.
-
----
-
-## Summary: How to Think About the Architecture
-
-When working in OpenPVA:
-
-- Think in terms of **population state** and **processes** that transform it.
-- Keep lifecycle logic **modular** and **explicit**.
-- Let `targets` handle workflow orchestration, and `renv` handle environments.
-- Avoid IO and side effects inside core modules.
-- Design new code so that others can read it, swap it out, and build on it.
-
-This architecture aims to capture the spirit of GAPPS—flexible, declarative, individual-based PVA—while grounding it in modern, open, and reproducible R practice.
+The target does not currently include a lifecycle DSL, registry, plugin manager,
+dependency injection, S4/R6 hierarchy, GUI, or automatic scientific validation.
+Those additions require demonstrated need after the simple contract succeeds.

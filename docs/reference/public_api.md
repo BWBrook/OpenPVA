@@ -1,114 +1,39 @@
-# Current Public API
+# Public API
 
-This page lists the exported interfaces currently treated as the active
-development surface for OpenPVA.
+## Process Engine
 
-OpenPVA is still a private, pre-release codebase. Cleanups and internal-facing
-API breaks are allowed when they improve clarity, provided the repo docs, tests,
-and examples move in lockstep.
-
-### Core simulation and scenario interfaces
-
-- `run_basic_simulation()`
-- `run_basic_simulation_replicates()`
+- `pva_state()`
+- `pva_process()`
+- `pva_result()`
+- `validate_processes()`
+- `allocate_ids()`
+- `execute_processes()`
 - `scenario_spec()`
 - `run_scenario()`
-- `read_scenario_yaml()`
 
-### Density interfaces
+## Minimal Built-in Processes
 
-- `density_spec()`
-- `validate_density_spec()`
-- `make_ceiling_density_fun()`
+- `age_process()`
+- `survival_process()`
+- `reproduction_process()`
+- `census_process()`
 
-### Population/lifecycle interfaces
+## Retained Scientific Helpers
 
-- `create_individual()`
-- `initialize_population()`
-- `age_individuals()`
-- `apply_survival()`
-- `determine_breeding()`
-- `apply_reproduction()`
-- `make_mate_limited_mating_fun()`
-- `apply_harvest_quota()`
-- `apply_supplementation()`
-- `apply_dispersal()`
-- `default_lifecycle_steps()`
+The package continues to export focused individual, demography-table, density,
+spatial and genetic helper functions documented in their R help pages. They are
+not privileged controller channels. Later goals may wrap high-value helpers as
+conforming process constructors.
 
-### Demography rate builders and validators
+`summarise_sensitivity_prcc()` remains available for independent draw-level
+tables. The defective legacy `apply_reproduction()` helper and the
+controller-coupled `summarise_sensitivity_oat()` route are retired;
+`reproduction_process()` is the active reproduction interface.
 
-- `validate_survival_table()`
-- `build_survival_fun_from_table()`
-- `make_default_survival_table()`
-- `default_breeding_prob_fun()`
-- `validate_breeding_prob_table()`
-- `build_breeding_prob_fun_from_table()`
-- `make_default_breeding_prob_table()`
-- `default_fecundity_lambda_fun()`
-- `validate_fecundity_lambda_table()`
-- `build_fecundity_lambda_fun_from_table()`
-- `make_default_fecundity_lambda_table()`
+## Deferred Interfaces
 
-### Summary/comparison interfaces
-
-- `summarise_extinction()`
-- `summarise_harvest_yield()`
-- `summarise_final_abundance()`
-- `compute_mean_trajectory()`
-- `plot_mean_trajectory()`
-- `compare_scenarios()`
-
-## Experimental or fast-moving API
-
-These remain exported for active development and may evolve with explicit
-release notes.
-
-- Genetics-facing interfaces:
-  - `initialize_genotypes()`
-  - `inherit_genotype_simple()`
-  - `make_inbreeding_survival_fun()`
-  - `summarise_genetic_diversity()`
-- Spatial convenience interfaces:
-  - `make_markov_dispersal_fun()`
-  - `dispersal_low_connectivity_fun()`
-  - `dispersal_high_connectivity_fun()`
-  - `dispersal_asymmetric_flow_fun()`
-  - `make_two_patch_spatial_scenario()`
-  - `initialize_spatial_population()`
-  - `initialize_spatial_genetic_population()`
-  - `summarise_patch_occupancy_final()`
-  - `summarise_patch_genetic_diversity_final()`
-  - `summarise_patch_occupancy_timeseries()`
-  - `summarise_patch_genetic_diversity_timeseries()`
-  - `summarise_patch_connectivity_timeseries()`
-  - `initialize_patches()`
-  - `default_dispersal_fun()`
-- Uncertainty/ensemble interfaces:
-  - `sample_uncertainty_parameters()`
-  - `run_scenario_ensemble()`
-  - `summarise_ensemble_outputs()`
-  - `summarise_sensitivity_prcc()`
-  - `summarise_sensitivity_oat()`
-  - `score_hindcast_fit()`
-  - `generate_calibration_candidates()`
-  - `run_calibration_search()`
-
-## Removed legacy compatibility layer
-
-These interfaces have been intentionally removed from the supported surface in
-the current development line:
-
-- `validate_breeding_table()`
-- `build_breeding_fun_from_table()`
-- `make_default_breeding_table()`
-- `validate_fecundity_table()`
-- `build_fecundity_fun_from_table()`
-- `as_breeding_fun()`
-- `as_breeding_prob_fun()`
-- `as_fecundity_fun()`
-- `as_fecundity_lambda_fun()`
-
-## Internal API rule
-
-Unexported functions (including names prefixed with `.`) are internal and not
-covered by any public-API promise.
+The former fixed-label controller, `run_basic_simulation*()`,
+`default_lifecycle_steps()`, YAML scenario loader, spatial/genetic scenario
+constructors and controller-coupled uncertainty/calibration/reporting entry
+points are not public Stage 1 interfaces. They will be reconsidered against the
+accepted process contract in Stages 3-4, without compatibility adapters.

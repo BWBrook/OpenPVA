@@ -5,7 +5,6 @@
 #' @param trajectory_summary Tibble produced by `compute_mean_trajectory()`.
 #'
 #' @return A ggplot object visualising mean trajectories with ±1 SD ribbon.
-#' @export
 plot_mean_trajectory <- function(trajectory_summary) {
   if (!nrow(trajectory_summary)) {
     stop("trajectory_summary must have at least one row")

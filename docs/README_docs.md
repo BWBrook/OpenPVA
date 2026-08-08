@@ -1,42 +1,19 @@
-# OpenPVA Documentation
+# OpenPVA documentation
 
-This `docs/` directory contains the **design and governance documents** for the OpenPVA project.  
-It complements the user-facing package documentation (function reference, vignettes) that will eventually live under a separate documentation site.
+The authoritative product statement is `vision_and_scope.md`. New contributors
+should then read `overview_openpva.md`, `architecture_core.md`, and the three
+documents under `design/` covering the canonical grizzly model, lifecycle
+contract, and realignment gap map.
 
-These markdown files are primarily aimed at:
+Historical GAPPS claims are evidence-governed by `gapps_heritage.md`,
+`literature/gapps_evidence_review.md`, and `../references/gapps.bib`.
 
-- Core developers
-- Contributors (including external collaborators)
-- Automated coding agents (Codex, ChatGPT, etc.)
+Current implementation references remain under `reference/`; historical
+roadmaps and work-package logs remain provenance, not current product authority.
+See `docs_index.md` for the full reading map.
 
-They describe what OpenPVA is, how it is architected, and how work in this repository should be carried out.
+OpenPVA's current North Star is:
 
----
-
-## Key Documents
-
-- `overview_openpva.md` — What OpenPVA is and why it exists.
-- `architecture_core.md` — Core architecture and design principles.
-- `dev_conventions_r.md` — R coding and workflow conventions.
-- `gapps_heritage.md` — Historical and conceptual background from GAPPS.
-- `roadmap_and_scope.md` — Development phases and current scope.
-- `use_cases_and_personas.md` — Intended users and canonical use cases.
-- `agent_guidelines_codex.md` — Behavioural rules for automated agents.
-- `docs_index.md` — Short index and suggested reading order.
-
-For a quick orientation, start with `docs_index.md` and follow the recommended reading sequence.
-
----
-
-## How These Docs Should Be Used
-
-- **Humans:**  
-  - Read these documents before making major changes to the architecture or conventions.  
-  - Update them when design decisions change or new phases begin.
-
-- **Automated agents:**  
-  - Must treat these files as required context before editing code.  
-  - Should obey the constraints and priorities expressed here.
-
-These documents are part of the **contract** that keeps OpenPVA coherent as it grows.  
-If you need to break with an existing convention, do so deliberately and update the relevant doc rather than silently diverging.
+> The modeller defines the biological program; OpenPVA supplies the execution
+> engine, reusable processes, scientific contracts, and reproducible analysis
+> machinery.

@@ -74,39 +74,3 @@ test_that("default probability and lambda tables are valid", {
   expect_error(validate_breeding_prob_table(breeding_tbl), NA)
   expect_error(validate_fecundity_lambda_table(fecundity_tbl), NA)
 })
-
-test_that("table-built rate functions plug into the controller pathway", {
-  breeding_tbl <- data.frame(
-    age_min = c(0, 2),
-    age_max = c(1, Inf),
-    sex = c("F", "F"),
-    p_breed = c(0, 1)
-  )
-  fecundity_tbl <- data.frame(
-    age_min = c(0, 2),
-    age_max = c(1, Inf),
-    sex = c("F", "F"),
-    lambda = c(0, 3)
-  )
-
-  pop <- list(
-    create_individual(1L, "F", age = 1L),
-    create_individual(2L, "F", age = 3L),
-    create_individual(3L, "M", age = 4L)
-  )
-
-  set.seed(123)
-  out <- run_basic_simulation(
-    initial_population = pop,
-    n_years = 1,
-    survival_fun = function(ind) 1,
-    breeding_prob_fun = build_breeding_prob_fun_from_table(breeding_tbl),
-    fecundity_lambda_fun = build_fecundity_lambda_fun_from_table(fecundity_tbl),
-    lifecycle_steps = c("age", "survival", "breeding_births")
-  )
-
-  expect_gt(out$summary$n_births[1], 0L)
-  newborns <- out$population[(length(pop) + 1L):length(out$population)]
-  expect_true(all(vapply(newborns, function(ind) ind$age, integer(1)) == 0L))
-  expect_true(all(vapply(newborns, function(ind) ind$mother_id, integer(1)) == 2L))
-})

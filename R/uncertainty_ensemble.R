@@ -27,7 +27,6 @@
 #'
 #' @return Tibble with one row per draw and required column `draw_id`, plus one
 #'   column per uncertainty parameter.
-#' @export
 sample_uncertainty_parameters <- function(uncertainty_spec, n_draws, seed = NULL) {
   uncertainty_spec <- .validate_uncertainty_spec(uncertainty_spec)
   n_draws <- .normalize_positive_count(n_draws, "n_draws")
@@ -71,7 +70,6 @@ sample_uncertainty_parameters <- function(uncertainty_spec, n_draws, seed = NULL
 #'       `scenario`, and `sim_output`.
 #'     \item `seed`: normalized seed or `NULL`.
 #'   }
-#' @export
 run_scenario_ensemble <- function(
     scenario,
     uncertainty_spec = NULL,
@@ -177,7 +175,6 @@ run_scenario_ensemble <- function(
 #'     \item `overall`: one-row tibble with aggregate uncertainty summary
 #'       statistics.
 #'   }
-#' @export
 summarise_ensemble_outputs <- function(
     ensemble_output,
     extinction_threshold = 0,

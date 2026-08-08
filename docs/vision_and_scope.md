@@ -1,196 +1,121 @@
-# OpenPVA Roadmap and Scope
+# OpenPVA North Star
 
-This document describes the planned development phases for OpenPVA and clarifies what is **in scope now** versus **deferred to later stages**.
+## Mission
 
-The purpose is to keep both human contributors and automated agents focused on the right problems at the right time.
+> The modeller defines the biological program; OpenPVA supplies the execution
+> engine, reusable processes, scientific contracts, and reproducible analysis
+> machinery.
 
----
+OpenPVA is a modern, open-R system for constructing, running, checking, and
+communicating population viability analyses. Its central product is not one
+fixed life cycle or one species model. It is an inspectable execution framework
+in which biological and management processes are ordinary R components whose
+order, inputs, state effects, stochasticity, and outputs are explicit.
 
-## Phase 0 – Foundations (completed / ongoing)
+## Scientific purpose
 
-**Objectives:**
+OpenPVA supports descriptive, predictive, and decision-scenario population
+models. It does not make a causal or predictive model credible merely by running
+it. Credibility depends on the estimand, sampling and observation processes,
+parameter evidence, structural assumptions, validation, and scope of inference.
 
-- Establish the core repository structure.
-- Define development conventions and architectural principles.
-- Capture GAPPS heritage and design intent in documentation.
+For a typical PVA, the modeller remains responsible for defining:
 
-**Key artefacts:**
+- the population, spatial and temporal scales of inference;
+- the individual, stage, patch, or population units;
+- lifecycle order and biological processes;
+- vital-rate, density, environmental, genetic, movement, and management models;
+- observation error, detection, missingness, and sampling bias where relevant;
+- validation data, sensitivity questions, and decision thresholds.
 
-- `docs/overview_openpva.md`
-- `docs/architecture_core.md`
-- `docs/dev_conventions_r.md`
-- `docs/gapps_heritage.md`
-- `docs/agent_guidelines_codex.md`
+OpenPVA is responsible for executing that program consistently, protecting
+state and random-number contracts, recording provenance, validating process
+requirements, and returning trajectories, events, diagnostics, and summaries
+without hiding assumptions.
 
-**Status:**  
-These documents and the basic `R/` skeleton exist and will be refined as the project evolves.
+## Product promise
 
----
+A modeller should be able to:
 
-## Phase 1 – Core Demographic Engine (current focus)
+1. compose an ordered lifecycle from reusable or project-defined R processes;
+2. replace, repeat, omit, or add a process without editing the engine controller;
+3. inspect what each process requires and writes;
+4. test stochastic simulations against independent expected-value calculations
+   where matched life-table or matrix assumptions permit it;
+5. reproduce runs from explicit parameters, seeds, versions, and provenance;
+6. validate transformations, accounting identities, special cases, hindcasts,
+   and decision-relevant outputs;
+7. retain replicate-level evidence rather than only polished summaries.
 
-**Goal:**  
-Implement a clean, testable **individual-based demographic engine** with a minimal but complete life cycle.
+Community extension is a core acceptance condition: a third-party process must
+compose through the public contract without a new engine branch or central
+registry entry.
 
-### 1.1 Core components
+## Architectural commitments
 
-In scope:
+- **R-native composition.** Ordinary functions and simple named lists are the
+  default. A minimal S3 tag may aid validation and printing, but inheritance is
+  not the process protocol.
+- **Explicit order.** The lifecycle is a direct ordered process list. Repetition
+  and omission are meaningful and validated.
+- **Separated ownership.** Processes own biological transformations. The engine
+  owns interval time, process occurrence, replicate RNG streams, run identity,
+  event collection,
+  provenance, and failure context.
+- **Visible state effects.** Population state, global dynamic state, and stable
+  identifier allocation are explicit. Hidden global mutation is prohibited.
+- **No premature platform.** No YAML lifecycle DSL, plugin manager, dependency-
+  injection system, global registry, or S4/R6 hierarchy until demonstrated use
+  proves that simpler R composition is inadequate.
+- **Clean realignment.** Obsolete controller paths will be removed rather than
+  preserved behind compatibility adapters when implementation is authorised.
+- **Locked lean defaults.** Goal 001 fixes replicate-level L'Ecuyer-CMRG
+  streams, declared field dependencies, required event provenance, and explicit
+  interval/census semantics. Native deterministic execution is deferred.
 
-- Individual representation (lists with id, sex, age, alive, etc.).
-- Population representation as a collection of individuals.
-- Lifecycle processes:
-  - Ageing (`age_individuals()`).
-  - Survival (`apply_survival()` with pluggable survival functions).
-  - Breeding-eligibility (`determine_breeding()`).
-  - Birth/offspring creation (initial minimal implementation).
-- Simple density feedback:
-  - E.g. ceiling-based regulation, basic harvest/removal modules.
+## Canonical benchmark
 
-Out of scope (for Phase 1):
+The first acceptance benchmark is a minimal grizzly-bear model derived from the
+scientific questions that motivated and later exercised GAPPS: structured
+survival and reproduction, maternal dependency, stochastic demography,
+human-caused mortality, alternative survival scenarios, and inspectable
+population summaries and, when enabled, genetic summaries. It is defined in
+`docs/design/canonical_grizzly_reference_model.md`.
 
-- Detailed genetics (alleles, loci, inbreeding coefficients).
-- Complex spatial structures (patch networks, landscapes).
-- Sophisticated management rules (e.g. complex optimisation routines).
+The benchmark is not a universal default, a calibrated Greater Yellowstone
+model, or a management recommendation. Its purpose is to prove that the engine
+can express and test a consequential long-lived-mammal PVA without hard-coding
+grizzly logic.
 
-### 1.2 Simulation controller
+## Scope boundaries
 
-In scope:
+OpenPVA is:
 
-- A basic simulation function that:
-  - Accepts an initial population and parameters.
-  - Applies a fixed sequence of lifecycle processes over time.
-  - Returns population trajectories and simple summary metrics.
+- an execution engine and reusable scientific-process library;
+- primarily individual-based; an additional aggregate/fractional population
+  representation is not required for the first realignment;
+- a reproducible analysis substrate for uncertainty, sensitivity, hindcasting,
+  scenario comparison, and reporting;
+- designed for code-capable ecologists and extensible by community R packages.
 
-- Integration with `targets`:
-  - Targets to initialise a population, run simulations, and summarise results.
+OpenPVA is not:
 
-### 1.3 Testing and examples
+- a black-box extinction-risk calculator;
+- a guarantee that a model is identifiable, calibrated, or decision-safe;
+- a replacement for integrated population models, habitat models, SDMs,
+  optimisation systems, or specialised genetic simulators;
+- a requirement that every model include genetics, space, density dependence,
+  or every available feature;
+- currently a GUI product or a new modelling language.
 
-In scope:
+## Current decision boundary
 
-- Unit tests for all core functions.
-- At least one worked example:
-  - A small, stylised population (e.g. simple age-structured mammal) with deterministic/stochastic runs.
+The repository has substantial implemented breadth, but its lifecycle vocabulary
+is still fixed to six controller-recognised labels. The next implementation
+tranche is therefore architectural realignment, not another feature family.
+`docs/design/lifecycle_process_contract.md` supplies the approved lean defaults
+for RNG, fields, events and time/census semantics. Barry's remaining decision is
+strategic acceptance of this package before implementation begins.
 
----
-
-## Phase 2 – Genetics and Inbreeding
-
-**Goal:**  
-Extend the engine to optionally model **genetic attributes** and their interaction with demography.
-
-In scope:
-
-- Adding genetic fields to individuals (e.g. allele representations, F).
-- Functions for:
-  - Initialising diversity (`initialise_alleles()`).
-  - Tracking inbreeding (`update_inbreeding()`).
-  - Calculating diversity/heterozygosity metrics.
-- Mechanisms to apply inbreeding depression to survival or breeding:
-  - E.g. functions that adjust vital rates based on F or other genetic metrics.
-
-Out of scope (Phase 2):
-
-- Full-blown population genetics platform.
-- Complex multi-locus selection models.
-- Tight coupling to external genetics simulators.
-
-The aim is to recapture the spirit of GAPPS’s `ALLELES`, `INBREED`, `GENETICS`, `DEPRESS` functionality in a transparent R implementation.
-
----
-
-## Phase 3 – Spatial and Environmental Structure
-
-**Goal:**  
-Introduce spatial structure and environmental dynamics in a modular way.
-
-In scope:
-
-- Spatial representation:
-  - Patches or regions with their own carrying capacities and vital rate modifiers.
-  - Assignment of individuals to patches.
-- Dispersal modules:
-  - Simple distance- or probability-based movement between patches.
-- Environmental forcing:
-  - Time series of patch-level conditions affecting vital rates or K.
-- Basic spatial outputs:
-  - Distribution of individuals across patches through time.
-  - Patch-level extinction risks.
-
-Out of scope (Phase 3):
-
-- Continuous landscapes with complex movement kernels.
-- Direct coupling to external SDM/climate models (except via pre-processed inputs).
-- Eco-evolutionary range shift modelling (this is in the territory of RangeShiftR).
-
----
-
-## Phase 4 – Decision Support and Management Scenarios
-
-**Goal:**  
-Layer decision- and management-oriented capabilities on top of the core engine.
-
-In scope:
-
-- Modules for:
-  - Harvest and culling strategies.
-  - Translocation/supplementation rules.
-  - Simple habitat restoration scenarios.
-- Scenario comparison tools:
-  - Running multiple management scenarios and comparing:
-    - Extinction risk.
-    - Time to quasi-extinction.
-    - Other relevant metrics.
-- Hooks for optimisation and decision analysis:
-  - E.g. simple search over discrete management options.
-
-Out of scope (Phase 4):
-
-- Full optimisation frameworks or POMDPs.
-- Sophisticated cost–benefit analyses (these can be built externally using OpenPVA outputs).
-
----
-
-## Phase 5 – Advanced Features and Interfaces
-
-**Goal:**  
-Once the core is stable and trusted, extend OpenPVA for broader use and deeper analysis.
-
-Potential directions (not all mandatory):
-
-- Integration with pattern-oriented validation or ensemble modelling (e.g. ideas akin to `poems`).
-- More sophisticated genetic models and eco-evolutionary dynamics.
-- Model calibration/parameter estimation interfaces (Bayesian, ABC, etc.).
-- Shiny-based or other GUIs for non-coding users.
-- Teaching-focused vignettes and classroom-friendly interfaces.
-
-These are aspirational and will be scoped in detail once Phases 1–3 are mature.
-
----
-
-## Current Scope Summary (for contributors and agents)
-
-At present, OpenPVA is in **Phase 1**. That means:
-
-- **In scope right now:**
-  - Individual and population representations.
-  - Ageing, survival, and basic breeding modules.
-  - A minimal birth/offspring module.
-  - A simple density feedback implementation.
-  - Basic simulation controller(s).
-  - Tests, documentation, and `_targets.R` wiring for the above.
-
-- **Out of scope for now:**
-  - Genetics modules (design can be discussed, but not implemented wholesale).
-  - Spatial structure and dispersal.
-  - Decision-support tooling.
-  - GUIs and other interfaces.
-
-The priority is to get a **clean, working, well-tested core demographic engine** in place before layering on additional complexity.
-
-If you are about to implement something that clearly belongs to a later phase, pause and either:
-
-- Defer it, or
-- Flag it explicitly in an issue or design note for future work.
-
-OpenPVA is intended to grow incrementally and coherently, not as a tangle of half-finished subsystems.
+Current capabilities and historical roadmaps are evidence about the starting
+point, not the authority for product direction. This document is the authority.

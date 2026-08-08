@@ -1,244 +1,32 @@
-test_that("scenario_spec creates validated objects", {
-  init_fun <- function() {
-    list(
-      create_individual(1L, "F", 2L),
-      create_individual(2L, "M", 3L)
-    )
-  }
-
-  sc <- scenario_spec(
-    name = "test_scenario",
-    n_runs = 3,
-    n_years = 2,
-    init_fun = init_fun,
-    survival_fun = function(ind) 1,
-    breeding_prob_fun = function(ind) 0,
-    fecundity_lambda_fun = function(ind) 0
-  )
-
-  expect_true(inherits(sc, "openpva_scenario"))
-  expect_equal(sc$name, "test_scenario")
-  expect_equal(sc$n_runs, 3L)
-  expect_equal(sc$n_years, 2L)
-  expect_equal(sc$lifecycle_steps, default_lifecycle_steps())
-
-  res <- run_scenario(sc)
-  expect_named(res, c("scenario", "sim_output"))
-  expect_equal(res$scenario, sc)
-  expect_equal(nrow(res$sim_output$summary), 6L)
-  expect_true(all(res$sim_output$summary$n_alive == 2L))
-})
-
-test_that("scenario_spec threads require_mate through run_scenario", {
-  init_fun <- function() {
-    list(
-      create_individual(1L, "F", 5L),
-      create_individual(2L, "F", 5L),
-      create_individual(3L, "M", 5L)
-    )
-  }
-
-  sc <- scenario_spec(
-    name = "require_mate_scenario",
-    n_runs = 1,
-    n_years = 1,
-    init_fun = init_fun,
-    survival_fun = function(ind) 1,
-    breeding_prob_fun = function(ind) 1,
-    fecundity_lambda_fun = function(ind) 1,
-    mating_fun = make_mate_limited_mating_fun(max_mates_per_male = 1L),
-    require_mate = TRUE,
-    lifecycle_steps = c("age", "survival", "breeding_births")
-  )
-
-  expect_true(sc$require_mate)
-  set.seed(20260314)
-  out <- run_scenario(sc)
-  sc_unrestricted <- sc
-  sc_unrestricted$require_mate <- FALSE
-  set.seed(20260314)
-  out_unrestricted <- run_scenario(sc_unrestricted)
-  expect_true(out$sim_output$summary$n_births[1] <= out_unrestricted$sim_output$summary$n_births[1])
-})
-
-test_that("read_scenario_yaml loads canonical YAML configs", {
-  yaml_text <- "
-name: 'yaml_demo'
-schema_version: 3
-n_runs: 2
-n_years: 3
-initializer:
-  fun: 'initialize_population'
-  args:
-    'n': 4
-management:
-  harvest_quota: 0
-lifecycle_steps:
-  - age
-  - survival
-  - breeding_births
-  - harvest
-reproduction_ev:
-  env_repro_p_sd: 0.1
-  env_repro_lambda_sd: 0.2
-  cat_repro_prob: 0.0
-  cat_repro_mult: 1
-"
-
-  tmp <- tempfile(fileext = ".yaml")
-  writeLines(yaml_text, tmp)
-  on.exit(unlink(tmp), add = TRUE)
-
-  sc <- read_scenario_yaml(tmp)
-  expect_true(inherits(sc, "openpva_scenario"))
-  expect_equal(sc$name, "yaml_demo")
-  expect_equal(sc$n_runs, 2L)
-  expect_equal(sc$n_years, 3L)
-  expect_equal(sc$harvest_quota, 0)
-  expect_equal(attr(sc, "yaml_schema_version"), 3L)
-
-  res <- run_scenario(sc)
-  expect_equal(nrow(res$sim_output$summary), 6L)
-})
-
-test_that("make_simple_genetic_scenario builds runnable scenario", {
-  sc <- make_simple_genetic_scenario(
-    name = "genetic_demo_test",
-    n_runs = 3,
-    n_years = 2,
-    initial_n = 10,
-    n_loci = 4,
-    n_alleles = 2,
-    mutation_rate = 0,
-    beta_F = 0.5
-  )
-
-  expect_true(inherits(sc, "openpva_scenario"))
-  expect_equal(sc$n_runs, 3L)
-  expect_equal(sc$n_years, 2L)
-  expect_true(is.function(sc$inherit_fun))
-  expect_true(is.function(sc$mating_fun))
-
-  ind <- create_individual(99L, "F", age = 3L, inbreeding_coeff = 1)
-  expect_lt(sc$survival_fun(ind), default_survival_fun(ind))
-
-  set.seed(123)
-  out <- run_scenario(sc)
-  expect_equal(out$scenario, sc)
-  expect_equal(nrow(out$sim_output$summary), 6L)
-
-  final_pop <- out$sim_output$runs[[1]]$population
-  alleles_flag <- vapply(final_pop, function(individual) !is.null(individual$alleles), logical(1))
-  expect_true(any(alleles_flag))
-})
-
-test_that("scenario_spec carries dispersal_fun through run_scenario", {
-  init_fun <- function() {
-    pop <- initialize_population(n = 4, max_age = 1)
-    initialize_patches(pop, patch_ids = c(1, 1, 2, 2))
-  }
-  dispersal_fun <- function(ind, population) {
-    if (!is.na(ind$patch_id) && ind$patch_id == 1L) {
-      return(2L)
-    }
-    ind$patch_id
-  }
-
-  sc <- scenario_spec(
-    name = "dispersal_test",
-    n_runs = 2,
-    n_years = 1,
-    init_fun = init_fun,
-    survival_fun = function(ind) 1,
-    breeding_prob_fun = function(ind) 0,
-    fecundity_lambda_fun = function(ind) 0,
-    lifecycle_steps = c("age", "survival", "dispersal"),
-    dispersal_fun = dispersal_fun
-  )
-
-  out <- run_scenario(sc)
-  expect_equal(length(out$sim_output$runs), 2L)
-  check_pids <- function(run_output) {
-    all(vapply(run_output$population, function(ind) ind$patch_id, integer(1)) == 2L)
-  }
-  expect_true(all(vapply(out$sim_output$runs, check_pids, logical(1))))
-})
-
-test_that("make_two_patch_spatial_scenario builds and runs", {
-  sc <- make_two_patch_spatial_scenario(
-    name = "two_patch_test",
-    n_runs = 3,
-    n_years = 2,
-    initial_n = c(5L, 5L),
-    K_patches = c(10, 10),
-    dispersal_matrix = matrix(c(1, 0,
-                                0, 1),
-                              nrow = 2, byrow = TRUE)
-  )
-  expect_true(inherits(sc, "openpva_scenario"))
-  expect_equal(sc$n_runs, 3L)
-  expect_equal(sc$n_years, 2L)
-  expect_true(inherits(sc$density_spec, "openpva_density_spec"))
-  expect_true(is.function(sc$dispersal_fun))
-
-  set.seed(456)
-  out <- run_scenario(sc)
-  expect_equal(length(out$sim_output$runs), 3L)
-  check_patches <- function(run_output) {
-    all(vapply(run_output$population, function(ind) ind$patch_id, integer(1)) %in% c(1L, 2L, NA_integer_))
-  }
-  expect_true(all(vapply(out$sim_output$runs, check_patches, logical(1))))
-})
-
-test_that("read_scenario_yaml handles management block", {
-  yaml_text <- "
-name: 'yaml_mgmt'
-schema_version: 3
-n_runs: 3
-n_years: 4
-initializer:
-  fun: 'initialize_population'
-  args:
-    'n': 10
-lifecycle_steps:
-  - age
-  - survival
-  - supplementation
-  - harvest
-management:
-  harvest_quota: 3
-  supplement_quota: 1
-  supplement_patch: 2
-"
-
-  tmp <- tempfile(fileext = ".yaml")
-  writeLines(yaml_text, tmp)
-  on.exit(unlink(tmp), add = TRUE)
-
-  sc <- read_scenario_yaml(tmp)
-  expect_equal(sc$harvest_quota, 3)
-  expect_equal(sc$supplement_quota, 1)
-  expect_equal(sc$supplement_patch, 2L)
-  expect_true("supplementation" %in% sc$lifecycle_steps)
-
-  out <- run_scenario(sc)
-  expect_true(any(out$sim_output$summary$n_supplemented > 0L))
-})
-
-test_that("scenario_spec and run_scenario carry record_population_history", {
-  sc <- scenario_spec(
-    name = "history_demo",
-    n_runs = 2,
-    n_years = 2,
-    init_fun = function() initialize_population(6),
-    survival_fun = function(ind) 1,
-    breeding_prob_fun = function(ind) 0,
-    fecundity_lambda_fun = function(ind) 0,
-    lifecycle_steps = c("age", "survival"),
+test_that("scenario_spec validates and exposes the ordered biological program", {
+  processes <- list(age_process(), constant_survival_process(1), census_process())
+  scenario <- scenario_spec(
+    "minimal",
+    2L,
+    3L,
+    function() make_test_population(4L),
+    processes,
+    seed = 41L,
     record_population_history = TRUE
   )
+  expect_s3_class(scenario, "openpva_scenario")
+  expect_identical(vapply(scenario$processes, `[[`, character(1), "name"),
+                   c("age", "survival", "census"))
+  output <- run_scenario(scenario)$sim_output
+  expect_length(output$runs, 2L)
+  expect_length(output$runs[[1L]]$population_history, 3L)
+  expect_identical(output$provenance$rng_kind, "L'Ecuyer-CMRG")
+})
 
-  expect_true(isTRUE(sc$record_population_history))
-  out <- run_scenario(sc)
-  expect_true(all(vapply(out$sim_output$runs, function(run) "population_history" %in% names(run), logical(1))))
+test_that("process validation rejects malformed objects and context writes", {
+  expect_error(pva_process("x", 1), "must be a function")
+  expect_error(
+    pva_process("x", function(state, context, params) pva_result(state),
+                writes = "context.time"),
+    "engine-owned context"
+  )
+  expect_error(
+    scenario_spec("bad", 1.5, 2L, function() list(), list(age_process())),
+    "n_runs must be a single positive integer"
+  )
 })

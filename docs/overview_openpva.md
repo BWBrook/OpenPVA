@@ -1,114 +1,74 @@
-# OpenPVA Overview
+# OpenPVA overview
 
-## What is OpenPVA?
+OpenPVA is an open-R population-viability execution system. The modeller writes
+the biological program as an ordered set of explicit processes; OpenPVA provides
+validated state transitions, reusable processes, time and RNG control,
+replication, provenance, diagnostics, and reproducible analysis machinery.
 
-OpenPVA is an open‑source, modular framework for **Population Viability Analysis (PVA)** implemented in R. It is designed to simulate the dynamics and extinction risk of structured populations under demographic, genetic, environmental, and management processes.
+The authoritative mission and scope are in `vision_and_scope.md`.
 
-OpenPVA’s core aim is to provide a **transparent, extensible, and reproducible** platform that conservation biologists and quantitative ecologists can both *use* and *extend*. It is intended to be a long‑lived, community‑maintained infrastructure project, not a one‑off model for a single species.
+## Why OpenPVA
 
----
+Population viability analyses are structurally consequential. Whether survival
+precedes reproduction, how mates are limited, how density acts, which sex is
+modelled, or how immigration enters can change extinction estimates and
+management conclusions. OpenPVA makes those choices visible and testable in R.
 
-## Conceptual Lineage: From GAPPS to OpenPVA
+The project inherits a demonstrated idea from GAPPS: a general engine can track
+individuals while allowing the modeller to sequence lifecycle and management
+processes. OpenPVA modernises that idea through open code, ordinary R
+composition, explicit contracts, versioned provenance, and reproducible
+workflows. `gapps_heritage.md` distinguishes verified history from OpenPVA's
+design choices.
 
-OpenPVA is conceptually inspired by the original **GAPPS** (Generalized Animal Population Projection System) developed in the 1980s by Richard Harris. GAPPS was one of the earliest general PVA engines, notable for:
+## Intended workflow
 
-- Individual‑based simulation of wildlife populations
-- A **declarative, script‑like language** for lifecycle processes (BREED, MATE, LITTER, SURVIVE, HUNT, etc.)
-- Explicit, user‑defined stochasticity and density dependence
-- Integration of **genetics** (alleles, inbreeding, depression) with demography
+1. State the scientific or management question and estimand.
+2. Define population state, scales, observation process, and evidence-backed
+   parameters.
+3. Compose an ordered lifecycle from reusable and project-specific processes.
+4. Validate required fields, written fields, time semantics, and special cases.
+5. Run stochastic replicates and compare their means with an independent
+   expected-value oracle where matched assumptions permit it.
+6. Examine trajectories, events, uncertainty, diagnostics, and hindcasts;
+7. compare scenarios at the decision scale and report limitations.
 
-However, GAPPS was constrained by its era: DOS, DBF files, closed distribution, limited spatial structure, and no modern reproducibility practices.
+`targets`, `renv`, and reporting tools can orchestrate a reproducible analysis;
+they are not part of the biological process protocol.
 
-OpenPVA is a **re‑imagining**, not a re‑implementation. It preserves GAPPS’s best ideas—modular lifecycle processes, individual‑based flexibility, genetics–demography integration—while rebuilding everything on a modern, open, R‑centric foundation.
+## Core objects
 
----
+- `state`: population records, shared dynamic globals, and engine-managed
+  identifier state;
+- `context`: engine-owned, read-only run/time/process-occurrence information;
+- process: a validated ordinary R component that transforms `state` using
+  `context` and explicit parameters;
+- result: the next `state` plus structured events;
+- simulation output: trajectories, events, diagnostics, summaries, and
+  provenance across runs.
 
-## Why Another PVA Tool?
+The active contract is specified in `design/lifecycle_process_contract.md` and
+implemented by the exported process/state/result constructors and generic
+executor.
 
-Many PVA tools already exist (VORTEX, RAMAS, steps, poems, RangeShiftR, etc.). OpenPVA is not trying to replace them all; instead, it aims to fill a specific gap:
+## Canonical reference
 
-- VORTEX and RAMAS are powerful but **closed‑source** and GUI‑bound.
-- Matrix/IPM packages (popbio, popdemo, IPMpack) are open but **focused on demography only**.
-- Newer frameworks (steps, RangeShiftR, poems) are open and flexible, but each has a particular emphasis (spatial dynamics, eco‑evolutionary range shifts, pattern‑oriented ensembles).
+The minimal grizzly benchmark in
+`design/canonical_grizzly_reference_model.md` tests the architecture against a
+real scientific lineage: long-lived two-sex demography, dependent offspring,
+stochastic vital events, human-caused mortality, survival scenarios, and
+management-relevant outputs. It deliberately excludes unsupported parameter
+defaults and unnecessary spatial or genetic detail.
 
-OpenPVA’s niche is to be a **general, modular, individual‑ or stage‑based PVA engine** that:
+## Current state
 
-- Integrates demography, genetics, spatial structure, and management in one coherent framework
-- Is implemented entirely in open R code
-- Is architected from the outset for extension by contributors via modules and pull requests
-- Emphasises **clear lifecycle logic** and **explicit process composition**, rather than hiding assumptions inside a GUI
+OpenPVA now executes community-defined processes without controller edits. The
+Stage 1 built-ins cover age, survival, reproduction and explicit census; exact
+event/ID accounting, reproducible replicate streams and downstream newborn
+field validation are enforced by the engine. Maternal patch inheritance is a
+declared birth-fixture rule, not hard-coded engine biology.
 
----
-
-## Core Design Goals
-
-OpenPVA is built around a few non‑negotiable principles:
-
-1. **Modularity**
-   - Each process (e.g. ageing, survival, breeding, dispersal, genetics, harvest) is implemented as a separate module.
-   - Modules can be swapped, extended, or combined without rewriting the engine.
-
-2. **Transparency**
-   - All model logic is in plain R scripts.
-   - No black‑box binaries, no undocumented side‑effects.
-   - Simulation workflows are orchestrated via `targets`, and environments pinned via `renv`.
-
-3. **Reproducibility**
-   - Analyses can be cloned, restored, and re‑run on any machine.
-   - Simulation pipelines are declarative and version‑controlled.
-
-4. **Extensibility**
-   - New lifecycle processes, density‑dependence functions, genetic models, or spatial dynamics can be added by contributors.
-   - The API is designed so external modules can plug into the engine cleanly.
-
-5. **Dual Audience: Users and Developers**
-   - Conservation practitioners should be able to run standard PVAs with minimal R code.
-   - Quantitative modellers should be able to extend or replace modules for advanced work.
-
----
-
-## What OpenPVA Is (and Is Not)
-
-**OpenPVA *is*:**
-
-- A general‑purpose PVA framework in R
-- A simulation engine for structured populations (individual‑ or stage‑based)
-- A platform for integrating demography, genetics, spatial structure, and management actions
-- A community‑oriented project intended to grow via contributions and peer review
-
-**OpenPVA is *not*:**
-
-- A single‑species model or a publication‑specific script
-- A point‑and‑click GUI program (though interfaces may be added later)
-- A black‑box risk calculator where assumptions are hidden from the user
-- A replacement for every existing PVA tool; it is one powerful tool in a broader ecosystem
-
----
-
-## Project Status
-
-At this stage (early development):
-
-- The repository structure, coding conventions, and reproducibility tooling (renv + targets) are being established.
-- Core R modules for individual representation, ageing, survival, and breeding are under development.
-- Genetics, spatial dynamics, and decision‑support modules are planned but not yet implemented.
-- Documentation and internal design notes are being written to guide future contributors and automated coding agents.
-
----
-
-## How to Think About OpenPVA (for Agents and Contributors)
-
-When modifying or extending OpenPVA:
-
-- Always think in terms of **modular lifecycle processes** that operate on a population state.
-- Preserve transparency: favour clear, explicit code over clever illusions.
-- Assume that future users will:
-  - Want to understand the assumptions,
-  - Want to plug in their own modules,
-  - And may not be expert programmers.
-
-The goal is not just to “get a model running”, but to build an **extensible framework** that others can trust, inspect, and evolve.
-
-Year-level environmental variation and simple survival catastrophes are available as opt-in parameters (`env_surv_sd`, `cat_surv_prob`, `cat_surv_mult`) that scale survival probabilities without changing existing module interfaces.
-
-Users can define baseline demography via age/sex tables for survival, breeding eligibility, and fecundity (in R or YAML); these tables are validated and compiled into functions, keeping assumptions explicit and reproducible.
+Existing density, spatial, genetic, management, uncertainty, calibration and
+reporting code is future-migration source. It is not a privileged parallel
+runtime. Stages 2-4 add the canonical grizzly benchmark, port high-value modules
+and reconnect analysis interfaces in that order.

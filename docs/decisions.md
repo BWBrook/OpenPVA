@@ -522,7 +522,9 @@
     outputs while keeping method scope aligned with the Line 2B contract.
   - Preserves auditability by enforcing explicit input specs and stable output
     tables.
-- **Status**: active
+- **Status**: superseded for Stage 1 by DEC-035. PRCC remains exported for
+  direct draw-level tables; the controller-coupled OAT route is retired rather
+  than adapted to mutate process parameters.
 
 ## DEC-030 — Hindcast/calibration scaffold boundaries and objective contract
 - **Date**: 2026-02-09
@@ -568,3 +570,98 @@
     maintaining reproducibility contracts central to OpenPVA.
   - Keeps parallel behavior bounded, explicit, and testable.
 - **Status**: active
+
+## DEC-032 — Authoritative North Star and clean realignment
+- **Date**: 2026-08-08
+- **Decision**:
+  - Adopt: “The modeller defines the biological program; OpenPVA supplies the
+    execution engine, reusable processes, scientific contracts, and reproducible
+    analysis machinery.”
+  - Treat `docs/vision_and_scope.md` as current product authority; roadmaps and
+    completed work packages are historical evidence.
+  - Replace the fixed-label dispatcher rather than preserving compatibility
+    adapters when implementation is authorised.
+- **Rationale**:
+  - The current controller allows reordering but not community process
+    composition. Compatibility layers would preserve the architectural defect.
+- **Status**: active. This decision supersedes **every** earlier compatibility-
+  preservation commitment wherever it conflicts with the authorised
+  realignment, whether or not individually enumerated. This explicitly includes
+  DEC-001, DEC-004, DEC-005, DEC-006, DEC-009, DEC-011, DEC-018, DEC-026 and
+  DEC-028. Those decisions are historical in that respect; their scientific
+  semantics and validation evidence remain useful, but their API-preservation
+  requirements do not govern new work.
+
+## DEC-033 — Lean R-native lifecycle process target
+- **Date**: 2026-08-08
+- **Decision**:
+  - Use a direct ordered list of validated process objects wrapping ordinary R
+    functions.
+  - Require process name, parameters, required fields and written fields; return
+    next state plus events.
+  - Keep time, RNG, run/process context, stable IDs, event collection and
+    provenance engine-owned.
+  - Permit a minimal `pva_process` S3 tag for printing/validation, but do not
+    make inheritance the protocol.
+  - Do not create a DSL, registry, plugin manager, dependency-injection system,
+    or S4/R6 hierarchy.
+- **Rationale**:
+  - This is the smallest contract that permits third-party processes without
+    controller edits while retaining preflight, provenance and scientific
+    failure context.
+- **Status**: approved target; implementation follows the defaults in DEC-034.
+
+## DEC-034 — Lean execution defaults
+- **Date**: 2026-08-08
+- **Decision**:
+  - Assign one independent L'Ecuyer-CMRG stream per replicate before execution;
+    consume draws sequentially through that lifecycle; scope and restore R RNG
+    state; require serial/parallel identity; forbid process-level `set.seed()`;
+    defer per-process substreams.
+  - Reserve and validate core field names/types. Allow ordinary named
+    contributed attributes without a central registry; require declared
+    requirements/writes and immediate failure when birth or introduction omits
+    a downstream-required field.
+  - Have the process supply `event_type`; validate it, then have the engine
+    stamp `run`, `time`, `phase`, `process_index`, `process_name`, and
+    `process_occurrence`. Permit optional individual/value/extra fields;
+    default to aggregate events while retaining unsuppressible core accounting
+    events.
+  - Define step `t` as interval `t -> t+1`; label processes, births and events
+    with `t`; advance time after the ordered list; make census an explicitly
+    positioned observer apart from an optional initial `t = 0` census.
+  - Validate stochastic means against an independent matched life-table/matrix
+    oracle. Defer native deterministic mode and a fractional population
+    representation until demonstrated need.
+  - Use the canonical grizzly reference model as the decision fixture.
+  - Reproduce the missing-newborn-`patch_id` failure with a focused test before
+    repair.
+- **Rationale**:
+  - These defaults make reproducibility, biological time, downstream field
+    validity and accounting explicit while avoiding speculative infrastructure.
+- **Status**: approved target defaults. These target RNG semantics supersede
+  DEC-008 and DEC-031 wherever they conflict during realignment. Barry's next
+  role is strategic acceptance of the package, not choosing these mechanics.
+
+## DEC-035 — Generic process engine clean break
+- **Date**: 2026-08-08
+- **Decision**:
+  - Implement `pva_state`, `pva_process`, `pva_result`, `allocate_ids`,
+    `execute_processes`, and a process-list `scenario_spec`/`run_scenario` as the
+    sole active simulation seam.
+  - Require explicit `creates` fields for any process that adds individuals;
+    validate those promises at preflight and runtime.
+  - Enforce exact sequential IDs, exact `next_id`, set-based accounting, and
+    aggregate birth/introduction/death/removal events.
+  - Distinguish an explicit initial observer from interval-zero processes with
+    an engine-owned event phase.
+  - Retire the fixed dispatcher, `run_basic_simulation*`, lifecycle labels,
+    YAML runtime and controller-coupled scenario conveniences without adapters.
+  - Keep optional scientific helper code as future migration source; reconnect
+    YAML, uncertainty, targets, Quarto and reporting only in their later stage.
+- **Rationale**:
+  - A parallel compatibility route would preserve the architectural defect and
+    make extension claims ambiguous. The explicit creation declaration is the
+    smallest addition needed to falsify incomplete newborn state before it
+    reaches a downstream process.
+- **Status**: implemented in Goal 002; pending orchestrator acceptance.

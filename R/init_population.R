@@ -24,13 +24,24 @@ create_individual <- function(
     mother_id = NA_integer_,
     father_id = NA_integer_,
     patch_id = NA_integer_) {
+  id <- .normalize_integer_scalar(id, "id", minimum = 1L)
+  age <- .normalize_integer_scalar(age, "age", minimum = 0L)
+  mother_id <- .normalize_integer_scalar(
+    mother_id, "mother_id", allow_na = TRUE, minimum = 1L
+  )
+  father_id <- .normalize_integer_scalar(
+    father_id, "father_id", allow_na = TRUE, minimum = 1L
+  )
+  patch_id <- .normalize_integer_scalar(
+    patch_id, "patch_id", allow_na = TRUE, minimum = 1L
+  )
   list(
     id = id,
-    sex = sex,
+    sex = as.character(sex),
     age = age,
-    alive = alive,
+    alive = as.logical(alive),
     alleles = alleles,
-    F = inbreeding_coeff,
+    F = as.numeric(inbreeding_coeff),
     mother_id = mother_id,
     father_id = father_id,
     patch_id = patch_id

@@ -11,22 +11,14 @@ summarise_sensitivity_prcc(
 )
 }
 \arguments{
-\item{ensemble_data}{One of:
-\itemize{
-  \item list from [summarise_ensemble_outputs()] containing `per_draw`,
-  \item object from [run_scenario_ensemble()],
-  \item draw-level data frame with response and parameter columns.
-}}
+\item{ensemble_data}{Draw-level data frame with response and parameter
+columns, or a list containing that table as \code{per_draw}.}
 
 \item{response_col}{Response column name in draw-level data.}
 
 \item{parameter_cols}{Optional character vector of parameter column names.
-When `NULL`, defaults are inferred in order:
-\itemize{
-  \item `names(uncertainty_spec)` when available from ensemble input,
-  \item otherwise numeric draw columns excluding `draw_id` and standard
-    per-draw summary metric columns.
-}}
+When \code{NULL}, numeric draw columns are used after excluding \code{draw_id},
+the response, and standard per-draw summary metric columns.}
 }
 \value{
 Tibble with one row per parameter and columns:
@@ -40,6 +32,6 @@ Tibble with one row per parameter and columns:
   }
 }
 \description{
-Computes parameter-wise partial rank correlations between uncertainty inputs
-and a selected response metric from ensemble outputs.
+Computes parameter-wise partial rank correlations between draw-level inputs
+and a selected response metric.
 }

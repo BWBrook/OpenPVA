@@ -1,7 +1,7 @@
 # Reproduction Rate API
 
-This page documents the reproduction-rate interfaces used by the controller
-reproduction pathway.
+This page documents baseline-rate helpers that can be called from a
+`reproduction_process()` model function.
 
 ## Breeding probability API
 
@@ -39,20 +39,9 @@ Contract:
 - `default_fecundity_lambda_fun(ind)` provides the package default baseline
   fecundity schedule.
 
-## Implementation note
+## Stage 1 boundary
 
-These APIs are the retained baseline-rate channels for:
-
-- controller-level Bernoulli/Poisson reproduction draws,
-- year-level reproduction EV/cat modifiers,
-- YAML schema v3 demography tables (`breeding_prob`, `fecundity_lambda`).
-
-## Mating control extension
-
-OpenPVA also provides a mating-control helper for constrained pairing:
-
-- `make_mate_limited_mating_fun(max_mates_per_male = 1L)`
-
-This function can be supplied to `scenario_spec()` / `run_basic_simulation()`
-as `mating_fun`. Combined with `require_mate = TRUE`, it enforces per-year mate
-scarcity constraints by skipping births for females without available mates.
+`reproduction_process()` owns Bernoulli breeding and Poisson litter draws.
+Project model functions may use these table helpers to provide baseline rates.
+The old controller-level reproduction and mate-limiting helpers are retired;
+process-native mating constraints belong in a later scientific-module goal.
