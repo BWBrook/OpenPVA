@@ -15,10 +15,10 @@ modeller-defined biological program.
 | Lifecycle configuration | Six allowed labels: age, survival, dispersal, breeding/births, harvest, supplementation | **Redesign** | Direct ordered list of validated third-party processes |
 | Controller dispatcher | Conditional branch for every biological step | **Remove after replacement** | One generic process execution loop; no compatibility dispatcher |
 | Reproduction coupled step | Mating, breeding draws and births concentrated in controller helpers | **Redesign incrementally** | Separate reusable processes or one composite process that still satisfies public contract |
-| Density channels | Explicit survival/breeding/fecundity modifiers | **Retain as reusable processes/functions** | No privileged controller channel unless execution semantics require it |
+| Density channels | Former survival/breeding/fecundity specification was disconnected from execution | **Replace** | Positioned ordinary abundance snapshots plus pure functions explicitly composed by the modeller |
 | Spatial patches/dispersal | Useful optional functionality | **Retain, repair** | Conforming processes with field declarations and birth initialization |
 | Newborn patch state | `create_individual()` call omits maternal `patch_id` | **Repair first implementation tranche** | Birth process initializes every downstream-required field; regression fixture |
-| Genetics/inbreeding | Optional individual allele/F state and summaries | **Retain, simplify interface** | Optional processes; no baseline grizzly requirement |
+| Genetics/inbreeding | Optional allele state plus heterozygosity-derived `F` | **Replace scientific core** | Pedigree/ancestry as primary IBM state; marker heterozygosity remains a separate observable summary |
 | Management actions | Harvest and supplementation are privileged labels | **Retain biology, redesign composition** | Ordinary processes, repeatable/reorderable like any lifecycle event |
 | YAML scenarios | Canonical schema configures existing fixed simulator | **Defer lifecycle expansion** | Keep current inputs during architecture work; do not add a process DSL |
 | `targets`/`renv`/Quarto | Reproducible workflow machinery | **Retain outside engine** | Analysis orchestration and reporting, not process protocol |
@@ -91,9 +91,10 @@ Acceptance: all extension demonstrations in the canonical-model document pass.
 
 ### Stage 3 — migrate high-value existing modules
 
-Port density, dispersal, supplementation and optional genetics to the same
-contract. Remove privileged controller channels as each is replaced. Validate
-output equivalence only where semantics are intentionally unchanged.
+Port global density, patch-aware dispersal/patch density, generic
+introductions/supplementation and optional pedigree genetics in that order.
+Remove privileged controller channels as each is replaced. Validate output
+equivalence only where semantics are intentionally unchanged.
 
 ### Stage 4 — reconnect interfaces and analyses
 

@@ -2,9 +2,9 @@
 
 ## Authority and current objective
 
-`docs/vision_and_scope.md` is the product authority. The sole operational
-programme is to build the canonical grizzly benchmark on the implemented
-R-native lifecycle-process contract.
+`docs/vision_and_scope.md` is the product authority. The current operational
+programme is Stage 3 migration through the accepted R-native lifecycle-process
+contract, beginning with bounded global density feedback in Goal 004.
 
 The modeller defines the biological program. OpenPVA supplies execution,
 reusable processes, scientific contracts, RNG/time/event provenance, validation
@@ -25,6 +25,9 @@ and reproducible analysis machinery.
   grizzly-like benchmark through ordinary process composition, with required
   scenario contrasts, annual survival variation, immigration/observation
   extensions and replicate-level summaries.
+- Goal 004 replaces the disconnected density specification with an ordinary
+  positioned global-abundance snapshot and one pure ceiling-style multiplier.
+  Vital-rate composition remains explicit and modeller-owned.
 - The published test/CI/release evidence remains useful historical baseline
   evidence, but it does not select the next product tranche.
 
@@ -76,7 +79,7 @@ error.
 
 ### Stage 2 — canonical grizzly benchmark
 
-Implemented in Goal 003 as an illustrative synthetic fixture. Baseline,
+Implemented, accepted and published in Goal 003 as an illustrative synthetic fixture. Baseline,
 alternative female-survival, targeted human-mortality and immigration
 scenarios differ through process objects and parameters. The benchmark also
 demonstrates annual survival variation, observation, mortality/reproduction
@@ -85,9 +88,18 @@ provenance. No value is an empirical grizzly default.
 
 ### Stage 3 — high-value module migration
 
-Port density, dispersal, supplementation and optional genetics through the same
-contract. Remove privileged channels as each is replaced. Test output
-equivalence only where semantics intentionally remain the same.
+Migrate four bounded tranches through the same contract, removing each obsolete
+surface rather than adapting it:
+
+1. global density measurement and explicit vital-rate feedback (Goal 004);
+2. patch-aware dispersal and patch-specific density;
+3. generic introductions and supplementation;
+4. optional pedigree/ancestry genetics.
+
+Pedigree and ancestry are primary individual-based state. Marker
+heterozygosity is a separate observable summary and must not define pedigree
+inbreeding. Test output equivalence only where semantics intentionally remain
+the same.
 
 ### Stage 4 — workflow reconnection
 
@@ -106,6 +118,6 @@ workstreams and should not be extended ahead of Stages 1–2.
 
 ## Stop rule
 
-Do not begin another horizontal feature family, release exercise, or interface
-platform before Stages 1–2 pass. Publication, tags and releases require separate
-authority.
+Do not begin the next Stage 3 module, release exercise, or interface platform
+before Goal 004 passes its bounded acceptance review. Publication, tags and
+releases require separate authority.

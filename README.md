@@ -22,14 +22,19 @@ The Stage 1 runtime provides:
 - explicit interval and initial-census timing;
 - independently assigned L'Ecuyer-CMRG replicate streams with caller RNG
   restoration and serial/fork identity;
-- minimal age, survival, reproduction and census process constructors.
+- minimal age, survival, reproduction, global-density snapshot and census
+  process constructors;
+- a pure ceiling-style global density multiplier for explicit composition in
+  modeller-owned vital-rate callbacks;
 - an explicitly uncalibrated canonical grizzly-like benchmark with baseline,
   female-survival, targeted human-mortality and immigration scenarios;
 - replicate-preserving abundance, event, threshold, growth and provenance
   summaries from `run_grizzly_benchmark()`.
 
-Density, spatial, genetic and management helpers remain available for direct R
-use where exported, but their process migration is a later stage. YAML,
+The source-labelled `grizzly_density_extension_scenario()` demonstrates global
+density feedback without adding an empirical carrying-capacity default or
+changing the five canonical scenarios. Spatial, genetic and management helpers
+remain future process-migration sources. YAML,
 uncertainty/calibration execution, `targets` and Quarto reconnection are
 deliberately not active runtime interfaces during this clean break.
 
@@ -120,7 +125,9 @@ or registration is required.
 - [Core architecture](docs/architecture_core.md)
 - [Lifecycle-process contract](docs/design/lifecycle_process_contract.md)
 - [Canonical grizzly reference model](docs/design/canonical_grizzly_reference_model.md)
+- [Global density feedback](docs/design/density_module.md)
 - [Goal 003 benchmark packet](docs/goals/003-canonical-grizzly-benchmark/Goal.md)
+- [Goal 004 density packet](docs/goals/004-global-density-feedback/Goal.md)
 - [Living plan](docs/plan.md)
 
 ## Validation

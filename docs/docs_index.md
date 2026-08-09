@@ -27,6 +27,10 @@
 - `goals/003-canonical-grizzly-benchmark/Plan.md`
 - `goals/003-canonical-grizzly-benchmark/Runbook.md`
 - `goals/003-canonical-grizzly-benchmark/Log.md`
+- `goals/004-global-density-feedback/Goal.md`
+- `goals/004-global-density-feedback/Plan.md`
+- `goals/004-global-density-feedback/Runbook.md`
+- `goals/004-global-density-feedback/Log.md`
 
 Goal 001 remains the accepted strategic record under
 `goals/001-north-star-realignment/`.
@@ -37,7 +41,8 @@ Goal 001 remains the accepted strategic record under
   process engine. `reference/yaml_schema_v1.md` is retained migration evidence;
   YAML execution is deferred to Stage 4.
 - `design/density_module.md` and `design/reproduction_ev_semantics.md` record
-  current process-specific contracts.
+  current process-specific contracts; the density document supersedes the
+  former controller-era channel design.
 - `plan.md` records current realignment priority.
 - `decisions.md` records active and historical decisions.
 - `roadmap.md` and `log/` are historical delivery records; do not infer current

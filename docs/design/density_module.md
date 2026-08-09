@@ -1,109 +1,89 @@
-# Design: density dependence module
+# Design: global density feedback
 
-Status: DECISION LOCKED + CHANNEL PATH IMPLEMENTED (WP-1.1.1 / WP-1.1.2)
+## Status and boundary
 
-## 1) Goal
+Goal 004 replaces the disconnected controller-era density specification with
+ordinary process composition. This tranche implements global abundance only.
+Patch-specific density follows spatial migration; no compatibility adapter or
+privileged density channel remains.
 
-The current density implementation generalizes the earlier survival-only
-`K`/`K_patches` idea into a modular channel system that can scale:
+## Measurement process
 
-- survival probability,
-- breeding probability,
-- fecundity lambda.
+`density_snapshot_process()` counts living individual records at its exact
+position in the modeller's ordered process list. It:
 
-The current line is a clean break: density composition must be explicit and
-auditable through `density_spec()`. Any compatibility claim requires named
-tests and documentation rather than an implicit promise for older scenarios.
+- requires `population.id` and `population.alive`;
+- writes the integer count to `globals.density_n_alive`;
+- emits one `density_snapshot` event containing `n_alive`;
+- changes neither population records nor `next_id`.
 
-## 2) Core semantic model
+The engine stamps run, time, phase and process provenance. Process position is
+scientific structure: measuring before reproduction records pre-birth
+abundance, while measuring after reproduction includes that interval's births.
+A downstream process that declares `globals.density_n_alive` but has no
+upstream writer fails field-dependency preflight.
 
-Density is represented as channel-specific multiplicative modifiers. For each
-relevant individual-year calculation:
+## Pure multiplier
 
-- `survival`: `p_surv_eff = clamp01(p_surv_base * m_surv_density * m_surv_evcat)`
-- `breeding`: `p_breed_eff = clamp01(p_breed_base * m_breed_density * m_breed_evcat)`
-- `fecundity`: `lambda_eff = max(0, lambda_base * m_fec_density * m_fec_evcat)`
+For non-negative whole-number abundance `N` and positive modeller-supplied
+capacity `K`, `ceiling_density_multiplier(N, K)` returns
 
-Where:
+```text
+1       when N <= K
+K / N   when N > K
+```
 
-- baseline rates come from demography functions/tables,
-- density modifiers come from the density module,
-- EV/cat modifiers come from controller year-level processes,
-- stochastic draws remain controller-owned.
+The zero-abundance result is therefore exactly one. The multiplier is a pure
+calculation with no population, state, event or RNG effect.
 
-## 3) Ordering contract (non-negotiable)
+## Modeller-owned composition
 
-The controller must apply in this order:
+Density is not an engine channel. A callback states explicitly which vital
+rate is affected and how all terms compose. For example:
 
-1. baseline demography rate,
-2. density modifier,
-3. year-level EV/cat modifier,
-4. bounds clamp (`[0,1]` for probabilities, `>=0` for lambdas),
-5. stochastic draw (Bernoulli/Poisson where relevant).
+```r
+survival_process(
+  probability = function(individual, state, context, params) {
+    params$base_survival *
+      state$globals$environment_modifier *
+      ceiling_density_multiplier(
+        state$globals$density_n_alive,
+        params$capacity
+      )
+  },
+  requires = c(
+    "globals.environment_modifier",
+    "globals.density_n_alive"
+  ),
+  params = list(base_survival = 0.8, capacity = 100)
+)
+```
 
-This keeps density, EV, and demographic stochasticity separable.
+The same pure term can be used explicitly in `breeding_probability` or
+`fecundity_mean` callbacks. Bounds remain the callback author's responsibility:
+probability callbacks must return `[0, 1]`, and fecundity callbacks a finite
+non-negative mean. OpenPVA does not infer affected rates, composition order or
+capacity from scenario state.
 
-## 4) State inputs and scope
+## Scientific interpretation
 
-Minimum required state for density functions:
+This ceiling form is phenomenological vital-rate feedback. Its `capacity`
+parameter is not automatically an empirical carrying capacity, a hard cap,
+population truncation, or a guarantee that abundance will equilibrate at that
+value. Interpretation depends on the rate affected, lifecycle position,
+population measure, temporal scale and parameter evidence supplied by the
+model.
 
-- total alive `N` (global),
-- optional per-patch alive counts `N_patch`,
-- optional carrying capacities (global and/or patch),
-- current individual (for patch-specific scaling).
+`grizzly_density_extension_scenario()` is a source-labelled synthetic example
+that applies one positioned snapshot to survival, breeding and fecundity. The
+breeding and fecundity callbacks each apply the multiplier, so expected births
+contain both terms. It is not one of the five canonical Goal 003 scenarios and
+supplies no empirical grizzly density default.
 
-Design scope for current implementation line:
+## Deferred
 
-- global and patch-level scaling,
-- no age-structured density state in initial version,
-- additive extensibility for richer state summaries later.
-
-## 5) Interface shape
-
-An R-level density spec should support channel-specific functions:
-
-- `survival_fun(population, ind) -> multiplier`
-- `breeding_fun(population, ind) -> multiplier`
-- `fecundity_fun(population, ind) -> multiplier`
-
-Each function returns a single finite numeric multiplier `>= 0`.
-
-The explicit constructor `make_ceiling_density_fun()` accepts `K` or
-`K_patches` and returns a channel function. These values are not
-`scenario_spec()` arguments; callers attach the constructor through
-`density_spec()`.
-
-## 6) Compatibility and migration
-
-The current controller and YAML line is clean-break:
-
-- `scenario_spec()` has no `K` or `K_patches` parameters.
-- YAML accepts only explicit `density.survival`, `density.breeding`, and
-  `density.fecundity` channel blocks; shorthand density fields are rejected.
-- Existing compatibility claims require named tests and documentation. The
-  historical `K`/`K_patches` behavior is represented by the explicit ceiling
-  constructor rather than an implicit scenario adapter.
-
-## 7) YAML implications
-
-Canonical schema v3 exposes density through explicit channel blocks. Each
-channel may use a constant multiplier, a function reference, or a ceiling
-model with `K` or `K_patches`; top-level and shorthand density fields are not
-accepted. See `docs/reference/yaml_schema_v1.md` (the filename is historical;
-the documented contract is schema v3).
-
-## 8) Test requirements
-
-- Unit tests:
-  - density spec validation,
-  - global and patch ceiling density function behavior.
-- Integration tests:
-  - channel effects on survival/reproduction outputs,
-  - explicit ceiling constructor behavior for global and patch capacities,
-  - seeded deterministic behavior with density active.
-
-## 9) Out-of-scope for this design lock
-
-- Density effects on non-vital-rate processes (e.g., movement) in this line.
-- Age-structured density states.
-- YAML implementation details (covered separately in WP-1.1.3).
+- patch-specific abundance and capacity;
+- age-, sex- or resource-structured density state;
+- lags, stochastic capacity and environmental inference;
+- calibration, sensitivity and YAML configuration;
+- a modifier registry or controller-managed density specification.

@@ -16,7 +16,12 @@
 - `age_process()`
 - `survival_process()`
 - `reproduction_process()`
+- `density_snapshot_process()`
 - `census_process()`
+
+`ceiling_density_multiplier()` is the lean pure helper for explicit global
+density composition inside modeller-supplied survival or reproduction
+callbacks. It is not a controller channel or carrying-capacity estimator.
 
 ## Canonical benchmark fixture
 
@@ -36,10 +41,14 @@ output must be summarised with explicit benchmark metadata; the summariser
 does not trust mutable scenario-object metadata and never silently labels
 generic output as a canonical benchmark.
 
+`grizzly_density_extension_scenario()` is a non-canonical, source-labelled
+synthetic demonstration of global density feedback. Its required capacity is
+illustrative rather than an empirical grizzly default.
+
 ## Retained Scientific Helpers
 
-The package continues to export focused individual, demography-table, density,
-spatial and genetic helper functions documented in their R help pages. They are
+The package continues to export focused individual, demography-table, spatial
+and genetic helper functions documented in their R help pages. They are
 not privileged controller channels. Later goals may wrap high-value helpers as
 conforming process constructors.
 

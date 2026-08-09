@@ -39,6 +39,14 @@ The `human_mortality_probability` is a conditional hazard among target
 individuals alive when that ordinary process executes; human-death events retain
 exact age and a separate maturity-boundary age class.
 
+## Goal 004 density extension
+
+`grizzly_density_extension_scenario()` remains a generic `run_scenario()`
+scenario. Its benchmark metadata records the illustrative capacity, snapshot
+field, affected vital rates and explicit non-calibration statement. Each
+interval adds one `density_snapshot` event with scalar `n_alive`; the same value
+is available to later callbacks as `state$globals$density_n_alive`.
+
 ## Event Core
 
 Every event has:

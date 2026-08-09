@@ -664,7 +664,7 @@
     make extension claims ambiguous. The explicit creation declaration is the
     smallest addition needed to falsify incomplete newborn state before it
     reaches a downstream process.
-- **Status**: implemented in Goal 002; pending orchestrator acceptance.
+- **Status**: implemented, accepted and published in Goal 002 at `e07a90d`.
 
 ## DEC-036 — Synthetic canonical benchmark composition
 - **Date**: 2026-08-09
@@ -683,4 +683,35 @@
 - **Rationale**:
   - A small end-to-end fixture tests the North Star directly without adding a
     species branch, lifecycle DSL, empirical claim or analysis platform.
-- **Status**: implemented in Goal 003; pending orchestrator acceptance.
+- **Status**: implemented, accepted and published in Goal 003 at `b712bdb`.
+
+## DEC-037 — Stage 3 order, global density contract and pedigree direction
+- **Date**: 2026-08-09
+- **Decision**:
+  - Migrate Stage 3 in four bounded tranches: global density; patch-aware
+    dispersal and patch density; generic introductions/supplementation; optional
+    genetics.
+  - Represent global density measurement as an ordinary explicitly positioned
+    process writing `globals.density_n_alive` and emitting a provenance-stamped
+    snapshot event.
+  - Provide one pure ceiling-style multiplier, neutral at/below a positive
+    modeller-supplied capacity and `capacity / n_alive` above it.
+  - Keep survival, breeding, fecundity and environmental composition explicit
+    inside modeller-owned callbacks. Do not add density channels, a density
+    specification, controller logic, registry or compatibility adapter.
+  - Interpret this multiplier only as phenomenological vital-rate feedback,
+    not a hard cap, empirical carrying capacity, guaranteed equilibrium or
+    population truncation.
+  - For the later genetics tranche, make pedigree and ancestry primary IBM
+    state. Treat marker heterozygosity as a separate observable summary; it
+    must not define pedigree inbreeding.
+- **Rationale**:
+  - Global density is the smallest consequential Stage 3 test of one ordinary
+    process producing state for downstream ordinary processes.
+  - Spatial density depends on settled patch and movement semantics;
+    introductions require a separate creator contract; pedigree genetics has
+    greater state, inheritance and scientific-validity coupling and should not
+    drive the earlier architecture.
+  - Explicit model-side multiplication is more inspectable and extensible than
+    reviving the former three-channel controller design.
+- **Status**: implemented and accepted in Goal 004; publication authorised.

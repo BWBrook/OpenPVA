@@ -63,12 +63,14 @@ defaults and unnecessary spatial or genetic detail.
 ## Current state
 
 OpenPVA now executes community-defined processes without controller edits. The
-Stage 1 built-ins cover age, survival, reproduction and explicit census; exact
-event/ID accounting, reproducible replicate streams and downstream newborn
-field validation are enforced by the engine. Maternal patch inheritance is a
-declared birth-fixture rule, not hard-coded engine biology.
+Built-ins cover age, survival, reproduction, an explicitly positioned global
+density snapshot and census; exact event/ID accounting, reproducible replicate
+streams and downstream newborn field validation are enforced by the engine.
+Density affects a rate only when the modeller composes the pure multiplier in
+that process callback. Maternal patch inheritance is a declared birth-fixture
+rule, not hard-coded engine biology.
 
-Existing density, spatial, genetic, management, uncertainty, calibration and
-reporting code is future-migration source. It is not a privileged parallel
-runtime. Stages 2-4 add the canonical grizzly benchmark, port high-value modules
-and reconnect analysis interfaces in that order.
+Existing spatial, genetic, management, uncertainty, calibration and reporting
+code is future-migration source. It is not a privileged parallel runtime.
+Stage 3 next migrates patch-aware movement/density, introductions and then
+pedigree-based genetics before Stage 4 reconnects analysis interfaces.

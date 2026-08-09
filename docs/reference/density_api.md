@@ -1,55 +1,35 @@
-# Density API
+# Global density API
 
-This page documents the explicit R-level density module interface used by the
-current controller/scenario APIs.
+## Public functions
 
-## Purpose
+- `density_snapshot_process(name = "density_snapshot")`
+- `ceiling_density_multiplier(n_alive, capacity)`
+- `grizzly_density_extension_scenario(capacity, ...)`
 
-The density module provides channel-specific multiplicative modifiers that are
-applied by controllers to baseline vital rates.
+## Snapshot contract
 
-Supported channels:
+The ordinary snapshot process records living abundance at its exact lifecycle
+position in `state$globals$density_n_alive` and emits a `density_snapshot`
+event with `n_alive`. It does not change population records or IDs. Downstream
+callbacks declare `globals.density_n_alive` in their process `requires` field.
 
-- `survival`
-- `breeding`
-- `fecundity`
+## Multiplier contract
 
-## Public constructors and validators
+`n_alive` must be one finite non-negative whole number and `capacity` one
+finite positive number. The result is exactly `1` at zero, below capacity and
+at capacity; above capacity it is `capacity / n_alive`.
 
-- `density_spec(survival_fun = NULL, breeding_fun = NULL, fecundity_fun = NULL)`
-- `validate_density_spec(spec)`
-- `make_ceiling_density_fun(K = NULL, K_patches = NULL)`
+The function is a phenomenological vital-rate multiplier, not a population
+cap, empirical estimate, equilibrium condition or removal operation. The
+modeller explicitly composes it in any selected survival, breeding or
+fecundity callback.
 
-## Function contract
+## Extension fixture
 
-Each channel function must have signature:
+`grizzly_density_extension_scenario()` adds a positioned snapshot and explicit
+density terms to the synthetic Goal 003 baseline. Its required `capacity` is
+illustrative and source-labelled. The five canonical benchmark scenarios are
+unchanged.
 
-- `function(population, ind) -> multiplier`
-
-Requirements:
-
-- Return value must be a single finite numeric scalar.
-- Return value must be `>= 0`.
-- At least one channel function must be supplied in `density_spec()`.
-
-## Controller composition order
-
-For each vital-rate calculation, OpenPVA applies:
-
-1. baseline demography rate
-2. density channel multiplier
-3. year-level EV/cat multiplier
-4. bounds clamp (`[0, 1]` for probabilities, `>= 0` for lambdas)
-5. stochastic draw (Bernoulli/Poisson where relevant)
-
-## YAML integration
-
-YAML scenarios configure density through a top-level `density` block in
-canonical schema v3. See `docs/reference/yaml_schema_v1.md` for field-level
-schema details (the filename is retained for historical links).
-
-## Notes on `survival_scale` summary field
-
-`survival_scale` is retained in the summary schema and remains `1` for the
-explicit density path. Channel effects are represented through outcomes rather
-than through a separate legacy scalar.
+Patch-specific density, density configuration schemas and controller-managed
+modifier channels are not part of this API.

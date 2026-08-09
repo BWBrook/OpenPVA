@@ -1,96 +1,62 @@
-# Design: reproduction semantics + reproduction EV
+# Design: reproduction rate semantics
 
-Status: DECISION LOCKED + CONTROLLER PATH IMPLEMENTED (WP-0.5.4)
+## Active contract
 
-## 1) Historical problem statement
+`reproduction_process()` separates two effective-rate callbacks from stochastic
+realisation:
 
-The pre-rate reproduction flow mixed structural rules and stochastic outcomes:
+- `breeding_probability(mother, state, context, params)` returns one value in
+  `[0, 1]`;
+- `fecundity_mean(mother, state, context, params)` returns one finite
+  non-negative Poisson mean.
 
-- `breeding_fun(ind)` as boolean eligibility.
-- `fecundity_fun(ind)` as realized integer count.
+For each living female, the process draws breeding as Bernoulli, resolves the
+optional mate, draws litter size as Poisson conditional on breeding, allocates
+stable IDs, initializes declared newborn fields and emits accounting events.
 
-That coupling makes year-level EV/cat application awkward and weakens auditability.
+## Modeller-owned effective rates
 
-## 2) Locked semantic model
+The callbacks return effective values. They may explicitly compose baseline
+demography, environment, density or other scientifically justified terms:
 
-Reproduction is split into baseline rates plus controller stochastic realization:
+```r
+breeding_probability = function(mother, state, context, params) {
+  params$base_breeding *
+    state$globals$environment_modifier *
+    ceiling_density_multiplier(
+      state$globals$density_n_alive,
+      params$capacity
+    )
+}
+```
 
-- `breeding_prob_fun(ind)` returns baseline `p_breed_base` in `[0, 1]`.
-- `fecundity_lambda_fun(ind)` returns baseline `lambda_base >= 0`.
+The process validates the final callback result but does not infer channels,
+composition order or bounds-clamping policy. Every state input must appear in
+the process `requires` declaration. The modeller therefore owns both the
+scientific formula and where its upstream measurement processes occur.
 
-Controller then applies year-level modifiers and performs stochastic draws:
+Applying one density multiplier to breeding probability and again to
+fecundity means expected births receive both terms. In the Goal 004 synthetic
+extension the same multiplier is used deliberately in both callbacks, so its
+reproductive expectation contains the multiplier squared. This is an explicit
+fixture choice, not an OpenPVA default.
 
-- breeding realization via Bernoulli,
-- offspring realization via Poisson (conditional on breeding).
+## Deferred configuration
 
-This split is mandatory for all new reproduction pathways.
+YAML and environmental-variation compilation are Stage 4 analysis/configuration
+work. They may construct these ordinary callbacks but must not become a second
+controller, a fixed modifier channel system or a lifecycle DSL.
 
-## 3) Controller responsibilities
+## Validation
 
-For each run-year:
+Tests should distinguish breeding-only, fecundity-only and combined effects.
+For `n` eligible females, breeding probability `p` and conditional Poisson mean
+`lambda`, the independent expectation is
 
-1. Compute reproduction EV/cat year modifiers.
-2. Compute effective per-individual rates:
-   - `p_breed_eff = clamp01(p_breed_base * m_p_year * m_p_density * ...)`
-   - `lambda_eff = max(0, lambda_base * m_lambda_year * m_lambda_density * ...)`
-3. Draw breeding realizations (Bernoulli).
-4. Resolve mates using configured mating policy.
-5. Draw offspring counts for realized breeders (Poisson).
-6. Generate offspring records and metadata.
+```text
+E[births] = n * p * lambda
+Var(births) = n * (p * lambda + p * (1 - p) * lambda^2)
+```
 
-## 4) Clean-break contract
-
-The current development line is clean-break by design:
-
-- controller/scenario APIs use baseline-rate channels only,
-- YAML uses a single canonical schema (`schema_version: 3`),
-- legacy `breeding_fun` / `fecundity_fun` controller shims are intentionally
-  removed.
-
-Breaking changes are allowed when the repo docs, tests, and packaged examples
-move together.
-
-## 5) YAML implications
-
-Canonical YAML exposes explicit baseline reproduction fields and reproduction EV:
-
-- baseline breeding probability channels,
-- baseline fecundity lambda channels,
-- year-level reproduction EV/cat configuration.
-
-The current parser accepts only this canonical schema-v3 form. Older YAML and
-the historical controller shims are not compatibility promises; any future
-migration requires named tests and documentation.
-
-## 6) Worked example
-
-Assume a female with:
-
-- `p_breed_base = 0.60`
-- `lambda_base = 1.80`
-
-And a given year has:
-
-- breeding EV multiplier `m_p_year = 0.90`
-- fecundity EV multiplier `m_lambda_year = 1.10`
-- no catastrophe
-
-Then:
-
-- `p_breed_eff = 0.60 * 0.90 = 0.54`
-- `lambda_eff = 1.80 * 1.10 = 1.98`
-
-Controller draws:
-
-- breed? `Bernoulli(0.54)`
-- if breeding realized, offspring count `Poisson(1.98)`
-
-This shows baseline demography and yearly stochastic forcing remain separable and auditable.
-
-## 7) Test requirements for implementation WPs
-
-- unit tests for new reproduction API helpers/builders,
-- integration tests:
-  - canonical YAML path,
-  - deterministic seeded behavior,
-  - output schema regression safety.
+Stochastic validation should compare replicate means against this compound
+expectation using stated Monte Carlo error rather than a single seeded result.
