@@ -21,6 +21,10 @@ and reproducible analysis machinery.
   downstream `patch_id` fails at preflight or runtime.
 - YAML, targets, uncertainty/calibration execution, summaries and optional
   module scenarios are deliberately de-exported/deferred rather than adapted.
+- Goal 003 supplies a synthetic, source-labelled and explicitly uncalibrated
+  grizzly-like benchmark through ordinary process composition, with required
+  scenario contrasts, annual survival variation, immigration/observation
+  extensions and replicate-level summaries.
 - The published test/CI/release evidence remains useful historical baseline
   evidence, but it does not select the next product tranche.
 
@@ -72,11 +76,12 @@ error.
 
 ### Stage 2 — canonical grizzly benchmark
 
-Implement baseline, alternative female-survival and targeted human-mortality
-scenarios. Demonstrate process reordering, observation, immigration,
-order-falsification, stochastic calibration, event accounting and reproducible
-provenance. Do not present empirical grizzly defaults without a separate
-parameter-evidence goal.
+Implemented in Goal 003 as an illustrative synthetic fixture. Baseline,
+alternative female-survival, targeted human-mortality and immigration
+scenarios differ through process objects and parameters. The benchmark also
+demonstrates annual survival variation, observation, mortality/reproduction
+reordering, event accounting, stochastic expectation checks and reproducible
+provenance. No value is an empirical grizzly default.
 
 ### Stage 3 — high-value module migration
 

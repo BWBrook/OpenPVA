@@ -18,6 +18,24 @@
 - `reproduction_process()`
 - `census_process()`
 
+## Canonical benchmark fixture
+
+The narrowly scoped `grizzly_benchmark_*()` builders, `run_grizzly_benchmark()`
+and `summarise_grizzly_benchmark()` provide the synthetic, source-labelled
+Goal 003 benchmark. They are acceptance fixtures, not calibrated species
+defaults or management advice. The leaf process constructors remain model-side
+implementation details; users normally start with the benchmark/scenario
+builder and the generic process contract.
+
+`run_grizzly_benchmark()` accepts only the five canonical scenario names:
+baseline, the two independent-female survival alternatives, targeted human
+mortality, and immigration. Environmental variation, reordered mortality and
+other mutations are ordinary extensions: compose them with
+`grizzly_benchmark_scenario()` and call `run_scenario()` directly. A generic
+output must be summarised with explicit benchmark metadata; the summariser
+does not trust mutable scenario-object metadata and never silently labels
+generic output as a canonical benchmark.
+
 ## Retained Scientific Helpers
 
 The package continues to export focused individual, demography-table, density,

@@ -17,6 +17,28 @@ Each run contains:
 - optional `population_history` snapshots;
 - initial/final stream provenance and the declared process plan.
 
+## Goal 003 benchmark summary
+
+`run_grizzly_benchmark()` adds `benchmark_summary` with:
+
+- `trajectory`: run/time/phase census rows by sex, cub/yearling/independent
+  status, eligible females and finite annual growth;
+- `events`: run/time event totals retaining births, introductions, natural and
+  stratum-labelled human deaths, dependency transitions, environment,
+  observation and census rows;
+- `run_summary`: replicate-level final abundance, independent-female
+  abundance, geometric finite growth, quasi-extinction flag and first crossing
+  phase/time (including an initial-census crossing; growth is `NA` when the
+  initial abundance is zero);
+- threshold probability, Monte Carlo standard error, conditional crossing
+  timing, parameter values/hash, process order, seed streams and software/R
+  version in `provenance`.
+
+The fixture's parameters are explicitly illustrative and uncalibrated.
+The `human_mortality_probability` is a conditional hazard among target
+individuals alive when that ordinary process executes; human-death events retain
+exact age and a separate maturity-boundary age class.
+
 ## Event Core
 
 Every event has:

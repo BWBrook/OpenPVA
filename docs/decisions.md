@@ -665,3 +665,22 @@
     smallest addition needed to falsify incomplete newborn state before it
     reaches a downstream process.
 - **Status**: implemented in Goal 002; pending orchestrator acceptance.
+
+## DEC-036 — Synthetic canonical benchmark composition
+- **Date**: 2026-08-09
+- **Decision**:
+  - Accept a narrowly scoped ordinary-R benchmark fixture as the Stage 2
+    acceptance surface: `grizzly_benchmark_*()`, `run_grizzly_benchmark()` and
+    `summarise_grizzly_benchmark()`.
+  - Keep all rates, horizons, thresholds and environmental modifiers explicit,
+    source-labelled and uncalibrated. They are not empirical grizzly truth,
+    GYE calibration, recovery criteria or sustainable-mortality claims.
+  - Express annual environment, cub/yearling dependency, mate-gated breeding,
+    reproduction, disjoint dependent/independent survival, targeted human
+    mortality, immigration, observation and census as ordinary processes.
+  - Preserve replicate-level outputs, initial/interval census distinction,
+    event accounting, process order, parameter hash and software provenance.
+- **Rationale**:
+  - A small end-to-end fixture tests the North Star directly without adding a
+    species branch, lifecycle DSL, empirical claim or analysis platform.
+- **Status**: implemented in Goal 003; pending orchestrator acceptance.

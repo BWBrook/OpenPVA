@@ -23,6 +23,10 @@
 - `goals/002-generic-process-execution/Plan.md`
 - `goals/002-generic-process-execution/Runbook.md`
 - `goals/002-generic-process-execution/Log.md`
+- `goals/003-canonical-grizzly-benchmark/Goal.md`
+- `goals/003-canonical-grizzly-benchmark/Plan.md`
+- `goals/003-canonical-grizzly-benchmark/Runbook.md`
+- `goals/003-canonical-grizzly-benchmark/Log.md`
 
 Goal 001 remains the accepted strategic record under
 `goals/001-north-star-realignment/`.

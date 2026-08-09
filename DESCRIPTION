@@ -39,6 +39,7 @@ Collate:
     'lifecycle_supplementation.R'
     'process_core.R'
     'process_demography.R'
+    'grizzly_benchmark.R'
     'simulation_summary.R'
     'simulation_plots.R'
     'scenario_core.R'

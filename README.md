@@ -23,6 +23,10 @@ The Stage 1 runtime provides:
 - independently assigned L'Ecuyer-CMRG replicate streams with caller RNG
   restoration and serial/fork identity;
 - minimal age, survival, reproduction and census process constructors.
+- an explicitly uncalibrated canonical grizzly-like benchmark with baseline,
+  female-survival, targeted human-mortality and immigration scenarios;
+- replicate-preserving abundance, event, threshold, growth and provenance
+  summaries from `run_grizzly_benchmark()`.
 
 Density, spatial, genetic and management helpers remain available for direct R
 use where exported, but their process migration is a later stage. YAML,
@@ -116,6 +120,7 @@ or registration is required.
 - [Core architecture](docs/architecture_core.md)
 - [Lifecycle-process contract](docs/design/lifecycle_process_contract.md)
 - [Canonical grizzly reference model](docs/design/canonical_grizzly_reference_model.md)
+- [Goal 003 benchmark packet](docs/goals/003-canonical-grizzly-benchmark/Goal.md)
 - [Living plan](docs/plan.md)
 
 ## Validation

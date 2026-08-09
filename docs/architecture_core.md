@@ -164,12 +164,13 @@ A community package should need only to:
 OpenPVA must not require community modules to register names globally, modify
 the controller, submit to the core repository, or subclass a deep hierarchy.
 
-## Current architecture gap
+## Historical architecture gap
 
-Current code validates six lifecycle labels and dispatches through conditional
-branches. Reordering is supported, but extension is not. The retained,
+The pre-Goal-002 code validated six lifecycle labels and dispatched through
+conditional branches. That starting defect is now removed. The retained,
 redesigned, repaired and removed components are specified in
-`design/realignment_gap_map.md`.
+`design/realignment_gap_map.md`; the active runtime is the generic process
+loop described above.
 
 ## Reference benchmark
 
@@ -177,6 +178,13 @@ redesigned, repaired and removed components are specified in
 test. It covers structured two-sex demography, maternal dependency, stochastic
 events, human-caused mortality, alternate ordering, expected-value oracle
 checks, accounting events and extension without controller edits.
+
+Goal 003 implements this acceptance fixture through ordinary model-side
+process composition. Its parameters are synthetic, source-labelled and
+explicitly uncalibrated. The engine does not recognise grizzlies, sex/age
+scenarios or mortality causes; process order, event strata, initial/interval
+census provenance, replicate evidence and parameter/software hashes remain
+visible in the benchmark summary.
 
 ## Explicit exclusions
 
