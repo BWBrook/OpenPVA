@@ -4,7 +4,8 @@
 
 `docs/vision_and_scope.md` is the product authority. The current operational
 programme is Stage 3 migration through the accepted R-native lifecycle-process
-contract, beginning with bounded global density feedback in Goal 004.
+contract. Goal 005 is the active bounded tranche: patch transitions and patch-
+specific density.
 
 The modeller defines the biological program. OpenPVA supplies execution,
 reusable processes, scientific contracts, RNG/time/event provenance, validation
@@ -27,7 +28,12 @@ and reproducible analysis machinery.
   extensions and replicate-level summaries.
 - Goal 004 replaces the disconnected density specification with an ordinary
   positioned global-abundance snapshot and one pure ceiling-style multiplier.
-  Vital-rate composition remains explicit and modeller-owned.
+  Vital-rate composition remains explicit and modeller-owned; the accepted
+  implementation is published at `122e8dd`.
+- Goal 005 replaces controller-era spatial conveniences with explicit patch
+  assignment, simultaneous event-emitting transitions and positioned full-
+  domain patch counts. Its implementation is under bounded review and remains
+  unpublished.
 - The published test/CI/release evidence remains useful historical baseline
   evidence, but it does not select the next product tranche.
 
@@ -91,8 +97,9 @@ provenance. No value is an empirical grizzly default.
 Migrate four bounded tranches through the same contract, removing each obsolete
 surface rather than adapting it:
 
-1. global density measurement and explicit vital-rate feedback (Goal 004);
-2. patch-aware dispersal and patch-specific density;
+1. global density measurement and explicit vital-rate feedback (Goal 004,
+   implemented, accepted and published);
+2. patch-aware dispersal and patch-specific density (Goal 005, active);
 3. generic introductions and supplementation;
 4. optional pedigree/ancestry genetics.
 
@@ -119,5 +126,5 @@ workstreams and should not be extended ahead of Stages 1–2.
 ## Stop rule
 
 Do not begin the next Stage 3 module, release exercise, or interface platform
-before Goal 004 passes its bounded acceptance review. Publication, tags and
+before Goal 005 passes its bounded acceptance review. Publication, tags and
 releases require separate authority.

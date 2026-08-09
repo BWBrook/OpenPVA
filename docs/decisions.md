@@ -714,4 +714,28 @@
     drive the earlier architecture.
   - Explicit model-side multiplication is more inspectable and extensible than
     reviving the former three-channel controller design.
-- **Status**: implemented and accepted in Goal 004; publication authorised.
+- **Status**: implemented, accepted and published in Goal 004 at `122e8dd`.
+
+## DEC-038 — Explicit patch transitions and event-first spatial evidence
+- **Date**: 2026-08-09
+- **Decision**:
+  - Interpret `patch_id` only within a modeller-supplied ordered positive-
+    integer domain; require explicit initial assignment and explicit newborn
+    inheritance or initialisation.
+  - Express discrete dispersal as an ordinary process. Evaluate all eligible
+    living individuals against one pre-process state, validate destinations,
+    then apply transitions simultaneously.
+  - Provide a strict Markov constructor over an explicit row-stochastic matrix.
+    Do not normalise rows or ship empirical/default connectivity regimes.
+  - Record realised transition cells, including retention, as engine-stamped
+    `patch_transition` events. Retire survivor-history connectivity inference.
+  - Record full-domain living patch counts through one positioned process and
+    use strict keyed count/capacity lookup with the existing ceiling multiplier.
+  - Retire the spatial convenience initialisers, old dispersal helpers and
+    history-inferred spatial summary suite without adapters.
+- **Rationale**:
+  - Simultaneous transitions preserve an inspectable lifecycle estimand;
+    survivor snapshots confound movement with mortality, births and timing.
+  - Explicit domains, matrices and birth rules avoid biologically arbitrary
+    defaults while using the accepted generic process seam unchanged.
+- **Status**: implemented and accepted in Goal 005; publication authorised.

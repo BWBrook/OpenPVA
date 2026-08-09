@@ -26,7 +26,6 @@ Collate:
     'init_population.R'
     'spatial_patches.R'
     'spatial_dispersal.R'
-    'spatial_summary.R'
     'genetics_core.R'
     'lifecycle_age.R'
     'demography_survival_spec.R'

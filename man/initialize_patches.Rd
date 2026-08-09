@@ -2,34 +2,24 @@
 % Please edit documentation in R/spatial_patches.R
 \name{initialize_patches}
 \alias{initialize_patches}
-\title{Assign individuals to spatial patches}
+\title{Assign explicit patch identifiers}
 \usage{
-initialize_patches(
-  population,
-  n_patches = NULL,
-  patch_ids = NULL,
-  assignment_fun = NULL
-)
+initialize_patches(population, patch_ids, patch_domain)
 }
 \arguments{
-\item{population}{List of individual objects.}
+\item{population}{List of individual records.}
 
-\item{n_patches}{Positive integer number of patches (required unless
-`patch_ids` is supplied).}
+\item{patch_ids}{Numeric vector containing one positive integer-like patch
+identifier per individual.}
 
-\item{patch_ids}{Optional integer vector with one entry per individual. When
-provided, it is used directly and overrides `n_patches` and
-`assignment_fun`.}
-
-\item{assignment_fun}{Optional function with signature
-`function(population, n_patches)` that returns a vector of patch identifiers
-(coercible to integer) for each individual.}
+\item{patch_domain}{Ordered numeric vector of unique positive integer-like
+patch identifiers. Identifiers need not be consecutive.}
 }
 \value{
-The population list with updated `patch_id` entries.
+The population list with strict integer \code{patch_id} fields.
 }
 \description{
-Populates the `patch_id` field for each individual either from an explicit
-vector or by applying a deterministic assignment rule across a specified
-number of patches.
+Assigns one modeller-supplied \code{patch_id} to each individual within an
+explicit ordered patch domain. Empty declared patches are valid; OpenPVA
+does not invent or balance an initial patch distribution.
 }

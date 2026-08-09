@@ -110,12 +110,14 @@ OpenPVA is not:
 
 ## Current decision boundary
 
-The repository has substantial implemented breadth. Goal 002 removed the former
-six-label controller and Goal 003 now supplies the first end-to-end synthetic,
-uncalibrated grizzly-like benchmark through ordinary process composition.
-`docs/design/lifecycle_process_contract.md` supplies the approved lean defaults
-for RNG, fields, events and time/census semantics. Empirical parameterisation,
-management inference and migration of optional modules remain later goals.
+Goal 002 removed the former six-label controller and Goal 003 supplies the first
+end-to-end synthetic, uncalibrated grizzly-like benchmark through ordinary
+process composition. Goal 004 added explicit global density feedback, and Goal
+005 is the bounded review surface for discrete patch transitions and patch-
+specific density. `docs/design/lifecycle_process_contract.md` supplies the
+approved lean defaults for RNG, fields, events and time/census semantics.
+Empirical parameterisation, management inference, introductions and pedigree
+genetics remain later goals.
 
 Current capabilities and historical roadmaps are evidence about the starting
 point, not the authority for product direction. This document is the authority.

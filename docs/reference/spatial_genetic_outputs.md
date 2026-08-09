@@ -1,115 +1,69 @@
-# Spatial-genetic outputs: usage and interpretation
+# Spatial processes and event interpretation
 
-This guide explains how to use OpenPVA spatial/genetic outputs for inference and
-comparison workflows.
+## Active surface
 
-## Output families
+Discrete patch structure is expressed through ordinary lifecycle processes:
 
-OpenPVA now provides three complementary families of spatial/genetic outputs:
+- `initialize_patches()` assigns explicit starting `patch_id` values within a
+  modeller-supplied ordered domain;
+- `dispersal_process()` applies a custom simultaneous destination rule;
+- `markov_dispersal_process()` draws from an explicit row-stochastic matrix;
+- `patch_density_snapshot_process()` records living counts for every declared
+  patch, including zero-count patches;
+- `patch_density_multiplier()` performs strict keyed count/capacity lookup and
+  applies `ceiling_density_multiplier()`.
 
-1. Final-time patch summaries.
-2. Time-series patch summaries.
-3. Connectivity/turnover diagnostics.
+There is no default patch allocation, connectivity regime, landscape object or
+implicit newborn patch rule.
 
-These answer different questions and should not be treated as interchangeable.
+## Transition evidence
 
-## 1) Final-time summaries
+Every eligible living individual contributes to one aggregate
+`patch_transition` event cell at the process position, including individuals
+retained on the diagonal. Event rows contain `origin_patch_id`,
+`destination_patch_id` and non-negative integer `value`, plus engine-owned
+run/time/phase/process provenance.
 
-Helpers:
+These events are the authoritative movement evidence. Comparing end-of-year
+survivor snapshots confounds transition timing with births, deaths and process
+order and must not be interpreted as realised connectivity.
 
-- `summarise_patch_occupancy_final(sim_output, n_patches, alive_only = TRUE)`
-- `summarise_patch_genetic_diversity_final(sim_output, n_patches, alive_only = TRUE)`
+For each patch and transition event batch:
 
-Use when the decision question is endpoint-oriented, for example:
+```text
+end abundance = start abundance + non-diagonal inflow - non-diagonal outflow
+```
 
-- "Which patches are most likely occupied at the end of the planning horizon?"
-- "How different are final heterozygosity/F-hat patterns by management option?"
+when no other demographic process occurs between the two censuses.
 
-Strengths:
+## Patch density
 
-- compact and easy to compare across scenarios,
-- useful for screening management alternatives.
+`patch_density_snapshot_process()` writes one named integer vector to
+`state$globals$patch_density_counts`. Its keys and order are the declared patch
+domain. Later modeller-owned vital-rate callbacks combine that state with an
+exactly keyed capacity vector through `patch_density_multiplier()`.
 
-Limitations:
+The snapshot is positional. Moving dispersal before or after it deliberately
+changes the local abundance available to downstream callbacks. Capacity remains
+a supplied phenomenological feedback parameter, not an inferred habitat limit
+or hard population ceiling.
 
-- hides transient dynamics,
-- does not reveal turnover pathways or year-to-year instability.
+## Birth state and order
 
-## 2) Time-series summaries
+If any downstream process requires `population.patch_id`, every creation
+process must declare and initialise it. Maternal inheritance is requested
+explicitly with `reproduction_process(inherit_fields = "patch_id")`; a
+`newborn_initializer` can express a different biological rule. The engine does
+not choose one.
 
-Helpers:
+Dispersal before birth moves a mother before inherited patch state is created.
+Birth before an age-filtered dispersal process can leave newborns in their
+birth patch. Those are different models, not interchangeable implementations.
 
-- `summarise_patch_occupancy_timeseries(sim_output, n_patches, alive_only = TRUE)`
-- `summarise_patch_genetic_diversity_timeseries(sim_output, n_patches, alive_only = TRUE)`
+## Scope
 
-Precondition:
-
-- Simulations must be run with `record_population_history = TRUE`.
-
-Use when the decision question is trajectory-oriented, for example:
-
-- "Does a patch recover after temporary collapse?"
-- "Is diversity steadily eroding or only fluctuating around a stable level?"
-
-Strengths:
-
-- exposes trend and volatility,
-- supports event-timing analyses (colonization/extirpation timing, lag effects).
-
-Limitations:
-
-- larger output objects,
-- requires explicit history capture at run time.
-
-## 3) Connectivity and turnover diagnostics
-
-Helper:
-
-- `summarise_patch_connectivity_timeseries(sim_output, n_patches, alive_only = TRUE)`
-
-Key outputs:
-
-- `transitions` and `transitions_overall`: patch-to-patch movement counts and
-  origin-conditional transition probabilities.
-- `net_patch_change`: year-to-year patch abundance change (`delta_n_alive`).
-- `turnover`: colonization/extirpation indicators.
-
-Use when the decision question is mechanism-oriented, for example:
-
-- "Are sink patches sustained by immigration?"
-- "Does a corridor alternative increase movement symmetry?"
-
-Interpretation caveat:
-
-- Transition diagnostics track individuals present in consecutive years
-  (ID-matched survivors). They do not represent total demographic flux,
-  because births/deaths alter patch counts outside survivor transitions.
-
-## Choosing the right output for a decision
-
-- Endpoint decision (final-state ranking): start with final-time summaries.
-- Stability/risk over time: use time-series summaries.
-- Movement mechanism or corridor inference: use connectivity diagnostics.
-
-In practice, use all three in sequence:
-
-1. Screen with final-time summaries.
-2. Stress-test shortlisted scenarios with time-series outputs.
-3. Explain differences with connectivity/turnover diagnostics.
-
-## Recommended comparison workflow
-
-1. Run scenario sets with fixed seeds and `record_population_history = TRUE`.
-2. Generate all three output families.
-3. Compare directional consistency across metrics (occupancy, diversity,
-   transition probabilities, turnover flags).
-4. Record interpretation notes in `docs/interpretation_notes.md`.
-
-## Scenario pack
-
-The packaged YAML scenario set under `inst/extdata/` includes three spatial
-regimes for this workflow:
-
-- `demo_spatial_genetic_fragmented.yaml`
-- `demo_spatial_genetic_connected.yaml`
-- `demo_spatial_genetic_asymmetric.yaml`
+Patches are discrete labels and each dispersal process is one transition at one
+declared lifecycle point. Continuous space, paths, distances, movement costs,
+habitat dynamics, empirical matrices, gene-flow inference and pedigree
+genetics are outside this surface. Genetics will be rebuilt from pedigree and
+ancestry state in its own Stage 3 tranche.

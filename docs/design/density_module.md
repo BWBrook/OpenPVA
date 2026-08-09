@@ -2,10 +2,10 @@
 
 ## Status and boundary
 
-Goal 004 replaces the disconnected controller-era density specification with
-ordinary process composition. This tranche implements global abundance only.
-Patch-specific density follows spatial migration; no compatibility adapter or
-privileged density channel remains.
+Goal 004 replaced the disconnected controller-era density specification with
+ordinary process composition. Its tranche implements global abundance;
+`spatial_process_contract.md` defines the later Goal 005 patch-specific
+extension. No compatibility adapter or privileged density channel remains.
 
 ## Measurement process
 
@@ -82,7 +82,6 @@ supplies no empirical grizzly density default.
 
 ## Deferred
 
-- patch-specific abundance and capacity;
 - age-, sex- or resource-structured density state;
 - lags, stochastic capacity and environmental inference;
 - calibration, sensitivity and YAML configuration;

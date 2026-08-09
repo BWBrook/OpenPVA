@@ -31,6 +31,10 @@
 - `goals/004-global-density-feedback/Plan.md`
 - `goals/004-global-density-feedback/Runbook.md`
 - `goals/004-global-density-feedback/Log.md`
+- `goals/005-patch-transitions-density/Goal.md`
+- `goals/005-patch-transitions-density/Plan.md`
+- `goals/005-patch-transitions-density/Runbook.md`
+- `goals/005-patch-transitions-density/Log.md`
 
 Goal 001 remains the accepted strategic record under
 `goals/001-north-star-realignment/`.
@@ -40,9 +44,10 @@ Goal 001 remains the accepted strategic record under
 - `reference/public_api.md` and `reference/output_schema.md` describe the active
   process engine. `reference/yaml_schema_v1.md` is retained migration evidence;
   YAML execution is deferred to Stage 4.
-- `design/density_module.md` and `design/reproduction_ev_semantics.md` record
-  current process-specific contracts; the density document supersedes the
-  former controller-era channel design.
+- `design/density_module.md`, `design/spatial_process_contract.md` and
+  `design/reproduction_ev_semantics.md` record current process-specific
+  contracts; the density and spatial documents supersede their former
+  controller-era surfaces.
 - `plan.md` records current realignment priority.
 - `decisions.md` records active and historical decisions.
 - `roadmap.md` and `log/` are historical delivery records; do not infer current

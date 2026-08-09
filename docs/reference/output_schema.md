@@ -47,6 +47,19 @@ field, affected vital rates and explicit non-calibration statement. Each
 interval adds one `density_snapshot` event with scalar `n_alive`; the same value
 is available to later callbacks as `state$globals$density_n_alive`.
 
+## Goal 005 spatial events
+
+`dispersal_process()` and `markov_dispersal_process()` emit one aggregate
+`patch_transition` row per realised origin/destination cell. Rows contain
+`origin_patch_id`, `destination_patch_id` and integer `value`; diagonal rows
+record eligible individuals retained in their origin patch. These events are
+the movement ledger and replace connectivity inferred from survivor histories.
+
+`patch_density_snapshot_process()` emits one `patch_density_snapshot` row per
+declared patch with `patch_id` and integer `value`, including zeros. The same
+ordered keyed counts are written to `state$globals$patch_density_counts` for
+later ordinary processes.
+
 ## Event Core
 
 Every event has:

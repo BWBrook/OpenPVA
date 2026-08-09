@@ -1,181 +1,239 @@
-#' Default dispersal function (no movement)
+#' Construct a simultaneous patch-transition process
 #'
-#' Returns the individual's current `patch_id`, implying no dispersal.
+#' Applies one modeller-supplied destination rule to eligible living
+#' individuals. Every rule call sees the same pre-process state, after which all
+#' validated destinations are applied together. The process emits aggregate
+#' `patch_transition` events, including diagonal retention.
 #'
-#' @param ind Individual object.
-#' @param population Full population list (unused, but part of the interface).
-#'
-#' @return The individual's existing `patch_id`.
-#' @export
-default_dispersal_fun <- function(ind, population) {
-  ind$patch_id
-}
-
-#' Apply dispersal to a population
-#'
-#' Updates each living individual's `patch_id` according to a user-supplied
-#' dispersal rule.
-#'
-#' @param population List of individual objects.
-#' @param dispersal_fun Function with signature `function(ind, population)` that
-#'   returns a new patch identifier (integer or `NA`).
-#'
-#' @return Modified population with updated `patch_id` values.
-#' @export
-apply_dispersal <- function(population, dispersal_fun) {
-  if (!is.function(dispersal_fun)) {
-    stop("dispersal_fun must be a function", call. = FALSE)
-  }
-  if (!length(population)) {
-    return(population)
-  }
-
-  population <- Map(
-    function(ind) {
-      if (isTRUE(ind$alive)) {
-        new_pid <- dispersal_fun(ind, population)
-        if (length(new_pid) == 0L || is.null(new_pid)) {
-          ind$patch_id <- NA_integer_
-        } else {
-          new_pid <- as.integer(new_pid[1L])
-          if (is.na(new_pid)) {
-            ind$patch_id <- NA_integer_
-          } else {
-            ind$patch_id <- new_pid
-          }
-        }
-      }
-      ind
-    },
-    population,
-    USE.NAMES = FALSE
-  )
-  population
-}
-
-#' Create a Markov dispersal function
-#'
-#' Converts a patch-to-patch transition matrix into a dispersal function
-#' compatible with `apply_dispersal()`.
-#'
-#' @param transition_matrix Square numeric matrix where rows correspond to
-#'   origin patches and columns to destination patches. Entries must be
-#'   non-negative; rows are normalised internally.
-#'
-#' @return A function with signature `function(ind, population)` that returns a
+#' @param patch_domain Ordered numeric vector of unique positive integer-like
+#'   patch identifiers.
+#' @param destination Function called as
+#'   `destination(individual, state, context, params)` and returning one
 #'   destination patch identifier.
+#' @param eligible Optional function with the same arguments returning one
+#'   non-missing logical value. Dead individuals are never eligible. `NULL`
+#'   makes every living individual eligible.
+#' @param name Process name.
+#' @param requires Additional state paths used by `destination` or `eligible`.
+#' @param params Explicit modeller parameters passed to both callbacks.
+#'
+#' @return A validated lifecycle process.
 #' @export
-make_markov_dispersal_fun <- function(transition_matrix) {
-  if (!is.matrix(transition_matrix)) {
-    stop("transition_matrix must be a matrix", call. = FALSE)
+dispersal_process <- function(
+    patch_domain,
+    destination,
+    eligible = NULL,
+    name = "dispersal",
+    requires = character(),
+    params = list()) {
+  patch_domain <- .normalize_patch_domain(patch_domain)
+  if (!is.function(destination)) {
+    stop("destination must be a function", call. = FALSE)
   }
-  if (nrow(transition_matrix) != ncol(transition_matrix)) {
-    stop("transition_matrix must be square", call. = FALSE)
+  if (is.null(eligible)) {
+    eligible <- function(individual, state, context, params) TRUE
   }
-  if (any(!is.finite(transition_matrix)) || any(transition_matrix < 0)) {
-    stop("transition_matrix must contain non-negative finite values", call. = FALSE)
+  if (!is.function(eligible)) {
+    stop("eligible must be NULL or a function", call. = FALSE)
   }
-  n_patches <- nrow(transition_matrix)
-  probs <- matrix(0, nrow = n_patches, ncol = n_patches)
-  for (i in seq_len(n_patches)) {
-    row_sum <- sum(transition_matrix[i, ])
-    if (row_sum <= 0) {
-      stop("Each row of transition_matrix must have positive sum", call. = FALSE)
-    }
-    probs[i, ] <- transition_matrix[i, ] / row_sum
+  if (!is.list(params)) {
+    stop("params must be a list", call. = FALSE)
   }
-  function(ind, population) {
-    pid <- ind$patch_id
-    if (is.null(pid) || is.na(pid)) {
-      return(ind$patch_id)
-    }
-    pid_int <- as.integer(pid)
-    if (pid_int < 1L || pid_int > n_patches) {
-      return(ind$patch_id)
-    }
-    dest <- base::sample.int(n = n_patches, size = 1L, prob = probs[pid_int, ])
-    as.integer(dest)
-  }
+
+  pva_process(
+    name = name,
+    run = function(state, context, process_params) {
+      pre_state <- state
+      patch_ids <- .population_patch_ids(
+        pre_state$population,
+        process_params$patch_domain
+      )
+      selected <- if (length(pre_state$population)) {
+        vapply(seq_along(pre_state$population), function(index) {
+          individual <- pre_state$population[[index]]
+          if (!isTRUE(individual$alive)) {
+            return(FALSE)
+          }
+          value <- process_params$eligible(
+            individual,
+            pre_state,
+            context,
+            process_params$model
+          )
+          if (!is.logical(value) || length(value) != 1L || is.na(value)) {
+            stop("eligible must return one non-missing logical value", call. = FALSE)
+          }
+          value
+        }, logical(1))
+      } else {
+        logical()
+      }
+      indices <- which(selected)
+      destinations <- if (length(indices)) {
+        vapply(indices, function(index) {
+          value <- process_params$destination(
+            pre_state$population[[index]],
+            pre_state,
+            context,
+            process_params$destination_model %||% process_params$model
+          )
+          .normalize_patch_ids(
+            value,
+            process_params$patch_domain,
+            "destination"
+          )
+        }, integer(1))
+      } else {
+        integer()
+      }
+
+      for (offset in seq_along(indices)) {
+        state$population[[indices[[offset]]]]$patch_id <- destinations[[offset]]
+      }
+
+      events <- list()
+      if (length(indices)) {
+        origins <- patch_ids[indices]
+        counts <- table(
+          factor(origins, levels = process_params$patch_domain),
+          factor(destinations, levels = process_params$patch_domain)
+        )
+        realised <- which(counts > 0L, arr.ind = TRUE)
+        events <- lapply(seq_len(nrow(realised)), function(row) {
+          list(
+            event_type = "patch_transition",
+            origin_patch_id = process_params$patch_domain[[realised[row, 1L]]],
+            destination_patch_id = process_params$patch_domain[[realised[row, 2L]]],
+            value = as.integer(counts[realised[row, 1L], realised[row, 2L]])
+          )
+        })
+      }
+      pva_result(state, events)
+    },
+    params = list(
+      patch_domain = patch_domain,
+      destination = destination,
+      eligible = eligible,
+      model = params
+    ),
+    requires = unique(c(
+      "population.id", "population.alive", "population.patch_id", requires
+    )),
+    writes = "population.patch_id",
+    description = "Apply simultaneous modeller-defined discrete patch transitions."
+  )
 }
 
-.fixed_markov_dispersal <- function(transition_matrix) {
-  dispersal_fun <- make_markov_dispersal_fun(transition_matrix)
-  function(ind, population) dispersal_fun(ind, population)
+.patch_probability_tolerance <- sqrt(.Machine$double.eps)
+
+.validate_transition_matrix <- function(
+    transition_matrix,
+    patch_domain,
+    tolerance = .patch_probability_tolerance) {
+  if (!is.matrix(transition_matrix) || !is.numeric(transition_matrix)) {
+    stop("transition_matrix must be a numeric matrix", call. = FALSE)
+  }
+  expected <- length(patch_domain)
+  if (!identical(dim(transition_matrix), c(expected, expected))) {
+    stop("transition_matrix dimensions must match patch_domain", call. = FALSE)
+  }
+  if (anyNA(transition_matrix) || any(!is.finite(transition_matrix)) ||
+      any(transition_matrix < 0) || any(transition_matrix > 1)) {
+    stop("transition_matrix entries must be finite probabilities in [0, 1]", call. = FALSE)
+  }
+  expected_names <- as.character(patch_domain)
+  matrix_names <- dimnames(transition_matrix)
+  if (!is.null(matrix_names) &&
+      (!identical(matrix_names[[1L]], expected_names) ||
+       !identical(matrix_names[[2L]], expected_names))) {
+    stop("transition_matrix dimnames must exactly match patch_domain", call. = FALSE)
+  }
+  if (any(abs(rowSums(transition_matrix) - 1) > tolerance)) {
+    stop(
+      "transition_matrix rows must sum to 1 within sqrt(.Machine$double.eps)",
+      call. = FALSE
+    )
+  }
+  transition_matrix
 }
 
-#' Low-connectivity dispersal regime (3 patches)
+#' Construct a Markov patch-transition process
 #'
-#' A convenience dispersal rule for fragmented systems where most individuals
-#' remain in their current patch each year.
+#' Uses an explicit row-stochastic matrix whose rows and columns follow the
+#' supplied ordered patch domain. Rows must already sum to one within
+#' `sqrt(.Machine$double.eps)`; they are never normalised internally. If matrix
+#' dimnames are supplied, both dimensions must exactly match the domain.
 #'
-#' @param ind Individual object.
-#' @param population Full population list (unused, but part of the interface).
+#' @inheritParams dispersal_process
+#' @param transition_matrix Numeric square matrix of origin-row to
+#'   destination-column probabilities.
+#' @param requires Additional state paths used by `eligible`.
+#' @param params Explicit modeller parameters passed to `eligible`.
 #'
-#' @return Destination `patch_id` sampled from a low-connectivity transition
-#'   matrix.
+#' @return A validated lifecycle process.
 #' @export
-dispersal_low_connectivity_fun <- local({
-  f <- .fixed_markov_dispersal(
-    matrix(
-      c(
-        0.95, 0.04, 0.01,
-        0.03, 0.94, 0.03,
-        0.02, 0.05, 0.93
-      ),
-      nrow = 3,
-      byrow = TRUE
-    )
+markov_dispersal_process <- function(
+    patch_domain,
+    transition_matrix,
+    eligible = NULL,
+    name = "dispersal",
+    requires = character(),
+    params = list()) {
+  patch_domain <- .normalize_patch_domain(patch_domain)
+  transition_matrix <- .validate_transition_matrix(
+    transition_matrix,
+    patch_domain
   )
-  function(ind, population) f(ind, population)
-})
-
-#' High-connectivity dispersal regime (3 patches)
-#'
-#' A convenience dispersal rule for connected systems with substantial
-#' cross-patch movement.
-#'
-#' @param ind Individual object.
-#' @param population Full population list (unused, but part of the interface).
-#'
-#' @return Destination `patch_id` sampled from a high-connectivity transition
-#'   matrix.
-#' @export
-dispersal_high_connectivity_fun <- local({
-  f <- .fixed_markov_dispersal(
-    matrix(
-      c(
-        0.55, 0.25, 0.20,
-        0.25, 0.50, 0.25,
-        0.20, 0.25, 0.55
-      ),
-      nrow = 3,
-      byrow = TRUE
+  destination <- function(individual, state, context, params) {
+    origin <- match(individual$patch_id, params$patch_domain)
+    destination_index <- base::sample.int(
+      length(params$patch_domain),
+      size = 1L,
+      prob = params$transition_matrix[origin, ]
     )
+    params$patch_domain[[destination_index]]
+  }
+  process <- dispersal_process(
+    patch_domain = patch_domain,
+    destination = destination,
+    eligible = eligible,
+    name = name,
+    requires = requires,
+    params = params
   )
-  function(ind, population) f(ind, population)
-})
-
-#' Asymmetric-flow dispersal regime (3 patches)
-#'
-#' A convenience dispersal rule where movement probabilities differ strongly by
-#' origin patch, producing directional flow patterns.
-#'
-#' @param ind Individual object.
-#' @param population Full population list (unused, but part of the interface).
-#'
-#' @return Destination `patch_id` sampled from an asymmetric transition matrix.
-#' @export
-dispersal_asymmetric_flow_fun <- local({
-  f <- .fixed_markov_dispersal(
-    matrix(
-      c(
-        0.78, 0.18, 0.04,
-        0.12, 0.72, 0.16,
-        0.35, 0.10, 0.55
-      ),
-      nrow = 3,
-      byrow = TRUE
+  process$params$destination_model <- list(
+    patch_domain = patch_domain,
+    transition_matrix = transition_matrix
+  )
+  process$validate_params <- function(process_params) {
+    effective_domain <- .normalize_patch_domain(
+      process_params$patch_domain,
+      "process patch_domain"
     )
-  )
-  function(ind, population) f(ind, population)
-})
+    destination_model <- process_params$destination_model
+    if (!is.list(destination_model) ||
+        !all(c("patch_domain", "transition_matrix") %in% names(destination_model))) {
+      stop(
+        "Markov destination_model must contain patch_domain and transition_matrix",
+        call. = FALSE
+      )
+    }
+    destination_domain <- .normalize_patch_domain(
+      destination_model$patch_domain,
+      "Markov destination patch_domain"
+    )
+    if (!identical(destination_domain, effective_domain)) {
+      stop(
+        "Markov destination patch_domain must match process patch_domain",
+        call. = FALSE
+      )
+    }
+    .validate_transition_matrix(
+      destination_model$transition_matrix,
+      effective_domain
+    )
+    invisible(process_params)
+  }
+  process$description <- "Draw simultaneous discrete transitions from an explicit Markov matrix."
+  .validate_process(process)
+}

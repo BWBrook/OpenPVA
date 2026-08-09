@@ -22,10 +22,10 @@ The Stage 1 runtime provides:
 - explicit interval and initial-census timing;
 - independently assigned L'Ecuyer-CMRG replicate streams with caller RNG
   restoration and serial/fork identity;
-- minimal age, survival, reproduction, global-density snapshot and census
-  process constructors;
-- a pure ceiling-style global density multiplier for explicit composition in
-  modeller-owned vital-rate callbacks;
+- minimal age, survival, reproduction, global/patch-density snapshot,
+  simultaneous dispersal and census process constructors;
+- pure global and strict keyed patch-density multipliers for explicit
+  composition in modeller-owned vital-rate callbacks;
 - an explicitly uncalibrated canonical grizzly-like benchmark with baseline,
   female-survival, targeted human-mortality and immigration scenarios;
 - replicate-preserving abundance, event, threshold, growth and provenance
@@ -33,7 +33,8 @@ The Stage 1 runtime provides:
 
 The source-labelled `grizzly_density_extension_scenario()` demonstrates global
 density feedback without adding an empirical carrying-capacity default or
-changing the five canonical scenarios. Spatial, genetic and management helpers
+changing the five canonical scenarios. Discrete patch transitions now use
+explicit domains and event-first evidence; genetics and management helpers
 remain future process-migration sources. YAML,
 uncertainty/calibration execution, `targets` and Quarto reconnection are
 deliberately not active runtime interfaces during this clean break.
@@ -126,8 +127,10 @@ or registration is required.
 - [Lifecycle-process contract](docs/design/lifecycle_process_contract.md)
 - [Canonical grizzly reference model](docs/design/canonical_grizzly_reference_model.md)
 - [Global density feedback](docs/design/density_module.md)
+- [Spatial process contract](docs/design/spatial_process_contract.md)
 - [Goal 003 benchmark packet](docs/goals/003-canonical-grizzly-benchmark/Goal.md)
 - [Goal 004 density packet](docs/goals/004-global-density-feedback/Goal.md)
+- [Goal 005 spatial packet](docs/goals/005-patch-transitions-density/Goal.md)
 - [Living plan](docs/plan.md)
 
 ## Validation

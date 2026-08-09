@@ -1,122 +1,197 @@
-#' Assign individuals to spatial patches
-#'
-#' Populates the `patch_id` field for each individual either from an explicit
-#' vector or by applying a deterministic assignment rule across a specified
-#' number of patches.
-#'
-#' @param population List of individual objects.
-#' @param n_patches Positive integer number of patches (required unless
-#'   `patch_ids` is supplied).
-#' @param patch_ids Optional integer vector with one entry per individual. When
-#'   provided, it is used directly and overrides `n_patches` and
-#'   `assignment_fun`.
-#' @param assignment_fun Optional function with signature
-#'   `function(population, n_patches)` that returns a vector of patch identifiers
-#'   (coercible to integer) for each individual.
-#'
-#' @return The population list with updated `patch_id` entries.
-#' @export
-initialize_patches <- function(
-    population,
-    n_patches = NULL,
-    patch_ids = NULL,
-    assignment_fun = NULL) {
+.normalize_patch_domain <- function(patch_domain, label = "patch_domain") {
+  if (!is.numeric(patch_domain) || !length(patch_domain) || anyNA(patch_domain) ||
+      any(!is.finite(patch_domain)) || any(patch_domain != floor(patch_domain)) ||
+      any(patch_domain <= 0) || any(patch_domain > .Machine$integer.max)) {
+    stop(label, " must contain positive integer-like patch identifiers", call. = FALSE)
+  }
+  domain <- as.integer(patch_domain)
+  if (anyDuplicated(domain)) {
+    stop(label, " must not contain duplicate patch identifiers", call. = FALSE)
+  }
+  domain
+}
+
+.normalize_patch_ids <- function(patch_ids, patch_domain, label = "patch_ids") {
+  if (!is.numeric(patch_ids) || anyNA(patch_ids) ||
+      any(!is.finite(patch_ids)) || any(patch_ids != floor(patch_ids)) ||
+      any(patch_ids <= 0) || any(patch_ids > .Machine$integer.max)) {
+    stop(label, " must contain non-missing positive integer-like values", call. = FALSE)
+  }
+  patch_ids <- as.integer(patch_ids)
+  unknown <- setdiff(unique(patch_ids), patch_domain)
+  if (length(unknown)) {
+    stop(
+      label, " contains identifier(s) outside patch_domain: ",
+      paste(unknown, collapse = ", "),
+      call. = FALSE
+    )
+  }
+  patch_ids
+}
+
+.population_patch_ids <- function(population, patch_domain) {
   if (!length(population)) {
-    return(population)
+    return(integer())
   }
-
-  assign_patch_ids <- NULL
-
-  if (!is.null(patch_ids)) {
-    if (length(patch_ids) != length(population)) {
-      stop("patch_ids must have length equal to the population size", call. = FALSE)
+  values <- vapply(seq_along(population), function(index) {
+    individual <- population[[index]]
+    if (!is.list(individual) || !"patch_id" %in% names(individual) ||
+        is.null(individual$patch_id)) {
+      stop(
+        "individual ", index, " is missing required field population.patch_id",
+        call. = FALSE
+      )
     }
-    assign_patch_ids <- as.integer(patch_ids)
-  } else {
-    if (is.null(n_patches) || !is.numeric(n_patches) || length(n_patches) != 1L || n_patches <= 0) {
-      stop("n_patches must be a positive integer when patch_ids is NULL", call. = FALSE)
-    }
-    n_patches <- as.integer(n_patches)
+    .normalize_patch_ids(
+      individual$patch_id,
+      patch_domain,
+      paste0("population[[", index, "]]$patch_id")
+    )
+  }, integer(1))
+  unname(values)
+}
 
-    if (is.null(assignment_fun)) {
-      assign_patch_ids <- as.integer(((seq_along(population) - 1L) %% n_patches) + 1L)
-    } else {
-      if (!is.function(assignment_fun)) {
-        stop("assignment_fun must be a function", call. = FALSE)
-      }
-      assign_patch_ids <- assignment_fun(population, n_patches)
-      if (length(assign_patch_ids) != length(population)) {
-        stop("assignment_fun must return one patch per individual", call. = FALSE)
-      }
-      assign_patch_ids <- as.integer(assign_patch_ids)
-    }
+#' Assign explicit patch identifiers
+#'
+#' Assigns one modeller-supplied `patch_id` to each individual within an
+#' explicit ordered patch domain. Empty declared patches are valid; OpenPVA
+#' does not invent or balance an initial patch distribution.
+#'
+#' @param population List of individual records.
+#' @param patch_ids Numeric vector containing one positive integer-like patch
+#'   identifier per individual.
+#' @param patch_domain Ordered numeric vector of unique positive integer-like
+#'   patch identifiers. Identifiers need not be consecutive.
+#'
+#' @return The population list with strict integer `patch_id` fields.
+#' @export
+initialize_patches <- function(population, patch_ids, patch_domain) {
+  if (!is.list(population)) {
+    stop("population must be a list", call. = FALSE)
   }
-
+  if (length(population) && !all(vapply(population, is.list, logical(1)))) {
+    stop("every population record must be a list", call. = FALSE)
+  }
+  patch_domain <- .normalize_patch_domain(patch_domain)
+  patch_ids <- .normalize_patch_ids(patch_ids, patch_domain)
+  if (length(patch_ids) != length(population)) {
+    stop("patch_ids must have length equal to the population size", call. = FALSE)
+  }
   Map(
-    function(ind, pid) {
-      ind$patch_id <- pid
-      ind
+    function(individual, patch_id) {
+      individual$patch_id <- patch_id
+      individual
     },
     population,
-    assign_patch_ids,
+    patch_ids,
     USE.NAMES = FALSE
   )
 }
 
-.normalize_patch_counts <- function(n_per_patch) {
-  if (!is.numeric(n_per_patch) || !length(n_per_patch)) {
-    stop("n_per_patch must be a non-empty numeric vector", call. = FALSE)
-  }
-  n_int <- suppressWarnings(as.integer(n_per_patch))
-  if (any(is.na(n_int)) || any(n_int < 0) || any(n_int != n_per_patch)) {
-    stop("n_per_patch must contain non-negative integer counts", call. = FALSE)
-  }
-  if (sum(n_int) <= 0L) {
-    stop("n_per_patch must sum to at least 1", call. = FALSE)
-  }
-  n_int
-}
-
-#' Initialize a spatial population from patch counts
+#' Construct a patch-abundance snapshot process
 #'
-#' Creates a population with explicit `patch_id` assignment based on
-#' patch-specific starting abundances.
+#' Counts living individuals in every member of an explicit patch domain at the
+#' process's exact lifecycle position. Counts, including zeros, are stored as a
+#' keyed integer vector in `state$globals$patch_density_counts`; one
+#' `patch_density_snapshot` event is emitted per patch.
 #'
-#' @param n_per_patch Non-empty numeric vector of non-negative integer counts
-#'   (one value per patch).
-#' @param max_age Maximum age passed to [initialize_population()].
+#' @param patch_domain Ordered numeric vector of unique positive integer-like
+#'   patch identifiers.
+#' @param name Process name.
 #'
-#' @return A population list with `patch_id` initialized from `n_per_patch`.
+#' @return A validated lifecycle process.
 #' @export
-initialize_spatial_population <- function(n_per_patch, max_age = 5L) {
-  patch_counts <- .normalize_patch_counts(n_per_patch)
-  total_n <- sum(patch_counts)
-  pop <- initialize_population(n = total_n, max_age = max_age)
-  patch_ids <- rep.int(seq_along(patch_counts), patch_counts)
-  initialize_patches(pop, patch_ids = patch_ids)
-}
-
-#' Initialize a spatial + genetic population from patch counts
-#'
-#' Creates a spatially structured population and initializes diploid genotypes
-#' for all individuals.
-#'
-#' @param n_per_patch Non-empty numeric vector of non-negative integer counts
-#'   (one value per patch).
-#' @param n_loci Number of loci passed to [initialize_genotypes()].
-#' @param n_alleles Number of allele states passed to [initialize_genotypes()].
-#' @param max_age Maximum age passed to [initialize_population()].
-#'
-#' @return A population list with `patch_id`, `alleles`, and `F` initialized.
-#' @export
-initialize_spatial_genetic_population <- function(
-    n_per_patch,
-    n_loci = 10L,
-    n_alleles = 2L,
-    max_age = 5L) {
-  pop <- initialize_spatial_population(
-    n_per_patch = n_per_patch,
-    max_age = max_age
+patch_density_snapshot_process <- function(
+    patch_domain,
+    name = "patch_density_snapshot") {
+  patch_domain <- .normalize_patch_domain(patch_domain)
+  pva_process(
+    name = name,
+    run = function(state, context, params) {
+      patch_ids <- .population_patch_ids(state$population, params$patch_domain)
+      alive <- if (length(state$population)) {
+        vapply(state$population, function(individual) isTRUE(individual$alive), logical(1))
+      } else {
+        logical()
+      }
+      counts <- tabulate(
+        match(patch_ids[alive], params$patch_domain),
+        nbins = length(params$patch_domain)
+      )
+      counts <- stats::setNames(as.integer(counts), as.character(params$patch_domain))
+      state$globals$patch_density_counts <- counts
+      events <- lapply(seq_along(params$patch_domain), function(index) {
+        list(
+          event_type = "patch_density_snapshot",
+          patch_id = params$patch_domain[[index]],
+          value = counts[[index]]
+        )
+      })
+      pva_result(state, events)
+    },
+    params = list(patch_domain = patch_domain),
+    requires = c("population.id", "population.alive", "population.patch_id"),
+    writes = "globals.patch_density_counts",
+    description = "Record living abundance for every declared patch at this position."
   )
-  initialize_genotypes(pop, n_loci = n_loci, n_alleles = n_alleles)
+}
+
+.normalize_keyed_patch_values <- function(values, label, whole, positive) {
+  if (!is.numeric(values) || !length(values) || is.null(names(values)) ||
+      anyNA(values) || any(!is.finite(values)) || any(!nzchar(names(values))) ||
+      anyDuplicated(names(values))) {
+    stop(label, " must be a finite named numeric vector with unique keys", call. = FALSE)
+  }
+  key_values <- suppressWarnings(as.numeric(names(values)))
+  if (anyNA(key_values)) {
+    stop(label, " names must be canonical positive integer patch identifiers", call. = FALSE)
+  }
+  keys <- .normalize_patch_domain(key_values, paste0(label, " names"))
+  if (!identical(names(values), as.character(keys))) {
+    stop(label, " names must be canonical positive integer patch identifiers", call. = FALSE)
+  }
+  if (whole && any(values != floor(values))) {
+    stop(label, " must contain whole-number values", call. = FALSE)
+  }
+  if (positive && any(values <= 0)) {
+    stop(label, " must contain positive values", call. = FALSE)
+  }
+  if (!positive && any(values < 0)) {
+    stop(label, " must contain non-negative values", call. = FALSE)
+  }
+  values
+}
+
+#' Calculate a keyed patch-density multiplier
+#'
+#' Strictly matches one patch identifier against complete keyed abundance and
+#' capacity vectors, then delegates the biological response to
+#' [ceiling_density_multiplier()]. Key order and membership must match exactly.
+#'
+#' @param patch_id One positive integer-like patch identifier.
+#' @param counts Named non-negative whole-number abundance vector.
+#' @param capacities Named positive finite capacity vector with keys and order
+#'   identical to `counts`.
+#'
+#' @return A numeric multiplier in `(0, 1]`.
+#' @export
+patch_density_multiplier <- function(patch_id, counts, capacities) {
+  if (length(patch_id) != 1L) {
+    stop("patch_id must contain exactly one value", call. = FALSE)
+  }
+  patch_id <- .normalize_patch_domain(patch_id, "patch_id")
+  counts <- .normalize_keyed_patch_values(
+    counts, "counts", whole = TRUE, positive = FALSE
+  )
+  capacities <- .normalize_keyed_patch_values(
+    capacities, "capacities", whole = FALSE, positive = TRUE
+  )
+  if (!identical(names(counts), names(capacities))) {
+    stop("counts and capacities must have identical patch keys and order", call. = FALSE)
+  }
+  key <- as.character(patch_id)
+  if (!key %in% names(counts)) {
+    stop("patch_id is not present in counts and capacities", call. = FALSE)
+  }
+  ceiling_density_multiplier(unname(counts[[key]]), unname(capacities[[key]]))
 }

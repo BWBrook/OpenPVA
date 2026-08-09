@@ -17,11 +17,19 @@
 - `survival_process()`
 - `reproduction_process()`
 - `density_snapshot_process()`
+- `dispersal_process()`
+- `markov_dispersal_process()`
+- `patch_density_snapshot_process()`
 - `census_process()`
 
 `ceiling_density_multiplier()` is the lean pure helper for explicit global
 density composition inside modeller-supplied survival or reproduction
 callbacks. It is not a controller channel or carrying-capacity estimator.
+
+`initialize_patches()` requires explicit starting assignments and an ordered
+patch domain. `patch_density_multiplier()` is the strict keyed helper for
+combining full-domain patch counts and capacities inside modeller-owned vital-
+rate callbacks. OpenPVA supplies no default allocation or connectivity matrix.
 
 ## Canonical benchmark fixture
 
@@ -47,10 +55,10 @@ illustrative rather than an empirical grizzly default.
 
 ## Retained Scientific Helpers
 
-The package continues to export focused individual, demography-table, spatial
-and genetic helper functions documented in their R help pages. They are
-not privileged controller channels. Later goals may wrap high-value helpers as
-conforming process constructors.
+The package continues to export focused individual, demography-table and
+genetic helper functions documented in their R help pages. They are not
+privileged controller channels. The current spatial surface is the explicit
+ordinary-process API above; pedigree genetics remains a later migration.
 
 `summarise_sensitivity_prcc()` remains available for independent draw-level
 tables. The defective legacy `apply_reproduction()` helper and the
@@ -61,6 +69,7 @@ controller-coupled `summarise_sensitivity_oat()` route are retired;
 
 The former fixed-label controller, `run_basic_simulation*()`,
 `default_lifecycle_steps()`, YAML scenario loader, spatial/genetic scenario
-constructors and controller-coupled uncertainty/calibration/reporting entry
+constructors, history-inferred spatial summaries and controller-coupled
+uncertainty/calibration/reporting entry
 points are not public Stage 1 interfaces. They will be reconsidered against the
 accepted process contract in Stages 3-4, without compatibility adapters.

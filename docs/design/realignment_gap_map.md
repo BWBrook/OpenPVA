@@ -16,8 +16,8 @@ modeller-defined biological program.
 | Controller dispatcher | Conditional branch for every biological step | **Remove after replacement** | One generic process execution loop; no compatibility dispatcher |
 | Reproduction coupled step | Mating, breeding draws and births concentrated in controller helpers | **Redesign incrementally** | Separate reusable processes or one composite process that still satisfies public contract |
 | Density channels | Former survival/breeding/fecundity specification was disconnected from execution | **Replace** | Positioned ordinary abundance snapshots plus pure functions explicitly composed by the modeller |
-| Spatial patches/dispersal | Useful optional functionality | **Retain, repair** | Conforming processes with field declarations and birth initialization |
-| Newborn patch state | `create_individual()` call omits maternal `patch_id` | **Repair first implementation tranche** | Birth process initializes every downstream-required field; regression fixture |
+| Spatial patches/dispersal | Controller-era helpers and history-inferred connectivity | **Replaced in Goal 005** | Explicit domains, simultaneous ordinary processes, transition events and positioned patch counts |
+| Newborn patch state | Former births omitted maternal `patch_id` | **Repaired by field contract** | Creator declares inheritance or initialization; missing downstream state fails |
 | Genetics/inbreeding | Optional allele state plus heterozygosity-derived `F` | **Replace scientific core** | Pedigree/ancestry as primary IBM state; marker heterozygosity remains a separate observable summary |
 | Management actions | Harvest and supplementation are privileged labels | **Retain biology, redesign composition** | Ordinary processes, repeatable/reorderable like any lifecycle event |
 | YAML scenarios | Canonical schema configures existing fixed simulator | **Defer lifecycle expansion** | Keep current inputs during architecture work; do not add a process DSL |
@@ -26,22 +26,18 @@ modeller-defined biological program.
 | Release/compatibility adapters | Historical clean-up burden and contradictory decisions | **Remove when touched** | No backwards-compatibility preservation for realignment |
 | Canonical empirical model | No accepted end-to-end benchmark | **Add** | Minimal grizzly benchmark and extension fixtures |
 
-## Current defects and risks
+## Historical defects and current risks
 
-### Fixed vocabulary
+### Fixed vocabulary (resolved)
 
-`R/lifecycle_pipeline.R` validates only six strings and
-`R/simulation_core.R` dispatches them via conditional branches. Users can reorder
-known events but cannot add a process without editing the controller. This is a
-configurable fixed simulator, not yet a programmable PVA engine.
+Goal 002 removed the former six-string dispatcher. The generic ordered process
+loop is now the sole active execution seam.
 
-### Spatial newborn defect
+### Spatial newborn defect (resolved)
 
-`R/lifecycle_reproduction.R` creates newborns without maternal `patch_id`.
-Patch density, occupancy and connectivity summaries can therefore omit or
-misclassify newborns. This is code-read evidence; no test was run in this
-documentation goal. The first implementation tranche must reproduce the defect
-with a focused test before repair.
+The creation contract now requires every field consumed downstream. Reproduction
+can explicitly inherit maternal `patch_id` or initialise it through a modeller-
+supplied rule; omission fails at preflight or immediately after creation.
 
 ### Feature breadth before reference fidelity
 
@@ -79,7 +75,7 @@ Acceptance: a project-defined observation or management process runs without
 controller edits, accounting fixtures pass, and stochastic means agree with an
 independent life-table/matrix expected-value oracle within Monte Carlo error.
 
-### Stage 2 — canonical grizzly benchmark
+### Stage 2 — canonical grizzly benchmark (implemented)
 
 - Implement baseline and alternative female-survival/human-mortality scenarios.
 - Add expected-value oracle, stochastic calibration, order-falsification, and
@@ -95,6 +91,10 @@ Port global density, patch-aware dispersal/patch density, generic
 introductions/supplementation and optional pedigree genetics in that order.
 Remove privileged controller channels as each is replaced. Validate output
 equivalence only where semantics are intentionally unchanged.
+
+Global density is published in Goal 004. Goal 005 implements explicit patch
+domains, simultaneous transition events and positioned full-domain patch
+counts; introductions and pedigree genetics remain later tranches.
 
 ### Stage 4 — reconnect interfaces and analyses
 
@@ -113,5 +113,5 @@ configuration unless repeated real use establishes a need for a lifecycle DSL.
 
 ## Stop rule
 
-Do not begin another horizontal feature tranche until Stages 0–2 establish the
-programmable process seam and canonical scientific benchmark.
+Do not begin introductions or pedigree genetics until Goal 005 passes its
+bounded acceptance review.
