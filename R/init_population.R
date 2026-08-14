@@ -42,22 +42,3 @@ create_individual <- function(
     patch_id = patch_id
   )
 }
-
-#' Initialise a population of individuals
-#'
-#' Creates a list of `n` individuals with randomly assigned sex and age.
-#'
-#' @param n Integer. Number of individuals to initialise.
-#' @param max_age Integer. Maximum age for random age assignment. Defaults to 10.
-#'
-#' @return A list of individual objects.
-#' @export
-initialize_population <- function(n = 10, max_age = 10) {
-  lapply(seq_len(n), function(i) {
-    create_individual(
-      id = i,
-      sex = sample(c("M", "F"), 1),
-      age = sample(0:max_age, 1)
-    )
-  })
-}

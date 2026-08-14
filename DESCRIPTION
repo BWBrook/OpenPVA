@@ -11,9 +11,7 @@ Encoding: UTF-8
 Depends: R (>= 4.6.0)
 Imports: 
     dplyr, 
-    tibble,
-    purrr,
-    ggplot2
+    tibble
 Suggests: 
     testthat,
     lintr,
@@ -27,23 +25,12 @@ Collate:
     'spatial_patches.R'
     'spatial_dispersal.R'
     'pedigree_ancestry.R'
-    'lifecycle_age.R'
     'demography_survival_spec.R'
     'demography_reproduction_spec.R'
-    'lifecycle_survival.R'
-    'lifecycle_breeding.R'
-    'lifecycle_reproduction.R'
-    'lifecycle_harvest.R'
     'process_core.R'
     'process_density.R'
     'process_demography.R'
     'process_introduction.R'
     'grizzly_benchmark.R'
     'grizzly_density_extension.R'
-    'simulation_summary.R'
-    'simulation_plots.R'
     'scenario_core.R'
-    'uncertainty_ensemble.R'
-    'calibration_scaffold.R'
-    'sensitivity_diagnostics.R'
-    'management.R'

@@ -78,5 +78,6 @@ Optional exact pedigree ancestry now composes through initialisation and
 ordinary birth/introduction callbacks, with complete founder/parentage
 declarations and tidy conditional-IBD outputs. The former marker-derived `F`
 surface is retired; any future marker module must be separate and ID-keyed.
-Harvest/removal, uncertainty, calibration and reporting code remains future-
-migration source rather than a privileged parallel runtime.
+Harvest/removal, uncertainty, calibration and reporting remain future module
+requirements. Their former controller- and old-output implementations are
+removed rather than retained as a privileged parallel runtime.

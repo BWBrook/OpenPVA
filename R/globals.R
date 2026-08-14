@@ -1,4 +1,4 @@
-# Declare data pronoun used inside dplyr/ggplot2 expressions to keep R CMD check clean.
+# Declare the data pronoun used inside dplyr expressions for R CMD check.
 utils::globalVariables(c(".data"))
 
 `%||%` <- function(a, b) {

@@ -11,10 +11,9 @@ validate_breeding_prob_table(tbl)
 `p_breed`.}
 }
 \value{
-Invisibly returns the validated table with `p_breed` coerced to
-  numeric.
+Invisibly returns the validated table.
 }
 \description{
-Checks that an age- and sex-specific breeding probability table is complete,
+Checks that an age- and sex-specific breeding probability table is well formed,
 non-overlapping, and bounded within `[0, 1]`.
 }

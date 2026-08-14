@@ -831,4 +831,30 @@
   - Static validation replay and per-newborn ledger scans added cost without a
     new trust boundary. Moving only that work out of repeated intervals keeps
     exact scientific and accounting checks where state can actually change.
-- **Status**: implemented in Goal 008 and awaiting review; not published.
+- **Status**: accepted and committed locally in Goal 008 at `d426910`; not
+  published.
+
+## DEC-042 - Delete dormant parallel products and hidden defaults
+- **Date**: 2026-08-14
+- **Decision**:
+  - Keep one active process-native runtime. Delete controller-era direct
+    lifecycle mutators, random population initialisation and packaged biological
+    schedules rather than adapting them.
+  - Retain modeller-supplied survival, breeding-probability and fecundity-table
+    validators/builders. Require every individual to match exactly one age/sex
+    row; reject missing coverage instead of returning zero or extrapolating.
+  - Delete the incompatible old-output summary, plotting, management,
+    uncertainty, sensitivity and calibration chain with its exclusive tests,
+    exports and current help.
+  - Remove the broken release-evidence automation and make current workflow,
+    CI and release documentation describe only executable gates. Preserve all
+    historical goals, logs and tracked evidence as provenance.
+  - Remove `purrr` and `ggplot2` as now-unused direct imports. Keep `targets`,
+    Quarto, YAML and the lockfile unchanged as deferred Stage 4 machinery.
+- **Rationale**:
+  - Multiple incompatible product surfaces obscured which contracts users and
+    contributors should trust, while silent demographic fallbacks encoded
+    unsupported biological choices.
+  - A clean deletion leaves fewer concepts, dependencies and self-protecting
+    tests without weakening the generic engine or accepted scientific modules.
+- **Status**: implemented in Goal 009 and awaiting review; not published.

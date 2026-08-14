@@ -11,10 +11,11 @@ build_breeding_prob_fun_from_table(tbl)
 `p_breed`. See `validate_breeding_prob_table()`.}
 }
 \value{
-A function with signature `function(ind)` returning baseline
-  breeding probability in `[0, 1]`.
+A function with signature `function(ind)` returning breeding
+  probability in `[0, 1]`.
 }
 \description{
 Converts an age- and sex-specific breeding probability table into a function
-returning `p_breed` in `[0, 1]`.
+returning `p_breed` in `[0, 1]`. Every individual must match exactly one
+row; the package does not choose a default.
 }

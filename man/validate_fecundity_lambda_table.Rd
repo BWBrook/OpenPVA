@@ -14,6 +14,6 @@ validate_fecundity_lambda_table(tbl)
 Invisibly returns the validated table.
 }
 \description{
-Checks that an age- and sex-specific fecundity-lambda table is complete and
+Checks that an age- and sex-specific fecundity-lambda table is well formed and
 non-overlapping.
 }

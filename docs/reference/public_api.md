@@ -1,106 +1,69 @@
 # Public API
 
-## Process Engine
+OpenPVA exposes one active product: a generic process engine, reusable ordinary
+processes, explicit scientific helpers, and a canonical synthetic benchmark.
 
-- `pva_state()`
-- `pva_process()`
-- `pva_result()`
-- `validate_processes()`
-- `allocate_ids()`
-- `execute_processes()`
-- `scenario_spec()`
-- `run_scenario()`
+## Process engine
 
-## Minimal Built-in Processes
+- `pva_state()`, `pva_process()`, `pva_result()`
+- `validate_processes()`, `allocate_ids()`, `execute_processes()`
+- `scenario_spec()`, `run_scenario()`
+
+A lifecycle is a direct ordered list of process objects. Community processes
+compose through the same state, context, result, field and event contracts as
+package processes; there is no controller dispatcher or registration layer.
+
+## Reusable processes
 
 - `age_process()`
 - `survival_process()`
 - `reproduction_process()`
 - `introduction_process()`
-- `density_snapshot_process()`
-- `dispersal_process()`
-- `markov_dispersal_process()`
-- `patch_density_snapshot_process()`
+- `density_snapshot_process()`, `patch_density_snapshot_process()`
+- `dispersal_process()`, `markov_dispersal_process()`
 - `census_process()`
 
-`survival_process()` and `reproduction_process()` evaluate all individual
-callbacks in one execution against one pre-process state, then apply staged
-deaths or births together. `reproduction_process()` requires an explicit
-`offspring_sex` callback; the package does not assume a sex ratio.
+Survival and reproduction callbacks in one execution see one common
+pre-process state. Reproduction requires an explicit `offspring_sex` callback.
+Introduction requires explicit count, source and newcomer state. The package
+does not supply species biology, a sex ratio, an introduction quota, patch
+allocation or connectivity defaults.
 
-`ceiling_density_multiplier()` is the lean pure helper for explicit global
-density composition inside modeller-supplied survival or reproduction
-callbacks. It is not a controller channel or carrying-capacity estimator.
+## Explicit scientific helpers
 
-`initialize_patches()` requires explicit starting assignments and an ordered
-patch domain. `patch_density_multiplier()` is the strict keyed helper for
-combining full-domain patch counts and capacities inside modeller-owned vital-
-rate callbacks. OpenPVA supplies no default allocation or connectivity matrix.
+- `create_individual()`
+- `validate_survival_table()`, `build_survival_fun_from_table()`
+- `validate_breeding_prob_table()`, `build_breeding_prob_fun_from_table()`
+- `validate_fecundity_lambda_table()`, `build_fecundity_lambda_fun_from_table()`
+- `ceiling_density_multiplier()`, `patch_density_multiplier()`
+- `initialize_patches()`
 
-`introduction_process()` is the one creator for exogenous immigration,
-supplementation, stocking and translocation. It requires a fixed or callback
-count, an exact newcomer initializer declaration and a nonblank source label.
-The engine allocates IDs and stamps aggregate or optionally grouped accounting
-events; OpenPVA supplies no quota, newcomer biology or donor-population model.
+Demographic tables are modeller-supplied callback ingredients. Every lookup
+must match exactly one age/sex row; missing coverage is an error, not an
+implicit zero or extrapolation. Density helpers are pure rate multipliers, not
+population caps or carrying-capacity estimators.
 
 ## Optional pedigree ancestry
 
-- `initialize_pedigree()`
-- `validate_pedigree()`
-- `pedigree_founder_fields()`
-- `pedigree_newborn_fields()`
+- `initialize_pedigree()`, `validate_pedigree()`
+- `pedigree_founder_fields()`, `pedigree_newborn_fields()`
 - `pedigree_parentage_fields()`
-- `pedigree_ledger()`
-- `summarise_pedigree()`
+- `pedigree_ledger()`, `summarise_pedigree()`
 
 Pedigree is complete when enabled. `pedigree_F` is exact conditional pedigree
-IBD under the explicit founder horizon; it is not marker heterozygosity. Birth
-and introduction helpers compose through existing initializer declarations.
-Known-parentage introductions reference ancestors in the shared pre-process
-ledger; same-batch related ancestry is unsupported.
+IBD under the declared founder horizon; it is not marker heterozygosity.
 
-## Canonical benchmark fixture
+## Canonical benchmark
 
-The narrowly scoped `grizzly_benchmark_*()` builders, `run_grizzly_benchmark()`
-and `summarise_grizzly_benchmark()` provide the synthetic, source-labelled
-Goal 003 benchmark. They are acceptance fixtures, not calibrated species
-defaults or management advice. The leaf process constructors remain model-side
-implementation details; users normally start with the benchmark/scenario
-builder and the generic process contract.
+The `grizzly_benchmark_*()` builders, `run_grizzly_benchmark()` and
+`summarise_grizzly_benchmark()` provide a source-labelled synthetic acceptance
+fixture. Its parameters are illustrative and uncalibrated, not species defaults
+or management advice. `grizzly_density_extension_scenario()` is a separate
+non-canonical demonstration of explicit density feedback.
 
-`run_grizzly_benchmark()` accepts only the five canonical scenario names:
-baseline, the two independent-female survival alternatives, targeted human
-mortality, and immigration. Environmental variation, reordered mortality and
-other mutations are ordinary extensions: compose them with
-`grizzly_benchmark_scenario()` and call `run_scenario()` directly. A generic
-output must be summarised with explicit benchmark metadata; the summariser
-does not trust mutable scenario-object metadata and never silently labels
-generic output as a canonical benchmark.
+## Deferred interfaces
 
-`grizzly_density_extension_scenario()` is a non-canonical, source-labelled
-synthetic demonstration of global density feedback. Its required capacity is
-illustrative rather than an empirical grizzly default.
-
-## Retained Scientific Helpers
-
-The package continues to export focused individual, demography-table, harvest
-and pedigree helper functions documented in their R help pages. They are not
-privileged controller channels. The legacy `apply_supplementation()` helper is
-retired; exogenous additions use `introduction_process()`. The current spatial
-surface is the explicit ordinary-process API above. Marker genotype helpers,
-marker-derived `F`/`Fhat` summaries and the uncalibrated inbreeding-survival
-helper are retired without adapters.
-
-`summarise_sensitivity_prcc()` remains available for independent draw-level
-tables. The defective legacy `apply_reproduction()` helper and the
-controller-coupled `summarise_sensitivity_oat()` route are retired;
-`reproduction_process()` is the active reproduction interface.
-
-## Deferred Interfaces
-
-The former fixed-label controller, `run_basic_simulation*()`,
-`default_lifecycle_steps()`, YAML scenario loader, spatial/genetic scenario
-constructors, history-inferred spatial summaries and controller-coupled
-uncertainty/calibration/reporting entry
-points are not public Stage 1 interfaces. They will be reconsidered against the
-accepted process contract in Stages 3-4, without compatibility adapters.
+Harvest/removal, YAML compilation, uncertainty, sensitivity, calibration,
+targets orchestration and reporting are Stage 4 requirements, not current
+runtime APIs. Former controller-era and old-output implementations were removed
+rather than preserved behind adapters.

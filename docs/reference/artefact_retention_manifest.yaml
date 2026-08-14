@@ -1,5 +1,5 @@
 manifest_version: 1
-as_of: "2026-08-03"
+as_of: "2026-08-14"
 scope:
   root: artefacts/
   tracked_file_count: 1133
@@ -16,11 +16,10 @@ families:
     path_globs:
       - artefacts/release_1.0.0-rc4/**
     disposition: retain
-    rationale: Latest release-candidate proof bundle and the repository's named canonical release evidence.
+    rationale: Latest historical release-candidate proof bundle; it does not prove the current checkout.
     named_consumer:
-      status: active
+      status: historical_only
       references:
-        - docs/plan.md
         - docs/interpretation_notes.md
         - docs/log/053_r461_macos_ci_readiness_closure.md
 
@@ -46,22 +45,20 @@ families:
       - artefacts/WP-2B.5/**
       - artefacts/WP-2B.6/**
     disposition: retain
-    rationale: Current uncertainty, sensitivity, calibration, and parallel-reproducibility evidence remains named by the active plan and interpretation records.
+    rationale: Historical uncertainty, sensitivity, calibration, and parallel-reproducibility evidence retained for provenance after the incompatible runtime was removed.
     named_consumer:
-      status: active
+      status: historical_only
       references:
-        - docs/plan.md
         - docs/roadmap.md
         - docs/interpretation_notes.md
-        - docs/reference/uncertainty_validation_contract.md
 
   - id: macos_readiness_evidence
     path_globs:
       - artefacts/macos_r460_readiness/**
     disposition: retain
-    rationale: Host and R 4.6.1 readiness evidence used by the current CI/readiness record.
+    rationale: Historical host and R 4.6.1 readiness evidence retained for provenance; it does not prove the current checkout.
     named_consumer:
-      status: active
+      status: historical_only
       references:
         - docs/log/053_r461_macos_ci_readiness_closure.md
 

@@ -1,47 +1,36 @@
-# Reproduction Rate API
+# Demographic table helpers
 
-This page documents baseline-rate helpers that can be called from a
-`reproduction_process()` model function.
+OpenPVA retains small compilers for modeller-supplied age- and sex-specific
+tables. They are ingredients for process callbacks, not packaged biological
+models.
 
-## Breeding probability API
+## Survival
 
-Primary (new) functions:
+- `validate_survival_table(tbl)`
+- `build_survival_fun_from_table(tbl)`
+
+Required columns are `age_min`, `age_max`, `sex`, and `p_surv`.
+Probabilities must lie in `[0, 1]`, ages must be non-negative, and intervals
+must not overlap within sex.
+
+## Reproduction
 
 - `validate_breeding_prob_table(tbl)`
 - `build_breeding_prob_fun_from_table(tbl)`
-- `make_default_breeding_prob_table()`
-
-Contract:
-
-- Table columns: `age_min`, `age_max`, `sex`, `p_breed`
-- `p_breed` must be in `[0, 1]`
-- Age intervals cannot overlap within sex
-- Builder returns `p_breed` by age/sex, default `0` when unmatched
-
-- `default_breeding_prob_fun(ind)` provides the package default baseline
-  breeding schedule.
-
-## Fecundity lambda API
-
-Primary (new) functions:
-
 - `validate_fecundity_lambda_table(tbl)`
 - `build_fecundity_lambda_fun_from_table(tbl)`
-- `make_default_fecundity_lambda_table()`
 
-Contract:
+Breeding tables use `p_breed` in `[0, 1]`; fecundity tables use non-negative
+finite `lambda`. Both use the same age/sex interval rules.
 
-- Table columns: `age_min`, `age_max`, `sex`, `lambda`
-- `lambda` must be non-negative
-- Age intervals cannot overlap within sex
-- Builder returns `lambda` by age/sex, default `0` when unmatched
+## Lookup contract
 
-- `default_fecundity_lambda_fun(ind)` provides the package default baseline
-  fecundity schedule.
+Each builder returns `function(individual)`. The individual must supply one
+non-missing character `sex` and one finite non-negative numeric `age`, and the
+table must contain exactly one matching row. Missing sex or age coverage fails
+clearly. The package does not silently return zero, extrapolate a terminal age
+class, or provide default tables.
 
-## Stage 1 boundary
-
-`reproduction_process()` owns Bernoulli breeding and Poisson litter draws.
-Project model functions may use these table helpers to provide baseline rates.
-The old controller-level reproduction and mate-limiting helpers are retired;
-process-native mating constraints belong in a later scientific-module goal.
+The modeller may call these lookups inside the corresponding callback of
+`survival_process()` or `reproduction_process()`. The process remains
+responsible for stochastic draws, state transitions and event accounting.

@@ -2,146 +2,54 @@
 
 ## Authority and current objective
 
-`docs/vision_and_scope.md` is the product authority. Stage 3 is implemented,
-accepted and published through Goal 007. Goal 008 is the authorised bounded
-integration-hardening tranche: common pre-process demographic decisions,
-explicit offspring sex and lean trusted-path validation. Goal 009 legacy-
-surface cleanup and Stage 4 remain outside this implementation.
+`docs/vision_and_scope.md` is product authority. Goals 001-007 are accepted and
+published. Goal 008 is accepted and committed locally at `d426910`. Goal 009 is
+implemented locally and awaiting review as the second lean sweep; it removes
+dormant parallel products before any new development. Publication is not
+authorised.
 
-The modeller defines the biological program. OpenPVA supplies execution,
-reusable processes, scientific contracts, RNG/time/event provenance, validation
-and reproducible analysis machinery.
+> The modeller defines the biological program; OpenPVA supplies the execution
+> engine, reusable processes, scientific contracts, and reproducible analysis
+> machinery.
 
-## Current state
+## Current product
 
-- Stage 0 was accepted and Stage 1 implemented the generic process seam.
-- `scenario_spec()` and `run_scenario()` take a direct process list; the fixed
-  dispatcher and `run_basic_simulation*()` surface are removed.
-- Minimal age, survival, reproduction, generic introduction and census
-  processes compose with project-defined observers or management processes.
-- Birth and introduction processes explicitly declare created fields; missing
-  downstream `patch_id` fails at preflight or runtime.
-- YAML, targets, uncertainty/calibration execution, summaries and optional
-  module scenarios are deliberately de-exported/deferred rather than adapted.
-- Goal 003 supplies a synthetic, source-labelled and explicitly uncalibrated
-  grizzly-like benchmark through ordinary process composition, with required
-  scenario contrasts, annual survival variation, immigration/observation
-  extensions and replicate-level summaries.
-- Goal 004 replaces the disconnected density specification with an ordinary
-  positioned global-abundance snapshot and one pure ceiling-style multiplier.
-  Vital-rate composition remains explicit and modeller-owned; the accepted
-  implementation is published at `122e8dd`.
-- Goal 005 replaces controller-era spatial conveniences with explicit patch
-  assignment, simultaneous event-emitting transitions and positioned full-
-  domain patch counts. It is accepted and published at `003960a`.
-- Goal 006 replaces the legacy supplementation helper and benchmark-specific
-  creation loop with one source-labelled ordinary creator. Counts and complete
-  newcomer state are modeller-owned; IDs and accounting remain engine-owned.
-  It is accepted and published at
-  `e7194c1bb524cd6726d5e1918b1ee200348adfa9`.
-- Goal 007 implements explicit founder/known-parentage declarations, exact
-  linear-memory ancestor tracing, creator helpers and tidy pedigree outputs.
-  Marker-derived `F`, marker placeholders and an uncalibrated fitness response
-  are retired rather than adapted. It is accepted and published at
-  `17545d04ea8001b7b01f6dc4de509d7f7b685b7f`.
-- Goal 008 removes progressive within-process survival/reproduction visibility,
-  makes offspring sex explicit, and prepares unchanged validation metadata once
-  per execution while retaining exact public and lineage-change pedigree
-  audits. It is implemented locally and awaiting review; publication is not
-  authorised.
-- The published test/CI/release evidence remains useful historical baseline
-  evidence, but it does not select the next product tranche.
+- A lifecycle is a direct ordered list of validated ordinary R processes.
+- The engine owns time, reproducible replicate streams, stable IDs, field and
+  event contracts, exact accounting and provenance.
+- Built-ins cover age, survival, reproduction, census, density snapshots,
+  simultaneous patch transitions and generic exogenous introductions.
+- Optional exact pedigree ancestry uses explicit founders/parentage and
+  conditional pedigree IBD, separate from marker observations.
+- The synthetic grizzly benchmark is the canonical end-to-end acceptance
+  fixture; its values are illustrative and uncalibrated.
+- Demographic table builders compile modeller-supplied schedules and fail on
+  missing coverage. OpenPVA ships no biological table defaults.
+- Controller-era direct mutators and old-output analysis/release surfaces are
+  removed in Goal 009 rather than adapted.
 
-## Locked target defaults
+There is no fixed dispatcher, lifecycle DSL, global registry, plugin manager,
+dependency-injection framework, compatibility layer or second aggregate
+population representation.
 
-- Ordered ordinary R process objects with explicit parameters,
-  requirements/writes, and state-plus-events results.
-- One preassigned L'Ecuyer-CMRG stream per replicate; sequential lifecycle
-  draws; serial/parallel equality; no process-level `set.seed()` or initial
-  per-process substreams.
-- Reserved and typed core fields plus ordinary named contributed attributes;
-  birth/introduction must initialize every downstream-required field.
-- Engine event columns `run`, `time`, `process_index`, `process_name`, and
-  `event_type`; aggregate default, opt-in individual detail, unsuppressible core
-  accounting events.
-- Step `t` denotes interval `t -> t+1`; time advances after the list; census is
-  an explicitly positioned observer apart from an optional initial `t = 0`
-  census.
-- An independent life-table/matrix expected-value oracle validates stochastic
-  means. Native deterministic execution and a second fractional population
-  representation are deferred.
-- No compatibility adapters, DSL, registry, plugin framework, dependency-
-  injection system, or S4/R6 process hierarchy.
+## Active tranche - Goal 009
 
-## Staged realignment
+1. Delete dormant lifecycle/default and old-output analysis clusters.
+2. Retain strict explicit demographic table builders.
+3. Reconcile exports, dependencies and current delivery documentation.
+4. Preserve historical provenance and all active scientific tests.
+5. Complete proportional package evidence and stop for Barry's acceptance.
 
-### Stage 0 — strategic acceptance (complete)
+## Next programme decision
 
-Barry reviews the North Star, evidence, canonical benchmark, lean contract and
-gap map as one package. The remaining decision is strategic acceptance and
-authority to implement Stage 1, not selection among reversible mechanics.
-
-### Stage 1 — generic execution seam (implemented; Goal 002 review surface)
-
-1. Add focused tests reproducing the fixed-dispatch and newborn-`patch_id`
-   failures.
-2. Implement validated process/result constructors and the single generic
-   ordered execution loop.
-3. Implement the locked RNG, field, event and interval/census contracts.
-4. Port only the minimal grizzly demographic processes.
-5. Repair newborn initialization through downstream field validation.
-6. Remove the obsolete dispatcher and update affected callers without
-   compatibility adapters.
-
-Acceptance: a project-defined observer or management process runs without a
-controller edit; accounting and serial/parallel reproducibility pass; simulated
-means match an independent expected-value oracle within stated Monte Carlo
-error.
-
-### Stage 2 — canonical grizzly benchmark
-
-Implemented, accepted and published in Goal 003 as an illustrative synthetic fixture. Baseline,
-alternative female-survival, targeted human-mortality and immigration
-scenarios differ through process objects and parameters. The benchmark also
-demonstrates annual survival variation, observation, mortality/reproduction
-reordering, event accounting, stochastic expectation checks and reproducible
-provenance. No value is an empirical grizzly default.
-
-### Stage 3 — high-value module migration
-
-All four bounded tranches are implemented, accepted and published, with
-obsolete surfaces removed rather than adapted:
-
-1. global density measurement and explicit vital-rate feedback (Goal 004,
-   implemented, accepted and published);
-2. patch-aware dispersal and patch-specific density (Goal 005, implemented,
-   accepted and published);
-3. generic exogenous introductions (Goal 006, implemented, accepted and
-   published);
-4. optional exact pedigree ancestry (Goal 007, implemented, accepted and
-   published).
-
-Pedigree `pedigree_F` is conditional IBD under the recorded pedigree and
-declared founder base. Marker observations are outside this tranche and any
-future marker module must remain separate and keyed by persistent ID.
-
-### Stage 4 — workflow reconnection
-
-Reconnect YAML compilation, uncertainty, sensitivity, calibration, targets and
-reporting after the process engine and grizzly benchmark are accepted. YAML
-remains parameter configuration, not a lifecycle language.
-
-## Historical accomplishments
-
-Earlier work established a functioning R package, schema-v3 scenarios,
-rate-based reproduction, channel-specific density, spatial/genetic summaries,
-uncertainty and calibration helpers, reproducible targets/Quarto workflows, and
-published R 4.6.1 CI evidence. Detailed status and validation remain in the
-historical roadmap, decisions, logs and artefacts. They are not active
-workstreams and should not be extended ahead of the current decision boundary.
+After Goal 009 acceptance, frame Stage 4 workflow reconnection against the
+current process/event/output contracts. YAML remains parameter configuration,
+not a lifecycle language. Targets and Quarto remain analysis/reporting tools,
+not mandatory engine protocol. Harvest/removal should return only as an
+ordinary evidence-backed process goal.
 
 ## Stop rule
 
-Stop after Goal 008 evidence and review. Do not begin Goal 009 dormant-surface
-cleanup or Stage 4 interface reconnection in this tranche. Tags, commits and
-publication require separate authority.
+Stop after Goal 009 evidence and one material review pass. Do not begin Stage 4,
+prune historical artefacts, split the active engine/benchmark or publish without
+separate authority.

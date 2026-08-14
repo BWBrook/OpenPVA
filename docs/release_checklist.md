@@ -1,36 +1,32 @@
-# Release checklist (OpenPVA)
+# Release checklist
 
-A release is a tagged, reviewable state of the repo with reproducible behaviour.
+A release is a maintainer-approved, tagged state. Historical release bundles do
+not prove the current checkout.
 
-## Preconditions
-- [x] `docs/plan.md` current and honest
-- [x] `docs/decisions.md` updated for major changes
-- [x] `docs/interpretation_notes.md` updated for this release candidate
-- [x] Working tree clean; meaningful commits only
+## Scope and records
 
-## Build & test
-- [x] `renv` restore works from clean checkout
-- [x] Unit tests pass
-- [x] Integration tests pass (YAML + scenario run at minimum)
-- [x] Minimal `targets` pipeline run succeeds
-- [x] Quarto demo renders (or defined minimal subset renders)
+- [ ] Release scope and version decision are explicit.
+- [ ] `docs/plan.md`, `docs/decisions.md`, current help and README are truthful.
+- [ ] Only accepted changes are committed and the worktree is clean.
 
-## Behavioural sanity
-- [x] Toy scenarios produce sensible dynamics (no obvious pathologies)
-- [x] EV/cat behaviour consistent with docs
-- [x] Management (harvest/supplement) metrics appear sensible
-- [x] Spatial/genetics scenarios still run (if included in release scope)
+## Package evidence
 
-## Documentation
-- [x] README up to date (install, quickstart, examples)
-- [x] YAML schema documented (including any new fields)
-- [x] Any breaking/deprecated changes documented
+- [ ] Project dependencies restore from the committed lockfile.
+- [ ] `Rscript scripts/run_tests.R` passes.
+- [ ] A representative canonical benchmark completes with plausible bounded
+      outputs and exact event accounting.
+- [ ] `lintr::lint_package()` reports no lints.
+- [ ] An isolated source build succeeds.
+- [ ] The selected ordinary or `--as-cran` `R CMD check` returns the accepted
+      status.
+- [ ] Relevant GitHub CI runs are successful at the exact candidate commit.
 
-## Versioning
-- [x] Version bumped appropriately (semver)
-- [x] NEWS/CHANGELOG updated (if present)
-- [ ] Tag created and release notes drafted
+## Publication
 
-## Automation (non-publishing)
-- [x] `scripts/build_release_evidence.sh` reproduces a release evidence bundle
-- [x] Maintainer/orchestrator review completed for latest generated bundle (`rc4`)
+- [ ] Maintainer review is complete.
+- [ ] Version and release notes are final.
+- [ ] Tag, GitHub release and any CRAN submission are separately authorised.
+
+There is no current release-evidence bundle script. Build logs or compact
+evidence should be captured only when a release goal requests them; older
+tracked bundles remain historical provenance.

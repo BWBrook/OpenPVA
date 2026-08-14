@@ -283,18 +283,6 @@ print.openpva_scenario <- function(x, ...) {
   eval(expr, envir = parent.frame())
 }
 
-.with_optional_seed <- function(seed, expr) {
-  expr <- substitute(expr)
-  evaluation_env <- parent.frame()
-  if (is.null(seed)) {
-    return(eval(expr, envir = evaluation_env))
-  }
-  .with_rng_restored({
-    set.seed(seed)
-    eval(expr, envir = evaluation_env)
-  })
-}
-
 .normalize_optional_seed <- function(seed) {
   if (is.null(seed)) {
     return(NULL)

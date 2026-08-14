@@ -26,7 +26,10 @@ transition_count <- function(events, origin, destination) {
 }
 
 test_that("patch initialisation is explicit, strict and permits empty patches", {
-  population <- initialize_population(2L, max_age = 2L)
+  population <- list(
+    create_individual(1L, "F", age = 1L),
+    create_individual(2L, "M", age = 2L)
+  )
   assigned <- initialize_patches(
     population,
     patch_ids = c(2L, 9L),

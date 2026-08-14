@@ -12,7 +12,7 @@ removed, repeated or reordered without editing the controller.
 
 ## Current Core
 
-The Stage 1 runtime provides:
+The current runtime provides:
 
 - validated `pva_state`, `pva_process` and `pva_result` objects;
 - one generic ordered execution loop;
@@ -222,5 +222,5 @@ or registration is required.
 Rscript scripts/run_tests.R
 ```
 
-Release builds, Quarto and workflow automation have separate validation and
-publication gates.
+Package release builds have separate acceptance and publication gates. YAML,
+targets and Quarto workflow reconnection is deferred to Stage 4.

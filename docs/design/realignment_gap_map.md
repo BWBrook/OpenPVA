@@ -10,19 +10,19 @@ modeller-defined biological program.
 
 | Area | Current evidence | Decision | Target |
 |---|---|---|---|
-| Individual/population helpers | Flexible lists and many tested lifecycle helpers | **Retain, then simplify** | Reuse behind explicit state and field contracts; avoid parallel representations without need |
-| Seeded replicate execution and provenance | Established controller-owned seeded workflows | **Retain, redesign boundary** | Engine owns RNG/context; processes consume approved RNG service |
-| Lifecycle configuration | Six allowed labels: age, survival, dispersal, breeding/births, harvest, supplementation | **Redesign** | Direct ordered list of validated third-party processes |
-| Controller dispatcher | Conditional branch for every biological step | **Remove after replacement** | One generic process execution loop; no compatibility dispatcher |
-| Reproduction coupled step | Mating, breeding draws and births concentrated in controller helpers | **Redesign incrementally** | Separate reusable processes or one composite process that still satisfies public contract |
+| Individual/population helpers | Explicit list records plus strict table compilers | **Retained and simplified** | Reuse behind explicit state and field contracts; avoid parallel representations |
+| Seeded replicate execution and provenance | Engine-owned reproducible streams and context | **Implemented** | Preserve serial/fork identity and caller RNG restoration |
+| Lifecycle configuration | Direct ordered process list | **Implemented** | Validate ordinary third-party processes without a DSL |
+| Controller dispatcher | Removed in Goal 002 | **Removed** | One generic process execution loop; no compatibility dispatcher |
+| Reproduction | Process-native staged births with explicit modeller callbacks | **Implemented** | Preserve common pre-state, creator and accounting contracts |
 | Density channels | Former survival/breeding/fecundity specification was disconnected from execution | **Replace** | Positioned ordinary abundance snapshots plus pure functions explicitly composed by the modeller |
 | Spatial patches/dispersal | Controller-era helpers and history-inferred connectivity | **Replaced in Goal 005** | Explicit domains, simultaneous ordinary processes, transition events and positioned patch counts |
 | Newborn patch state | Former births omitted maternal `patch_id` | **Repaired by field contract** | Creator declares inheritance or initialization; missing downstream state fails |
 | Genetics/inbreeding | Former optional allele state plus heterozygosity-derived `F` | **Replaced in Goal 007** | Exact optional pedigree ancestry is primary IBM state; a future marker module must be separate and ID-keyed |
 | Management actions | Harvest and supplementation were privileged labels | **Migrate in bounded tranches** | Generic exogenous introductions are ordinary processes in Goal 006; harvest/removal remains later work |
-| YAML scenarios | Canonical schema configures existing fixed simulator | **Defer lifecycle expansion** | Keep current inputs during architecture work; do not add a process DSL |
+| YAML scenarios | Former fixed-simulator schema retained only as history | **Rebuild later** | Parameter compilation in Stage 4; never a lifecycle DSL |
 | `targets`/`renv`/Quarto | Reproducible workflow machinery | **Retain outside engine** | Analysis orchestration and reporting, not process protocol |
-| Uncertainty/sensitivity/calibration helpers | Broad analysis support | **Retain, defer expansion** | Reconnect after canonical engine acceptance; do not drive architecture |
+| Uncertainty/sensitivity/calibration | Former old-output helpers removed in Goal 009 | **Rebuild later** | Stage 4 analysis over current events/results; do not drive engine architecture |
 | Release/compatibility adapters | Historical clean-up burden and contradictory decisions | **Remove when touched** | No backwards-compatibility preservation for realignment |
 | Canonical empirical model | No accepted end-to-end benchmark | **Add** | Minimal grizzly benchmark and extension fixtures |
 
@@ -42,9 +42,10 @@ supplied rule; omission fails at preflight or immediately after creation.
 ### Feature breadth before reference fidelity
 
 Spatial, genetic, uncertainty and calibration capabilities arrived before a
-canonical empirical acceptance model. Their existence is valuable, but they
-cannot establish coherent lifecycle semantics or scientific credibility by
-feature count.
+canonical empirical acceptance model. Spatial and pedigree concepts were
+reimplemented through the process contract; the incompatible analysis stack was
+removed. Historical evidence remains useful but cannot establish current
+scientific credibility by feature count.
 
 ### Contract contradictions
 
@@ -99,9 +100,9 @@ field and RNG contracts.
 
 ### Stage 4 — reconnect interfaces and analyses
 
-Reconnect YAML scenario compilation, uncertainty, sensitivity, calibration,
-`targets`, and reporting to the accepted process engine. Keep YAML as parameter
-configuration unless repeated real use establishes a need for a lifecycle DSL.
+Rebuild YAML parameter compilation, uncertainty, sensitivity, calibration,
+`targets`, and reporting over the accepted process/event/output contracts. Keep
+YAML as parameter configuration, not a lifecycle DSL.
 
 ## Deferred work
 
@@ -115,4 +116,4 @@ configuration unless repeated real use establishes a need for a lifecycle DSL.
 ## Stop rule
 
 Do not begin marker genetics, fitness responses or Stage 4 reconnection until
-Goal 007 passes its bounded acceptance review.
+Goal 009 is accepted and its clean product boundary is published.

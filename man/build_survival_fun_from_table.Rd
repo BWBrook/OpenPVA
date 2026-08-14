@@ -16,5 +16,6 @@ A function with signature `function(ind)` that returns a survival
 }
 \description{
 Converts an age- and sex-specific survival table into a function that can be
-supplied to simulation controllers.
+used inside a modeller-supplied process callback. Every individual must
+match exactly one row; the package does not extrapolate or choose a default.
 }

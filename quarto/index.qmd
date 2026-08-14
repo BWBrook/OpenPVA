@@ -3,5 +3,6 @@ title: "Welcome to OpenPVA"
 format: html
 ---
 
-OpenPVA is an open-source R framework for population viability analysis...
-
+OpenPVA is a programmable, inspectable population-viability engine for R. The
+modeller defines an ordered biological program; OpenPVA supplies generic
+execution, reusable processes and explicit scientific contracts.

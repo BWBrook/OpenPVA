@@ -206,15 +206,6 @@ test_that("event provenance fields and event names cannot be overwritten", {
   )
 })
 
-test_that("retired incompatible helpers are absent from the public surface", {
-  exports <- getNamespaceExports("OpenPVA")
-  expect_false("apply_reproduction" %in% exports)
-  expect_false("make_mate_limited_mating_fun" %in% exports)
-  expect_false("summarise_sensitivity_oat" %in% exports)
-  expect_true("reproduction_process" %in% exports)
-  expect_true("summarise_sensitivity_prcc" %in% exports)
-})
-
 test_that("project-defined observation and management processes need no controller edit", {
   observer <- pva_process(
     "project_observer",

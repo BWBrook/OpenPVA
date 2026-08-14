@@ -15,5 +15,5 @@ Invisibly returns the validated table; stops with an informative
 }
 \description{
 Checks that a data frame describing age- and sex-specific survival
-probabilities is complete and non-overlapping.
+probabilities is well formed and non-overlapping.
 }

@@ -82,3 +82,11 @@
   skipped** in **36.7 seconds**. Fresh isolated R 4.6.1 build succeeded and
   `R CMD check --no-manual --no-build-vignettes` returned **Status: OK**.
   Temporary products were removed; no further polish pass was started.
+
+## 2026-08-14 - accepted and committed locally
+
+- Barry accepted Goal 008 and authorised a local commit.
+- The exact reviewed Goal 008 payload was committed as `d426910` with message
+  `feat: harden process state and validation`.
+- No push, tag, release or other publication occurred. The clean repository was
+  `main...origin/main [ahead 1]` before Goal 009 began.

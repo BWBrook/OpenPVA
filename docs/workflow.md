@@ -1,81 +1,43 @@
-# OpenPVA workflow: artefact review and iteration
+# OpenPVA development workflow
 
-OpenPVA is not “just code”; it produces stochastic simulation artefacts.
-Therefore we require an **Artefact Review Cycle** analogous to scientific result-checking.
+OpenPVA uses proportional scientific validation: test the contract that changed,
+exercise a representative real workflow, then run package-level gates before a
+change is accepted or published.
 
-This workflow is mandatory for the Codex agent.
+## Per-goal cycle
 
-## 1) What counts as an artefact?
+1. Read `AGENTS.md`, the active goal and the relevant scientific contract.
+2. Implement the smallest coherent change and update callers, tests, help and
+   current documentation together.
+3. Run focused contract tests and inspect structured events/state for scientific
+   plausibility and exact accounting.
+4. Run the full suite and one representative scenario when runtime behavior
+   changed.
+5. For acceptance or publication, build the source package and run the agreed
+   `R CMD check` profile outside the worktree.
+6. Record commands, results, limitations and the publication boundary in the
+   active goal log. Perform one focused review/repair pass, then stop.
 
-- simulation outputs (summary tibbles, extinction summaries),
-- YAML scenario behaviour,
-- targets pipeline outputs,
-- Quarto demo render outputs (figures/tables),
-- test outputs,
-- documentation pages.
+Do not repeat unchanged checks or polish historical material without a material
+risk reduction. Do not relax evidence for scientific claims, state integrity,
+RNG reproducibility, accounting or destructive operations.
 
-## 2) Cycle: Build sanity → Domain sanity → Interpretation → Iteration
+## Current gates
 
-### Step A — Build sanity (technical)
-For significant changes (especially refactors), run:
+```sh
+Rscript scripts/run_tests.R
+R CMD build --no-build-vignettes .
+R CMD check --no-manual --no-build-vignettes OpenPVA_*.tar.gz
+```
 
-- package/test checks (as appropriate for repo structure),
-- unit tests and integration tests,
-- at least a minimal `targets` run,
-- Quarto render smoke test if feasible.
+Run build/check in an isolated temporary directory. Lint is a fast-CI gate.
+The canonical grizzly benchmark is the preferred representative runtime proof
+for changes to engine or demographic behavior.
 
-Record in `docs/interpretation_notes.md`:
-- what was run,
-- pass/fail,
-- any warnings that matter.
+## Deferred workflow surfaces
 
-### Step B — Domain sanity (PVA behaviour)
-Create/maintain a small set of deterministic “toy” scenarios and check:
-
-- probabilities remain within bounds [0,1],
-- no `NA`/`NaN` propagation in summary outputs,
-- population size and extinction behave sensibly under:
-  - zero EV/cats vs non-zero EV/cats,
-  - no management vs harvest/supplementation,
-  - no dispersal vs Markov dispersal,
-  - genetics on/off (if included).
-
-These sanity checks should be encoded as tests where possible.
-
-### Step C — Interpretation (what the artefacts are telling you)
-For each meaningful change:
-
-- inspect key output columns (e.g. EV multipliers, catastrophe indicators, harvested/supplemented counts),
-- inspect at least 1–2 plots from the demo pipeline (mean trajectories, occupancy, etc.),
-- write notes in `docs/interpretation_notes.md`:
-  - what changed,
-  - what behaviour you observed,
-  - what seems suspicious,
-  - follow-up actions.
-
-### Step D — Iteration
-If behaviour is suspicious or inconsistent:
-- add missing tests,
-- adjust implementation,
-- rerun the cycle.
-
-Do not “paper over” suspicious outputs with narrative.
-Fix or explicitly document limitations.
-
-## 3) How this connects to other docs
-
-- `docs/plan.md` — update whenever you change milestone scope, APIs, or priorities.
-- `docs/decisions.md` — record non-trivial design choices.
-- `docs/log/*` — chronological record of what you did and why.
-- `docs/questions_for_human.md` — only when blocked.
-
-## 4) CI profile usage
-
-OpenPVA CI is split into two validation profiles:
-
-- `ci-fast`: pull request and `main` push gate (lint + tests + package check).
-- `ci-heavy-validation`: scheduled/manual workflow for heavier reproducibility
-  checks (`targets`, Quarto render, schema/seed regressions, and `--as-cran` check).
-
-Profile definitions and local command equivalents are documented in
-`docs/reference/ci_profiles.md`.
+Targets, YAML compilation and Quarto reporting remain planned Stage 4 analysis
+machinery. They are not mandatory current gates and do not define lifecycle
+semantics. The unrendered legacy `quarto/basic_demo.*` sources and historical
+evidence bundles are retained only as migration evidence until Stage 4 replaces
+them deliberately.

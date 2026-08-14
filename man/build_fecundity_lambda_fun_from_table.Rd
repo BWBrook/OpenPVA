@@ -12,9 +12,10 @@ build_fecundity_lambda_fun_from_table(tbl)
 }
 \value{
 A function with signature `function(ind)` returning non-negative
-  `lambda`, defaulting to `0` when no row matches.
+  `lambda`.
 }
 \description{
 Converts an age- and sex-specific fecundity table into a function returning
-baseline `lambda` values.
+`lambda` values. Every individual must match exactly one row; the package
+does not choose a default.
 }
