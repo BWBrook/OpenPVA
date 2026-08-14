@@ -75,3 +75,21 @@ advice or pedigree/genetics implementation.
 - Publication of the reviewed Goal 006 change set is authorised.
 - This entry records authority only; no publication commit or push is claimed
   here.
+
+## 2026-08-14 - published
+
+- The exact reviewed 29-path Goal 006 payload was committed as
+  `e7194c1bb524cd6726d5e1918b1ee200348adfa9` with message
+  `feat: add generic introduction processes` and pushed to `origin/main`.
+- Fresh publication gates passed: introduction **77/77**, grizzly **106/106**,
+  retained full suite **505/505**, isolated R 4.6.1 source build succeeded and
+  `R CMD check --no-manual --no-build-vignettes` returned **Status: OK**.
+- Diff, public/retired surface, controller, grizzly-loop, artifact and preserved-
+  provenance scans were clean before exact staging. The staged payload contained
+  1,337 insertions and 174 deletions with no unstaged or untracked residue.
+- Push result was `cd3659e..e7194c1`. Local `HEAD`, `origin/main` and the live
+  remote ref converged exactly at the full commit above with divergence `0/0`;
+  the worktree was clean and no tag or release was created.
+- Goal 006 is closed. The next programme decision is whether to authorise a
+  proposed Goal 007 pedigree/ancestry tranche; no Goal 007 is created or
+  authorised by this record.

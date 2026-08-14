@@ -3,9 +3,10 @@
 ## Authority and current objective
 
 `docs/vision_and_scope.md` is the product authority. The current operational
-programme is Stage 3 migration through the accepted R-native lifecycle-process
-contract. Goal 006 is the active bounded tranche: generic exogenous
-introductions.
+programme has completed its three authorised Stage 3 migration tranches through
+the accepted R-native lifecycle-process contract. The next decision is whether
+to authorise a proposed Goal 007 pedigree/ancestry tranche; no Goal 007 work is
+currently authorised.
 
 The modeller defines the biological program. OpenPVA supplies execution,
 reusable processes, scientific contracts, RNG/time/event provenance, validation
@@ -36,7 +37,8 @@ and reproducible analysis machinery.
 - Goal 006 replaces the legacy supplementation helper and benchmark-specific
   creation loop with one source-labelled ordinary creator. Counts and complete
   newcomer state are modeller-owned; IDs and accounting remain engine-owned.
-  Its implementation is under bounded review and remains unpublished.
+  It is accepted and published at
+  `e7194c1bb524cd6726d5e1918b1ee200348adfa9`.
 - The published test/CI/release evidence remains useful historical baseline
   evidence, but it does not select the next product tranche.
 
@@ -97,20 +99,22 @@ provenance. No value is an empirical grizzly default.
 
 ### Stage 3 — high-value module migration
 
-Migrate four bounded tranches through the same contract, removing each obsolete
-surface rather than adapting it:
+The three authorised bounded tranches are implemented, accepted and published
+through the same contract, with each obsolete surface removed rather than
+adapted:
 
 1. global density measurement and explicit vital-rate feedback (Goal 004,
    implemented, accepted and published);
 2. patch-aware dispersal and patch-specific density (Goal 005, implemented,
    accepted and published);
-3. generic exogenous introductions (Goal 006, active);
-4. optional pedigree/ancestry genetics.
+3. generic exogenous introductions (Goal 006, implemented, accepted and
+   published).
 
-Pedigree and ancestry are primary individual-based state. Marker
-heterozygosity is a separate observable summary and must not define pedigree
-inbreeding. Test output equivalence only where semantics intentionally remain
-the same.
+The next programme decision is whether to authorise a proposed Goal 007 for
+optional pedigree/ancestry genetics. If authorised, pedigree and ancestry are
+primary individual-based state; marker heterozygosity remains a separate
+observable summary and must not define pedigree inbreeding. No Goal 007 packet
+or implementation is claimed by this plan.
 
 ### Stage 4 — workflow reconnection
 
@@ -125,10 +129,10 @@ rate-based reproduction, channel-specific density, spatial/genetic summaries,
 uncertainty and calibration helpers, reproducible targets/Quarto workflows, and
 published R 4.6.1 CI evidence. Detailed status and validation remain in the
 historical roadmap, decisions, logs and artefacts. They are not active
-workstreams and should not be extended ahead of Stages 1–2.
+workstreams and should not be extended ahead of the current decision boundary.
 
 ## Stop rule
 
-Do not begin pedigree genetics, a release exercise or an interface platform
-before Goal 006 passes its bounded acceptance review. Publication, tags and
-releases require separate authority.
+Do not create or begin the proposed Goal 007 pedigree/ancestry tranche, or move
+to Stage 4 interface reconnection, without Barry's explicit authorisation.
+Tags and releases require separate authority.

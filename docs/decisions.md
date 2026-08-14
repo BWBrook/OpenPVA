@@ -767,4 +767,7 @@
   - Same-pre-state initialization avoids within-process order artifacts;
     partitioned events provide useful patch or cohort evidence without
     double-counting population additions.
-- **Status**: implemented and accepted in Goal 006; publication authorised.
+- **Status**: implemented, accepted and published in Goal 006 at
+  `e7194c1bb524cd6726d5e1918b1ee200348adfa9`. The next programme decision is
+  whether to authorise a proposed Goal 007 pedigree/ancestry tranche; this
+  decision does not create or authorise that goal.
