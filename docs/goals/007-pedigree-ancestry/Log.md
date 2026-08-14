@@ -107,3 +107,27 @@ persistence or Stage 4 workflow reconnection.
   skipped**. Fresh isolated R 4.6.1 build succeeded and package check returned
   **Status: OK**. `git diff --check` passed, the temporary check directory was
   removed, and no repository build/database artefact remains.
+
+## 2026-08-14 - accepted; publication authorised
+
+- Barry accepted Goal 007 after the bounded implementation, material repair
+  and independent closure audit.
+- Publication of the reviewed Goal 007 change set was authorised.
+
+## 2026-08-14 - published
+
+- The exact reviewed 42-path Goal 007 payload was committed as
+  `17545d04ea8001b7b01f6dc4de509d7f7b685b7f` with message
+  `feat: add exact pedigree ancestry` and pushed to `origin/main`.
+- Fresh publication gates passed: retained full suite **587/587**, isolated R
+  4.6.1 source build succeeded, and
+  `R CMD check --no-manual --no-build-vignettes` returned **Status: OK**.
+- The independent closure audit returned **ACCEPT** after directly verifying
+  the public trust-boundary repair. `git diff --check`, exact staging and the
+  temporary-artifact check were clean; the implementation payload contained
+  1,843 insertions and 432 deletions with no unstaged residue.
+- Push result was `e3bd94e..17545d0`; the live remote ref matched the full
+  implementation commit. No tag or release was created.
+- Goal 007 is closed. The next authorised activity is a bounded lean integration
+  review of the completed Stage 3 tranche; no cleanup implementation or Stage 4
+  reconnection is authorised by this record.

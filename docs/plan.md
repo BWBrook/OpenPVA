@@ -2,10 +2,10 @@
 
 ## Authority and current objective
 
-`docs/vision_and_scope.md` is the product authority. Goal 007 is the current
-authorised Stage 3 review surface: replace ambiguous marker-derived state with
-an exact optional pedigree ancestry foundation through the accepted R-native
-lifecycle and creator contracts.
+`docs/vision_and_scope.md` is the product authority. Stage 3 is implemented,
+accepted and published through Goal 007. The current operational surface is a
+bounded lean integration review across the four Stage 3 tranches before the
+next development decision; this review does not authorise cleanup or Stage 4.
 
 The modeller defines the biological program. OpenPVA supplies execution,
 reusable processes, scientific contracts, RNG/time/event provenance, validation
@@ -41,7 +41,8 @@ and reproducible analysis machinery.
 - Goal 007 implements explicit founder/known-parentage declarations, exact
   linear-memory ancestor tracing, creator helpers and tidy pedigree outputs.
   Marker-derived `F`, marker placeholders and an uncalibrated fitness response
-  are retired rather than adapted. Review and publication remain pending.
+  are retired rather than adapted. It is accepted and published at
+  `17545d04ea8001b7b01f6dc4de509d7f7b685b7f`.
 - The published test/CI/release evidence remains useful historical baseline
   evidence, but it does not select the next product tranche.
 
@@ -102,9 +103,8 @@ provenance. No value is an empirical grizzly default.
 
 ### Stage 3 — high-value module migration
 
-The first three bounded tranches are implemented, accepted and published. The
-fourth is implemented under Goal 007 review, with obsolete surfaces removed
-rather than adapted:
+All four bounded tranches are implemented, accepted and published, with
+obsolete surfaces removed rather than adapted:
 
 1. global density measurement and explicit vital-rate feedback (Goal 004,
    implemented, accepted and published);
@@ -112,7 +112,8 @@ rather than adapted:
    accepted and published);
 3. generic exogenous introductions (Goal 006, implemented, accepted and
    published);
-4. optional exact pedigree ancestry (Goal 007, implemented, under review).
+4. optional exact pedigree ancestry (Goal 007, implemented, accepted and
+   published).
 
 Pedigree `pedigree_F` is conditional IBD under the recorded pedigree and
 declared founder base. Marker observations are outside this tranche and any
@@ -135,5 +136,6 @@ workstreams and should not be extended ahead of the current decision boundary.
 
 ## Stop rule
 
-Do not move from Goal 007 review to Stage 4 interface reconnection. Staging,
-commit, push, tags and releases require separate authority.
+Do not implement lean-review recommendations or move to Stage 4 interface
+reconnection without Barry's explicit authorisation. Tags and releases require
+separate authority.

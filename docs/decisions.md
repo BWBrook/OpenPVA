@@ -797,7 +797,7 @@
     conflating them makes both state and downstream claims scientifically
     ambiguous. Exact ancestor tracing supplies a validated foundation without
     quadratic persistent memory or a new engine category.
-- **Status**: implemented under Goal 007 review; not yet accepted or published.
-  This decision supersedes DEC-016 and the genetic parts of DEC-019. Their
-  historical delivery evidence remains intact, but those active marker
-  surfaces are retired.
+- **Status**: implemented, accepted and published in Goal 007 at
+  `17545d04ea8001b7b01f6dc4de509d7f7b685b7f`. This decision supersedes DEC-016
+  and the genetic parts of DEC-019. Their historical delivery evidence remains
+  intact, but those active marker surfaces are retired.
