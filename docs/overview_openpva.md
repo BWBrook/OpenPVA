@@ -74,7 +74,9 @@ multiplier in that process callback. Maternal patch inheritance is a declared
 birth-fixture rule, not hard-coded engine biology. Realised movement is
 recorded in transition events rather than inferred from survivor histories.
 
-Existing genetic, harvest/removal, uncertainty, calibration and reporting code
-is future-migration source. It is not a privileged parallel runtime. Stage 3
-next addresses pedigree-based genetics after Goal 006 introductions, before
-Stage 4 reconnects analysis interfaces.
+Optional exact pedigree ancestry now composes through initialisation and
+ordinary birth/introduction callbacks, with complete founder/parentage
+declarations and tidy conditional-IBD outputs. The former marker-derived `F`
+surface is retired; any future marker module must be separate and ID-keyed.
+Harvest/removal, uncertainty, calibration and reporting code remains future-
+migration source rather than a privileged parallel runtime.

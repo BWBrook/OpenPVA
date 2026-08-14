@@ -771,3 +771,33 @@
   `e7194c1bb524cd6726d5e1918b1ee200348adfa9`. The next programme decision is
   whether to authorise a proposed Goal 007 pedigree/ancestry tranche; this
   decision does not create or authorise that goal.
+
+## DEC-040 — Exact optional pedigree ancestry
+- **Date**: 2026-08-14
+- **Decision**:
+  - Define individual `pedigree_F` as conditional pedigree IBD under an
+    explicit unrelated, non-inbred founder base. Use numerator relationship
+    `A`, so newborn `pedigree_F = A[mother,father] / 2`.
+  - Make pedigree optional but complete when enabled. Every record explicitly
+    declares `base_founder` with two absent parents or `known_parentage` with a
+    distinct earlier female mother and male father. Reject partial, uncertain,
+    phantom, later, self, cyclic and same-batch newcomer ancestry.
+  - Compute exact ancestry through `A = T D T'` ancestor tracing with linear
+    retained vectors and transient sparse contributions. Do not persist a
+    relationship matrix, hidden cache or second population representation.
+  - Compose initialisation, births and introductions through ordinary public
+    helpers and existing exact creator-field declarations. Retain the generic
+    append-only ID and accounting contracts unchanged.
+  - Expose a tidy pedigree ledger and essential coefficient summaries. Retire
+    generic `alleles`, ambiguous `F`, marker-genotype/inheritance/diversity
+    helpers and the uncalibrated inbreeding-survival response without adapters.
+    A future marker module must be separate and keyed by persistent ID.
+- **Rationale**:
+  - Pedigree IBD and observed marker heterozygosity are different estimands;
+    conflating them makes both state and downstream claims scientifically
+    ambiguous. Exact ancestor tracing supplies a validated foundation without
+    quadratic persistent memory or a new engine category.
+- **Status**: implemented under Goal 007 review; not yet accepted or published.
+  This decision supersedes DEC-016 and the genetic parts of DEC-019. Their
+  historical delivery evidence remains intact, but those active marker
+  surfaces are retired.

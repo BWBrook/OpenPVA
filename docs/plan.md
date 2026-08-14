@@ -2,11 +2,10 @@
 
 ## Authority and current objective
 
-`docs/vision_and_scope.md` is the product authority. The current operational
-programme has completed its three authorised Stage 3 migration tranches through
-the accepted R-native lifecycle-process contract. The next decision is whether
-to authorise a proposed Goal 007 pedigree/ancestry tranche; no Goal 007 work is
-currently authorised.
+`docs/vision_and_scope.md` is the product authority. Goal 007 is the current
+authorised Stage 3 review surface: replace ambiguous marker-derived state with
+an exact optional pedigree ancestry foundation through the accepted R-native
+lifecycle and creator contracts.
 
 The modeller defines the biological program. OpenPVA supplies execution,
 reusable processes, scientific contracts, RNG/time/event provenance, validation
@@ -39,6 +38,10 @@ and reproducible analysis machinery.
   newcomer state are modeller-owned; IDs and accounting remain engine-owned.
   It is accepted and published at
   `e7194c1bb524cd6726d5e1918b1ee200348adfa9`.
+- Goal 007 implements explicit founder/known-parentage declarations, exact
+  linear-memory ancestor tracing, creator helpers and tidy pedigree outputs.
+  Marker-derived `F`, marker placeholders and an uncalibrated fitness response
+  are retired rather than adapted. Review and publication remain pending.
 - The published test/CI/release evidence remains useful historical baseline
   evidence, but it does not select the next product tranche.
 
@@ -99,22 +102,21 @@ provenance. No value is an empirical grizzly default.
 
 ### Stage 3 — high-value module migration
 
-The three authorised bounded tranches are implemented, accepted and published
-through the same contract, with each obsolete surface removed rather than
-adapted:
+The first three bounded tranches are implemented, accepted and published. The
+fourth is implemented under Goal 007 review, with obsolete surfaces removed
+rather than adapted:
 
 1. global density measurement and explicit vital-rate feedback (Goal 004,
    implemented, accepted and published);
 2. patch-aware dispersal and patch-specific density (Goal 005, implemented,
    accepted and published);
 3. generic exogenous introductions (Goal 006, implemented, accepted and
-   published).
+   published);
+4. optional exact pedigree ancestry (Goal 007, implemented, under review).
 
-The next programme decision is whether to authorise a proposed Goal 007 for
-optional pedigree/ancestry genetics. If authorised, pedigree and ancestry are
-primary individual-based state; marker heterozygosity remains a separate
-observable summary and must not define pedigree inbreeding. No Goal 007 packet
-or implementation is claimed by this plan.
+Pedigree `pedigree_F` is conditional IBD under the recorded pedigree and
+declared founder base. Marker observations are outside this tranche and any
+future marker module must remain separate and keyed by persistent ID.
 
 ### Stage 4 — workflow reconnection
 
@@ -133,6 +135,5 @@ workstreams and should not be extended ahead of the current decision boundary.
 
 ## Stop rule
 
-Do not create or begin the proposed Goal 007 pedigree/ancestry tranche, or move
-to Stage 4 interface reconnection, without Barry's explicit authorisation.
-Tags and releases require separate authority.
+Do not move from Goal 007 review to Stage 4 interface reconnection. Staging,
+commit, push, tags and releases require separate authority.

@@ -18,7 +18,7 @@ modeller-defined biological program.
 | Density channels | Former survival/breeding/fecundity specification was disconnected from execution | **Replace** | Positioned ordinary abundance snapshots plus pure functions explicitly composed by the modeller |
 | Spatial patches/dispersal | Controller-era helpers and history-inferred connectivity | **Replaced in Goal 005** | Explicit domains, simultaneous ordinary processes, transition events and positioned patch counts |
 | Newborn patch state | Former births omitted maternal `patch_id` | **Repaired by field contract** | Creator declares inheritance or initialization; missing downstream state fails |
-| Genetics/inbreeding | Optional allele state plus heterozygosity-derived `F` | **Replace scientific core** | Pedigree/ancestry as primary IBM state; marker heterozygosity remains a separate observable summary |
+| Genetics/inbreeding | Former optional allele state plus heterozygosity-derived `F` | **Replaced in Goal 007** | Exact optional pedigree ancestry is primary IBM state; a future marker module must be separate and ID-keyed |
 | Management actions | Harvest and supplementation were privileged labels | **Migrate in bounded tranches** | Generic exogenous introductions are ordinary processes in Goal 006; harvest/removal remains later work |
 | YAML scenarios | Canonical schema configures existing fixed simulator | **Defer lifecycle expansion** | Keep current inputs during architecture work; do not add a process DSL |
 | `targets`/`renv`/Quarto | Reproducible workflow machinery | **Retain outside engine** | Analysis orchestration and reporting, not process protocol |
@@ -93,9 +93,9 @@ Remove privileged controller channels as each is replaced. Validate output
 equivalence only where semantics are intentionally unchanged.
 
 Global density is published in Goal 004 and patch transitions/density in Goal
-005. Goal 006 implements generic exogenous introductions through the same
-creator, event and RNG contracts; pedigree genetics remains the next Stage 3
-tranche.
+005. Goal 006 implements generic exogenous introductions and Goal 007
+implements optional exact pedigree ancestry through the same creator, event,
+field and RNG contracts.
 
 ### Stage 4 — reconnect interfaces and analyses
 
@@ -114,5 +114,5 @@ configuration unless repeated real use establishes a need for a lifecycle DSL.
 
 ## Stop rule
 
-Do not begin pedigree genetics until Goal 006 passes its bounded acceptance
-review.
+Do not begin marker genetics, fitness responses or Stage 4 reconnection until
+Goal 007 passes its bounded acceptance review.

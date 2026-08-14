@@ -177,7 +177,7 @@ print.openpva_scenario <- function(x, ...) {
   stream_record <- list(root_seed = as.integer(root_seed), stream = stream)
   event_batches <- list()
   if (!is.null(scenario$initial_census)) {
-    initial_result <- execute_processes(
+    initial_result <- .execute_processes_trusted(
       state = state,
       processes = list(scenario$initial_census),
       run = run_id,
@@ -193,7 +193,7 @@ print.openpva_scenario <- function(x, ...) {
 
   history <- if (scenario$record_population_history) vector("list", scenario$n_steps) else NULL
   for (time in seq.int(0L, scenario$n_steps - 1L)) {
-    interval_result <- execute_processes(
+    interval_result <- .execute_processes_trusted(
       state = state,
       processes = scenario$processes,
       run = run_id,

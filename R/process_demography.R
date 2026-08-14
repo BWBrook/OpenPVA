@@ -239,7 +239,7 @@ reproduction_process <- function(
           next
         }
         for (offspring_index in seq_len(litter_size)) {
-          allocation <- allocate_ids(state, 1L)
+          allocation <- .allocate_ids_trusted(state, 1L)
           state <- allocation$state
           sex <- process_params$offspring_sex(
             mother,

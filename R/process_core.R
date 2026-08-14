@@ -53,6 +53,13 @@ pva_state <- function(population, globals = list(), next_id = NULL) {
 #' @export
 allocate_ids <- function(state, n) {
   state <- .validate_state(state)
+  .allocate_ids_trusted(state, n)
+}
+
+.allocate_ids_trusted <- function(state, n) {
+  # Internal creator hot path. Public callers enter through allocate_ids(),
+  # which performs exact pedigree validation before this structural check.
+  state <- .validate_state(state, validate_pedigree_coefficients = FALSE)
   n <- .normalize_non_negative_count(n, "n")
   if (n == 0L) {
     return(list(state = state, ids = integer()))
@@ -173,7 +180,31 @@ execute_processes <- function(
     execution_id = NULL,
     phase = c("interval", "initial")) {
   state <- .validate_state(state)
-  processes <- validate_processes(processes, state)
+  .execute_processes_trusted(
+    state = state,
+    processes = processes,
+    run = run,
+    time = time,
+    dt = dt,
+    stream_provenance = stream_provenance,
+    execution_id = execution_id,
+    phase = phase
+  )
+}
+
+.execute_processes_trusted <- function(
+    state,
+    processes,
+    run = 1L,
+    time = 0L,
+    dt = 1,
+    stream_provenance = NULL,
+    execution_id = NULL,
+    phase = c("interval", "initial")) {
+  # Internal continuation path. A replicate is exactly validated once before
+  # entering it, and every realised lineage change is exactly validated below.
+  processes <- validate_processes(processes)
+  .validate_process_field_plan(processes, state)
   run <- .normalize_positive_count(run, "run")
   time <- .normalize_non_negative_count(time, "time")
   dt <- as.numeric(dt)
@@ -220,6 +251,10 @@ execute_processes <- function(
     )
     result <- .validate_process_result(result, process)
     .validate_declared_writes(before, result$state, process)
+    if (.pedigree_is_enabled(result$state$population) &&
+        .pedigree_lineage_changed(before$population, result$state$population)) {
+      .validate_pedigree_population(result$state$population)
+    }
     event_records <- .normalize_event_records(result$events, process$name)
     .validate_accounting_transition(before, result$state, event_records, process$name)
     .validate_new_individuals(
@@ -332,7 +367,7 @@ print.pva_process <- function(x, ...) {
   process
 }
 
-.validate_state <- function(state) {
+.validate_state <- function(state, validate_pedigree_coefficients = TRUE) {
   if (!is.list(state) || !all(c("population", "globals", "next_id") %in% names(state))) {
     stop("state must contain population, globals, and next_id", call. = FALSE)
   }
@@ -372,6 +407,13 @@ print.pva_process <- function(x, ...) {
     for (field in intersect(names(.core_field_specs()), unique(unlist(lapply(state$population, names))))) {
       .validate_population_field(state$population, field, allow_missing = TRUE)
     }
+    if (.pedigree_is_enabled(state$population)) {
+      if (validate_pedigree_coefficients) {
+        .validate_pedigree_population(state$population)
+      } else {
+        .pedigree_topology(state$population, require_F = TRUE)
+      }
+    }
   } else if (state$next_id != 1L) {
     stop("state$next_id must be 1 for an empty population", call. = FALSE)
   }
@@ -387,7 +429,16 @@ print.pva_process <- function(x, ...) {
     mother_id = list(type = "integer", allow_na = TRUE, predicate = function(x) x > 0L),
     father_id = list(type = "integer", allow_na = TRUE, predicate = function(x) x > 0L),
     patch_id = list(type = "integer", allow_na = TRUE, predicate = function(x) x > 0L),
-    F = list(type = "numeric", allow_na = TRUE, predicate = function(x) x >= 0 && x <= 1),
+    pedigree_status = list(
+      type = "character",
+      allow_na = FALSE,
+      predicate = function(x) x %in% c("base_founder", "known_parentage")
+    ),
+    pedigree_F = list(
+      type = "numeric",
+      allow_na = FALSE,
+      predicate = function(x) is.finite(x) && x >= 0 && x <= 1
+    ),
     dependency = list(type = "character", allow_na = FALSE, predicate = NULL),
     reproductive_status = list(type = "character", allow_na = FALSE, predicate = NULL)
   )
@@ -527,7 +578,10 @@ print.pva_process <- function(x, ...) {
       call. = FALSE
     )
   }
-  result$state <- .validate_state(result$state)
+  result$state <- .validate_state(
+    result$state,
+    validate_pedigree_coefficients = FALSE
+  )
   result
 }
 
@@ -765,6 +819,26 @@ print.pva_process <- function(x, ...) {
     )
   }
   new_population <- Filter(function(ind) ind$id %in% new_ids, after$population)
+  if (.pedigree_is_enabled(new_population)) {
+    prior_ids <- .population_ids(before$population)
+    for (individual in new_population) {
+      if (identical(individual$pedigree_status, "known_parentage") &&
+          (!individual$mother_id %in% prior_ids ||
+           !individual$father_id %in% prior_ids)) {
+        stop(
+          sprintf(
+            paste0(
+              "new individual %d from process '%s' must reference pedigree ",
+              "parents present before the creation process"
+            ),
+            individual$id,
+            creator$name
+          ),
+          call. = FALSE
+        )
+      }
+    }
+  }
   declared_fields <- sub("^population\\.", "", creator$creates)
   fields_to_check <- union(fields, declared_fields)
   for (field in fields_to_check) {

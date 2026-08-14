@@ -73,6 +73,16 @@ All introduction rows retain the Event Core columns below. The synthetic
 grizzly immigration extension uses process name `immigration` and source
 `illustrative translocation`; its benchmark event summary retains that source.
 
+## Goal 007 pedigree outputs
+
+Pedigree ancestry is individual state rather than an event stream.
+`pedigree_ledger()` returns persistent ID, mother/father IDs, sex, alive status,
+explicit `base_founder`/`known_parentage` status and exact numeric
+`pedigree_F`. `summarise_pedigree()` reports the selected living/all-record
+count, status counts and mean/maximum `pedigree_F`. These quantities are
+conditional on the recorded pedigree and declared founder base; they are not
+marker heterozygosity or realised genomic IBD.
+
 ## Event Core
 
 Every event has:

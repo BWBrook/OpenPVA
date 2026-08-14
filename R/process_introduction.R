@@ -63,7 +63,7 @@ introduction_process <- function(
         return(pva_result(state))
       }
 
-      allocation <- allocate_ids(state, realised_count)
+      allocation <- .allocate_ids_trusted(state, realised_count)
       state <- allocation$state
       newcomers <- vector("list", realised_count)
       for (index in seq_len(realised_count)) {

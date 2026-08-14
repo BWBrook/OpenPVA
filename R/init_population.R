@@ -1,13 +1,12 @@
 #' Create an individual agent
 #'
-#' Initializes a list representing a single individual with demographic and optional genetic attributes.
+#' Initializes a list representing one demographic individual. Optional
+#' pedigree fields are added explicitly with the pedigree helpers.
 #'
 #' @param id Integer. Unique identifier.
 #' @param sex Character. "M" or "F".
 #' @param age Integer. Age in years.
 #' @param alive Logical. Is the individual alive? Defaults to TRUE.
-#' @param alleles List or NULL. Placeholder for genetic attributes.
-#' @param inbreeding_coeff Numeric. Inbreeding coefficient (F). Defaults to 0.
 #' @param mother_id Integer. ID of the mother if known.
 #' @param father_id Integer. ID of the father if known.
 #' @param patch_id Integer. Optional patch identifier.
@@ -19,8 +18,6 @@ create_individual <- function(
     sex,
     age,
     alive = TRUE,
-    alleles = NULL,
-    inbreeding_coeff = 0,
     mother_id = NA_integer_,
     father_id = NA_integer_,
     patch_id = NA_integer_) {
@@ -40,8 +37,6 @@ create_individual <- function(
     sex = as.character(sex),
     age = age,
     alive = as.logical(alive),
-    alleles = alleles,
-    F = as.numeric(inbreeding_coeff),
     mother_id = mother_id,
     father_id = father_id,
     patch_id = patch_id

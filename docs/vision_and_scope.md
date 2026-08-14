@@ -113,12 +113,12 @@ OpenPVA is not:
 Goal 002 removed the former six-label controller and Goal 003 supplies the first
 end-to-end synthetic, uncalibrated grizzly-like benchmark through ordinary
 process composition. Goals 004 and 005 published explicit global density,
-discrete patch transitions and patch-specific density. Goal 006 is the bounded
-review surface for generic exogenous introductions through the same creator
-contract. `docs/design/lifecycle_process_contract.md` supplies the approved
-lean defaults for RNG, fields, events and time/census semantics. Empirical
-parameterisation, management inference and pedigree genetics remain later
-goals.
+discrete patch transitions and patch-specific density, and Goal 006 published
+generic exogenous introductions through the same creator contract. Goal 007 is
+the current bounded review surface for optional exact pedigree ancestry.
+`docs/design/lifecycle_process_contract.md` supplies the approved lean defaults
+for RNG, fields, events and time/census semantics. Empirical parameterisation,
+marker genetics and management inference remain later goals.
 
 Current capabilities and historical roadmaps are evidence about the starting
 point, not the authority for product direction. This document is the authority.

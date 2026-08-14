@@ -64,6 +64,6 @@ birth patch. Those are different models, not interchangeable implementations.
 
 Patches are discrete labels and each dispersal process is one transition at one
 declared lifecycle point. Continuous space, paths, distances, movement costs,
-habitat dynamics, empirical matrices, gene-flow inference and pedigree
-genetics are outside this surface. Genetics will be rebuilt from pedigree and
-ancestry state in its own Stage 3 tranche.
+habitat dynamics, empirical matrices and gene-flow inference are outside this
+surface. Goal 007 pedigree ancestry is a separate optional ID-based state
+contract and does not infer gene flow from patch transitions.

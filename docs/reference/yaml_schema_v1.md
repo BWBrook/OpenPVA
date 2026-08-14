@@ -98,9 +98,7 @@ Optional function hooks can be supplied by name:
 
 - `mating_fun` (`function(females, males)` used in reproduction),
 - `dispersal_fun` (`function(ind, population)` used by `dispersal` lifecycle
-  steps),
-- `inherit_fun` (`function(mother, father)` used for offspring genotype
-  inheritance).
+  steps).
 
 When omitted, defaults from the core scenario API are used.
 
@@ -151,6 +149,6 @@ not accepted.
   population and yearly summary only.
 - `record_population_history: true`: each run output includes
   `population_history` (one population snapshot per simulated year) for
-  spatial/genetic time-series summaries.
+  legacy time-series summaries.
 
 The returned scenario includes attribute `yaml_schema_version = 3L`.

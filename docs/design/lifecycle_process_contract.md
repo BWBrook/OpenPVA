@@ -230,6 +230,10 @@ The public introduction constructor applies the same creator contract with a
 modeller-owned count and exact initializer, one shared pre-process state,
 engine-allocated IDs, required source provenance and optionally partitioned
 aggregate events. It adds no biological branch to the executor.
+Optional pedigree fields use these same declarations: births initialise
+known-parentage status and exact `pedigree_F`; introductions are declared base
+founders or reference two ancestors in the shared pre-process state. The
+generic executor adds no pedigree process category.
 Native deterministic execution remains deferred: use an independent
 life-table or matrix expected-value oracle to test stochastic means under
 matched assumptions.

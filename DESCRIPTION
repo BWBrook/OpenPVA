@@ -5,7 +5,7 @@ Authors@R:
     person("Barry", "Brook", email = "bwbrook@users.noreply.github.com", role = c("aut", "cre"))
 Author: Barry Brook [aut, cre]
 Maintainer: Barry Brook <bwbrook@users.noreply.github.com>
-Description: A general-purpose, open-source R framework for population viability analysis. It enables transparent, modular modeling of population dynamics under demographic, genetic, environmental, and management scenarios.
+Description: A general-purpose, open-source R framework for population viability analysis. It enables transparent, modular modeling of population dynamics under demographic, pedigree-ancestry, environmental, and management scenarios.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Depends: R (>= 4.6.0)
@@ -26,7 +26,7 @@ Collate:
     'init_population.R'
     'spatial_patches.R'
     'spatial_dispersal.R'
-    'genetics_core.R'
+    'pedigree_ancestry.R'
     'lifecycle_age.R'
     'demography_survival_spec.R'
     'demography_reproduction_spec.R'

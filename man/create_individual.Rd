@@ -9,8 +9,6 @@ create_individual(
   sex,
   age,
   alive = TRUE,
-  alleles = NULL,
-  inbreeding_coeff = 0,
   mother_id = NA_integer_,
   father_id = NA_integer_,
   patch_id = NA_integer_
@@ -25,10 +23,6 @@ create_individual(
 
 \item{alive}{Logical. Is the individual alive? Defaults to TRUE.}
 
-\item{alleles}{List or NULL. Placeholder for genetic attributes.}
-
-\item{inbreeding_coeff}{Numeric. Inbreeding coefficient (F). Defaults to 0.}
-
 \item{mother_id}{Integer. ID of the mother if known.}
 
 \item{father_id}{Integer. ID of the father if known.}
@@ -39,5 +33,6 @@ create_individual(
 A list representing an individual.
 }
 \description{
-Initializes a list representing a single individual with demographic and optional genetic attributes.
+Initializes a list representing one demographic individual. Optional
+pedigree fields are added explicitly with the pedigree helpers.
 }

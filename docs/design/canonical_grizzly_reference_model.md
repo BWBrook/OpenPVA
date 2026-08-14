@@ -203,3 +203,8 @@ The benchmark passes only if all can be added without controller edits:
 Scientific parameterisation requires a separate goal with named data sources,
 observation model, units, population and time period. Barry must approve any
 values presented as canonical empirical defaults.
+
+The Goal 007 pedigree foundation can be composed as an optional architecture
+extension, but the synthetic benchmark deliberately retains partially recorded
+maternal relationships and therefore is not pedigree-enabled by default. A
+fitness response remains outside the benchmark and Goal 007.

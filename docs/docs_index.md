@@ -39,6 +39,10 @@
 - `goals/006-generic-introductions/Plan.md`
 - `goals/006-generic-introductions/Runbook.md`
 - `goals/006-generic-introductions/Log.md`
+- `goals/007-pedigree-ancestry/Goal.md`
+- `goals/007-pedigree-ancestry/Plan.md`
+- `goals/007-pedigree-ancestry/Runbook.md`
+- `goals/007-pedigree-ancestry/Log.md`
 
 Goal 001 remains the accepted strategic record under
 `goals/001-north-star-realignment/`.
@@ -49,7 +53,8 @@ Goal 001 remains the accepted strategic record under
   process engine. `reference/yaml_schema_v1.md` is retained migration evidence;
   YAML execution is deferred to Stage 4.
 - `design/density_module.md`, `design/spatial_process_contract.md`,
-  `design/introduction_process_contract.md` and
+  `design/introduction_process_contract.md`,
+  `design/pedigree_ancestry_contract.md` and
   `design/reproduction_ev_semantics.md` record current process-specific
   contracts; they supersede their former controller-era surfaces.
 - `plan.md` records current realignment priority.

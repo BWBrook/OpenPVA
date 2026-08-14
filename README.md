@@ -37,8 +37,10 @@ density feedback without adding an empirical carrying-capacity default or
 changing the five canonical scenarios. Discrete patch transitions now use
 explicit domains and event-first evidence. Exogenous immigration,
 supplementation, stocking and translocation use one source-labelled creator
-with modeller-owned counts and newcomer state; genetics and harvest/removal
-remain future process-migration sources. YAML,
+with modeller-owned counts and newcomer state. Optional pedigree ancestry uses
+exact conditional-IBD coefficients, explicit founder/parentage declarations
+and the same creator seam; marker genetics and harvest/removal remain future
+process-migration sources. YAML,
 uncertainty/calibration execution, `targets` and Quarto reconnection are
 deliberately not active runtime interfaces during this clean break.
 
@@ -132,6 +134,38 @@ stocking <- introduction_process(
 These release values are illustrative API inputs, not biological defaults or
 management advice. An introduction does not subtract from a donor population.
 
+## Optional Pedigree Ancestry
+
+Pedigree founders are declared explicitly. Assignment by field name replaces
+the generic missing parent fields rather than appending duplicates.
+
+```r
+female <- create_individual(1L, "F", age = 4L)
+male <- create_individual(2L, "M", age = 5L)
+founder_fields <- pedigree_founder_fields()
+female[names(founder_fields)] <- founder_fields
+male[names(founder_fields)] <- founder_fields
+population <- initialize_pedigree(list(female, male))
+
+pedigree_birth <- reproduction_process(
+  breeding_probability = function(mother, state, context, params) 0.5,
+  fecundity_mean = function(mother, state, context, params) 1.2,
+  mating = function(population, mother, context, params) population[[2L]],
+  require_mate = TRUE,
+  newborn_initializer = function(mother, father, state, context, params) {
+    pedigree_newborn_fields(mother, father, state)
+  },
+  initializer_fields = c("pedigree_status", "pedigree_F"),
+  requires = c(
+    "population.mother_id", "population.father_id",
+    "population.pedigree_status", "population.pedigree_F"
+  )
+)
+```
+
+`pedigree_F` is conditional pedigree IBD, not marker heterozygosity. These
+birth values remain illustrative API inputs rather than species defaults.
+
 ## Community Process
 
 A project-defined observer composes through the same public contract:
@@ -166,10 +200,12 @@ or registration is required.
 - [Global density feedback](docs/design/density_module.md)
 - [Spatial process contract](docs/design/spatial_process_contract.md)
 - [Introduction process contract](docs/design/introduction_process_contract.md)
+- [Pedigree ancestry contract](docs/design/pedigree_ancestry_contract.md)
 - [Goal 003 benchmark packet](docs/goals/003-canonical-grizzly-benchmark/Goal.md)
 - [Goal 004 density packet](docs/goals/004-global-density-feedback/Goal.md)
 - [Goal 005 spatial packet](docs/goals/005-patch-transitions-density/Goal.md)
 - [Goal 006 introductions packet](docs/goals/006-generic-introductions/Goal.md)
+- [Goal 007 pedigree packet](docs/goals/007-pedigree-ancestry/Goal.md)
 - [Living plan](docs/plan.md)
 
 ## Validation

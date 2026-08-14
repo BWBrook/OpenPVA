@@ -38,6 +38,22 @@ count, an exact newcomer initializer declaration and a nonblank source label.
 The engine allocates IDs and stamps aggregate or optionally grouped accounting
 events; OpenPVA supplies no quota, newcomer biology or donor-population model.
 
+## Optional pedigree ancestry
+
+- `initialize_pedigree()`
+- `validate_pedigree()`
+- `pedigree_founder_fields()`
+- `pedigree_newborn_fields()`
+- `pedigree_parentage_fields()`
+- `pedigree_ledger()`
+- `summarise_pedigree()`
+
+Pedigree is complete when enabled. `pedigree_F` is exact conditional pedigree
+IBD under the explicit founder horizon; it is not marker heterozygosity. Birth
+and introduction helpers compose through existing initializer declarations.
+Known-parentage introductions reference ancestors in the shared pre-process
+ledger; same-batch related ancestry is unsupported.
+
 ## Canonical benchmark fixture
 
 The narrowly scoped `grizzly_benchmark_*()` builders, `run_grizzly_benchmark()`
@@ -63,11 +79,12 @@ illustrative rather than an empirical grizzly default.
 ## Retained Scientific Helpers
 
 The package continues to export focused individual, demography-table, harvest
-and genetic helper functions documented in their R help pages. They are not
+and pedigree helper functions documented in their R help pages. They are not
 privileged controller channels. The legacy `apply_supplementation()` helper is
 retired; exogenous additions use `introduction_process()`. The current spatial
-surface is the explicit ordinary-process API above; pedigree genetics remains
-a later migration.
+surface is the explicit ordinary-process API above. Marker genotype helpers,
+marker-derived `F`/`Fhat` summaries and the uncalibrated inbreeding-survival
+helper are retired without adapters.
 
 `summarise_sensitivity_prcc()` remains available for independent draw-level
 tables. The defective legacy `apply_reproduction()` helper and the

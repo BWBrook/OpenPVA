@@ -147,6 +147,13 @@ processes over the same state. No feature is automatically scientifically
 appropriate. Each process documents assumptions, required evidence, scale and
 validation.
 
+Optional pedigree ancestry is complete when enabled: each record declares a
+base founder or two known earlier parents and exposes exact `pedigree_F`
+conditional on that founder horizon. Exact ancestor tracing uses transient
+contribution vectors and a linear derived index, not a persisted relationship
+matrix or second population representation. Marker observations are not part
+of this state and cannot define pedigree inbreeding.
+
 Patch-aware creation is a key invariant: if downstream processes require
 `patch_id`, reproduction or introduction must initialize it according to a
 declared rule. The Stage 1 preflight and immediate post-creation checks enforce
