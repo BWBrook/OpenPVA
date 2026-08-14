@@ -3,9 +3,10 @@
 ## Authority and current objective
 
 `docs/vision_and_scope.md` is the product authority. Stage 3 is implemented,
-accepted and published through Goal 007. The current operational surface is a
-bounded lean integration review across the four Stage 3 tranches before the
-next development decision; this review does not authorise cleanup or Stage 4.
+accepted and published through Goal 007. Goal 008 is the authorised bounded
+integration-hardening tranche: common pre-process demographic decisions,
+explicit offspring sex and lean trusted-path validation. Goal 009 legacy-
+surface cleanup and Stage 4 remain outside this implementation.
 
 The modeller defines the biological program. OpenPVA supplies execution,
 reusable processes, scientific contracts, RNG/time/event provenance, validation
@@ -43,6 +44,11 @@ and reproducible analysis machinery.
   Marker-derived `F`, marker placeholders and an uncalibrated fitness response
   are retired rather than adapted. It is accepted and published at
   `17545d04ea8001b7b01f6dc4de509d7f7b685b7f`.
+- Goal 008 removes progressive within-process survival/reproduction visibility,
+  makes offspring sex explicit, and prepares unchanged validation metadata once
+  per execution while retaining exact public and lineage-change pedigree
+  audits. It is implemented locally and awaiting review; publication is not
+  authorised.
 - The published test/CI/release evidence remains useful historical baseline
   evidence, but it does not select the next product tranche.
 
@@ -136,6 +142,6 @@ workstreams and should not be extended ahead of the current decision boundary.
 
 ## Stop rule
 
-Do not implement lean-review recommendations or move to Stage 4 interface
-reconnection without Barry's explicit authorisation. Tags and releases require
-separate authority.
+Stop after Goal 008 evidence and review. Do not begin Goal 009 dormant-surface
+cleanup or Stage 4 interface reconnection in this tranche. Tags, commits and
+publication require separate authority.

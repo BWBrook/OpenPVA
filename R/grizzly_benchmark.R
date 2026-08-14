@@ -442,6 +442,9 @@ grizzly_benchmark_processes <- function(
     fecundity_mean = function(mother, state, context, params) {
       params$fecundity_lambda
     },
+    offspring_sex = function(mother, father, state, context, params) {
+      sample(c("F", "M"), 1L)
+    },
     mating = function(population, mother, context, params) {
       males <- Filter(function(ind) {
         isTRUE(ind$alive) && identical(ind$sex, "M") &&

@@ -23,6 +23,11 @@
 - `patch_density_snapshot_process()`
 - `census_process()`
 
+`survival_process()` and `reproduction_process()` evaluate all individual
+callbacks in one execution against one pre-process state, then apply staged
+deaths or births together. `reproduction_process()` requires an explicit
+`offspring_sex` callback; the package does not assume a sex ratio.
+
 `ceiling_density_multiplier()` is the lean pure helper for explicit global
 density composition inside modeller-supplied survival or reproduction
 callbacks. It is not a controller channel or carrying-capacity estimator.

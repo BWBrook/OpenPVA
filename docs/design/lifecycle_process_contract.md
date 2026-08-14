@@ -126,6 +126,17 @@ permitted if downstream requirements remain satisfied. A project package can
 export a constructor returning a conforming object. The OpenPVA controller does
 not need to know the process's biological category.
 
+### Within-process decision state
+
+Built-in individual decision processes use one explicit pre-process state per
+execution. Survival eligibility and probability callbacks cannot observe
+earlier deaths from the same process. Reproduction breeding, mating,
+fecundity, offspring-sex and newborn-initializer callbacks cannot observe
+earlier newborns or allocator advancement from the same process. Realised
+deaths and newborn records are staged and applied together after decisions.
+Sequential callback and RNG order still follows the persistent population
+ledger. Offspring sex is a required modeller callback, never an engine default.
+
 ## Validation
 
 Preflight must:
@@ -143,6 +154,17 @@ Preflight must:
 
 Declared fields are a scientific contract and diagnostic aid, not a static type
 system. Runtime validation remains necessary.
+
+Process-object validation, the declared field plan, occurrence identities and
+required creator fields are static execution metadata. A public one-interval
+call prepares them once; a scenario prepares them once and checks the field
+plan against each replicate's actual validated initial state. Repeated
+intervals still validate current requirements, returned state, declared writes,
+accounting and newly created records. Public state/allocation entry points
+perform exact pedigree validation, and every realised lineage change triggers
+an exact full-ledger pedigree audit. The internal allocator checks count,
+scalar allocator state and overflow without rescanning an already trusted
+population ledger.
 
 ## RNG contract
 

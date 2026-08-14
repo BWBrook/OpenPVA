@@ -68,6 +68,12 @@ run_scenario <- function(scenario, parallel = FALSE, workers = 2L) {
   if (parallel && workers < 2L) {
     stop("workers must be at least 2 when parallel = TRUE", call. = FALSE)
   }
+  interval_execution <- .prepare_process_execution(scenario$processes)
+  initial_execution <- if (is.null(scenario$initial_census)) {
+    NULL
+  } else {
+    .prepare_process_execution(list(scenario$initial_census))
+  }
 
   sim_output <- .with_rng_restored({
     root_seed <- scenario$seed
@@ -82,6 +88,8 @@ run_scenario <- function(scenario, parallel = FALSE, workers = 2L) {
       .with_replicate_stream(streams[[run_id]], {
         .run_process_replicate(
           scenario = scenario,
+          interval_execution = interval_execution,
+          initial_execution = initial_execution,
           run_id = run_id,
           root_seed = root_seed,
           stream = streams[[run_id]]
@@ -112,7 +120,7 @@ run_scenario <- function(scenario, parallel = FALSE, workers = 2L) {
         root_seed = as.integer(root_seed),
         rng_kind = "L'Ecuyer-CMRG",
         streams = streams,
-        process_plan = .build_process_plan(scenario$processes)
+        process_plan = interval_execution$plan
       )
     )
   })
@@ -165,12 +173,18 @@ print.openpva_scenario <- function(x, ...) {
   scenario
 }
 
-.run_process_replicate <- function(scenario, run_id, root_seed, stream) {
+.run_process_replicate <- function(
+    scenario,
+    interval_execution,
+    initial_execution,
+    run_id,
+    root_seed,
+    stream) {
   initial <- scenario$init_fun()
-  state <- if (.is_pva_state(initial)) initial else pva_state(initial)
-  validate_processes(scenario$processes, state)
-  if (!is.null(scenario$initial_census)) {
-    validate_processes(list(scenario$initial_census), state)
+  state <- if (.is_pva_state(initial)) .validate_state(initial) else pva_state(initial)
+  .validate_process_field_plan(interval_execution$processes, state)
+  if (!is.null(initial_execution)) {
+    .validate_process_field_plan(initial_execution$processes, state)
   }
 
   execution_id <- paste0(scenario$name, ":run-", run_id)
@@ -179,7 +193,7 @@ print.openpva_scenario <- function(x, ...) {
   if (!is.null(scenario$initial_census)) {
     initial_result <- .execute_processes_trusted(
       state = state,
-      processes = list(scenario$initial_census),
+      execution = initial_execution,
       run = run_id,
       time = 0L,
       dt = scenario$dt,
@@ -195,7 +209,7 @@ print.openpva_scenario <- function(x, ...) {
   for (time in seq.int(0L, scenario$n_steps - 1L)) {
     interval_result <- .execute_processes_trusted(
       state = state,
-      processes = scenario$processes,
+      execution = interval_execution,
       run = run_id,
       time = time,
       dt = scenario$dt,
@@ -221,7 +235,7 @@ print.openpva_scenario <- function(x, ...) {
       root_seed = as.integer(root_seed),
       initial_stream = stream,
       final_stream = get(".Random.seed", envir = .GlobalEnv, inherits = FALSE),
-      process_plan = .build_process_plan(scenario$processes)
+      process_plan = interval_execution$plan
     )
   )
 }

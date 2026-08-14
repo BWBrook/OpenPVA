@@ -12,7 +12,8 @@ test_that("newborn patch requirements fail at preflight and against a lying crea
   )
   incomplete_birth <- reproduction_process(
     breeding_probability = function(mother, state, context, params) 1,
-    fecundity_mean = function(mother, state, context, params) 1
+    fecundity_mean = function(mother, state, context, params) 1,
+    offspring_sex = function(mother, father, state, context, params) "F"
   )
   expect_error(
     validate_processes(list(incomplete_birth, patch_observer), pva_state(population)),

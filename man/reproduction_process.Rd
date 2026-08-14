@@ -6,10 +6,10 @@
 reproduction_process(
   breeding_probability,
   fecundity_mean,
+  offspring_sex,
   name = "reproduction",
   mating = NULL,
   require_mate = FALSE,
-  offspring_sex = NULL,
   newborn_initializer = NULL,
   initializer_fields = character(),
   inherit_fields = character(),
@@ -23,7 +23,7 @@ reproduction_process(
 \item{name}{Process name.}
 \item{mating}{Optional mate-selection function.}
 \item{require_mate}{Whether reproduction requires a father.}
-\item{offspring_sex}{Function returning \code{"F"} or \code{"M"}.}
+\item{offspring_sex}{Required function returning \code{"F"} or \code{"M"}.}
 \item{newborn_initializer}{Function returning additional newborn fields.}
 \item{initializer_fields}{Fields promised by \code{newborn_initializer}.}
 \item{inherit_fields}{Maternal fields copied to newborns.}
@@ -31,4 +31,4 @@ reproduction_process(
 \item{params}{Explicit model parameters.}
 }
 \value{A validated lifecycle process.}
-\description{Draws breeding and litter events and explicitly initialises newborn state.}
+\description{Draws breeding and litter events against one pre-process state and explicitly initialises newborn state.}

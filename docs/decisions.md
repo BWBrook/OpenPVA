@@ -801,3 +801,34 @@
   `17545d04ea8001b7b01f6dc4de509d7f7b685b7f`. This decision supersedes DEC-016
   and the genetic parts of DEC-019. Their historical delivery evidence remains
   intact, but those active marker surfaces are retired.
+
+## DEC-041 — Common demographic pre-state and lean trusted validation
+- **Date**: 2026-08-14
+- **Decision**:
+  - Give every survival eligibility/probability callback in one execution the
+    same pre-process state, stage outcomes and apply deaths together.
+  - Give reproduction breeding, mating, fecundity, offspring-sex and newborn-
+    initializer callbacks the same pre-process state/population; stage newborns
+    in deterministic ledger order and append them together.
+  - Require the modeller to supply `offspring_sex`. Remove the former silent
+    50:50 sample without a fallback or compatibility path.
+  - Prepare validated process metadata once per public call or scenario and
+    check the field plan once against each actual replicate initial state,
+    while retaining dynamic requirement/result/write/accounting validation.
+  - Keep exact state validation at public `execute_processes()` and
+    `allocate_ids()` boundaries and at replicate initialisation. Exactly audit
+    every actual pedigree-lineage change. Let the internal trusted allocator
+    check only count, scalar allocator state and overflow.
+  - Do not add hidden state, a persistent cache, a pedigree engine branch or a
+    second population representation. Repeated newborn ancestry reconstruction
+    remains a measured residual until a small execution-local solution is
+    justified.
+- **Rationale**:
+  - Progressive mutation made state-dependent biological callbacks sensitive
+    to ledger position inside one nominal process. One pre-state gives survival,
+    reproduction, dispersal and introductions a consistent inspectable
+    decision contract.
+  - Static validation replay and per-newborn ledger scans added cost without a
+    new trust boundary. Moving only that work out of repeated intervals keeps
+    exact scientific and accounting checks where state can actually change.
+- **Status**: implemented in Goal 008 and awaiting review; not published.

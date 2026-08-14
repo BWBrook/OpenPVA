@@ -79,7 +79,10 @@ processes <- list(
   ),
   reproduction_process(
     breeding_probability = function(mother, state, context, params) 0.5,
-    fecundity_mean = function(mother, state, context, params) 1.2
+    fecundity_mean = function(mother, state, context, params) 1.2,
+    offspring_sex = function(mother, father, state, context, params) {
+      sample(c("F", "M"), 1L)
+    }
   ),
   census_process()
 )
@@ -99,6 +102,10 @@ result$sim_output$events
 ```
 
 These values are an API example, not biological defaults for any species.
+Within one survival or reproduction process, every individual-level callback
+sees the same pre-process state and realised changes are staged. Offspring sex
+is always an explicit modeller-owned callback; OpenPVA supplies no sex-ratio
+default.
 
 ## Exogenous Introductions
 
@@ -150,6 +157,7 @@ population <- initialize_pedigree(list(female, male))
 pedigree_birth <- reproduction_process(
   breeding_probability = function(mother, state, context, params) 0.5,
   fecundity_mean = function(mother, state, context, params) 1.2,
+  offspring_sex = function(mother, father, state, context, params) "F",
   mating = function(population, mother, context, params) population[[2L]],
   require_mate = TRUE,
   newborn_initializer = function(mother, father, state, context, params) {

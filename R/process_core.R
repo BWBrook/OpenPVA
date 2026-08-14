@@ -57,10 +57,12 @@ allocate_ids <- function(state, n) {
 }
 
 .allocate_ids_trusted <- function(state, n) {
-  # Internal creator hot path. Public callers enter through allocate_ids(),
-  # which performs exact pedigree validation before this structural check.
-  state <- .validate_state(state, validate_pedigree_coefficients = FALSE)
   n <- .normalize_non_negative_count(n, "n")
+  if (!is.list(state) || !is.integer(state$next_id) ||
+      length(state$next_id) != 1L || is.na(state$next_id) ||
+      state$next_id <= 0L) {
+    stop("state$next_id must be a single positive integer", call. = FALSE)
+  }
   if (n == 0L) {
     return(list(state = state, ids = integer()))
   }
@@ -180,9 +182,12 @@ execute_processes <- function(
     execution_id = NULL,
     phase = c("interval", "initial")) {
   state <- .validate_state(state)
+  processes <- validate_processes(processes)
+  .validate_process_field_plan(processes, state)
+  execution <- .prepare_process_execution(processes)
   .execute_processes_trusted(
     state = state,
-    processes = processes,
+    execution = execution,
     run = run,
     time = time,
     dt = dt,
@@ -194,17 +199,16 @@ execute_processes <- function(
 
 .execute_processes_trusted <- function(
     state,
-    processes,
+    execution,
     run = 1L,
     time = 0L,
     dt = 1,
     stream_provenance = NULL,
     execution_id = NULL,
     phase = c("interval", "initial")) {
-  # Internal continuation path. A replicate is exactly validated once before
-  # entering it, and every realised lineage change is exactly validated below.
-  processes <- validate_processes(processes)
-  .validate_process_field_plan(processes, state)
+  # Internal continuation path. Static process metadata and the actual initial
+  # field plan are prepared once before repeated intervals enter this function.
+  processes <- execution$processes
   run <- .normalize_positive_count(run, "run")
   time <- .normalize_non_negative_count(time, "time")
   dt <- as.numeric(dt)
@@ -213,9 +217,9 @@ execute_processes <- function(
   }
   phase <- match.arg(phase)
 
-  plan <- .build_process_plan(processes)
+  plan <- execution$plan
   all_events <- list()
-  all_required_fields <- .required_population_fields(processes)
+  all_required_fields <- execution$required_population_fields
 
   for (index in seq_along(processes)) {
     process <- processes[[index]]
@@ -251,7 +255,9 @@ execute_processes <- function(
     )
     result <- .validate_process_result(result, process)
     .validate_declared_writes(before, result$state, process)
-    if (.pedigree_is_enabled(result$state$population) &&
+    pedigree_enabled <- .pedigree_is_enabled(before$population) ||
+      .pedigree_is_enabled(result$state$population)
+    if (pedigree_enabled &&
         .pedigree_lineage_changed(before$population, result$state$population)) {
       .validate_pedigree_population(result$state$population)
     }
@@ -411,7 +417,10 @@ print.pva_process <- function(x, ...) {
       if (validate_pedigree_coefficients) {
         .validate_pedigree_population(state$population)
       } else {
-        .pedigree_topology(state$population, require_F = TRUE)
+        .validate_pedigree_field_presence(
+          state$population,
+          require_F = TRUE
+        )
       }
     }
   } else if (state$next_id != 1L) {
@@ -583,6 +592,14 @@ print.pva_process <- function(x, ...) {
     validate_pedigree_coefficients = FALSE
   )
   result
+}
+
+.prepare_process_execution <- function(processes) {
+  list(
+    processes = processes,
+    plan = .build_process_plan(processes),
+    required_population_fields = .required_population_fields(processes)
+  )
 }
 
 .validate_declared_writes <- function(before, after, process) {

@@ -21,4 +21,4 @@ survival_process(
 \item{cause}{Death-cause label.}
 }
 \value{A validated lifecycle process.}
-\description{Applies Bernoulli survival and emits aggregate death accounting.}
+\description{Stages Bernoulli survival decisions against one pre-process state and emits aggregate death accounting.}

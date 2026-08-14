@@ -8,11 +8,21 @@ realisation:
 - `breeding_probability(mother, state, context, params)` returns one value in
   `[0, 1]`;
 - `fecundity_mean(mother, state, context, params)` returns one finite
-  non-negative Poisson mean.
+  non-negative Poisson mean;
+- `offspring_sex(mother, father, state, context, params)` is required and
+  returns exactly `"F"` or `"M"` for each realised newborn.
 
 For each living female, the process draws breeding as Bernoulli, resolves the
 optional mate, draws litter size as Poisson conditional on breeding, allocates
 stable IDs, initializes declared newborn fields and emits accounting events.
+OpenPVA supplies no sex-ratio fallback: the model owns that biological rule.
+
+Every breeding, mating, fecundity, offspring-sex and newborn-initializer
+decision in one execution sees the same immutable pre-process population/state.
+Newborn records are staged in deterministic mother/litter ledger order and
+appended only after all decisions. Callback RNG consumption remains sequential
+in that order; state-independent callbacks therefore retain their prior seeded
+draw sequence.
 
 ## Modeller-owned effective rates
 

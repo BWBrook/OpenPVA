@@ -115,6 +115,11 @@ truth. Required functions/tables define:
 - dependency transition rules;
 - human-caused mortality by selected class.
 
+The synthetic benchmark's reproduction callback samples uniformly from the
+explicit `F`/`M` levels, preserving its existing illustrative 50:50 rule. This
+is fixture biology under the benchmark's uncalibrated source label, not an
+OpenPVA engine default or an empirical grizzly claim.
+
 ### Expected-value oracle
 
 Stage 1 does not implement a second aggregate/fractional population

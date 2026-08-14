@@ -43,7 +43,10 @@ test_that("preassigned streams make serial and fork execution byte-identical", {
     constant_survival_process(0.83),
     reproduction_process(
       breeding_probability = function(mother, state, context, params) 0.4,
-      fecundity_mean = function(mother, state, context, params) 0.7
+      fecundity_mean = function(mother, state, context, params) 0.7,
+      offspring_sex = function(mother, father, state, context, params) {
+        sample(c("F", "M"), 1L)
+      }
     ),
     census_process()
   )

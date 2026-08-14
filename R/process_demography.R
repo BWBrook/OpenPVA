@@ -37,6 +37,8 @@ age_process <- function(name = "age") {
 #' @param cause Cause label attached to aggregate death events.
 #'
 #' @return A validated lifecycle process.
+#' @details Every eligibility and probability callback in one execution sees
+#'   the same pre-process state. Deaths are applied together after all decisions.
 #' @export
 survival_process <- function(
     probability,
@@ -58,16 +60,18 @@ survival_process <- function(
   pva_process(
     name = name,
     run = function(state, context, process_params) {
+      pre_state <- state
+      deaths <- logical(length(pre_state$population))
       n_deaths <- 0L
-      for (index in seq_along(state$population)) {
-        ind <- state$population[[index]]
+      for (index in seq_along(pre_state$population)) {
+        ind <- pre_state$population[[index]]
         if (!isTRUE(ind$alive)) {
           next
         }
         is_eligible <- if (is.null(process_params$eligible)) {
           TRUE
         } else {
-          process_params$eligible(ind, state, context, process_params$model)
+          process_params$eligible(ind, pre_state, context, process_params$model)
         }
         if (!is.logical(is_eligible) || length(is_eligible) != 1L || is.na(is_eligible)) {
           stop("eligible must return one non-missing logical value", call. = FALSE)
@@ -77,7 +81,7 @@ survival_process <- function(
         }
         probability_value <- process_params$probability(
           ind,
-          state,
+          pre_state,
           context,
           process_params$model
         )
@@ -87,9 +91,12 @@ survival_process <- function(
           stop("probability must return one finite value in [0, 1]", call. = FALSE)
         }
         if (stats::runif(1L) >= probability_value) {
-          state$population[[index]]$alive <- FALSE
+          deaths[[index]] <- TRUE
           n_deaths <- n_deaths + 1L
         }
+      }
+      for (index in which(deaths)) {
+        state$population[[index]]$alive <- FALSE
       }
       events <- if (n_deaths) {
         list(list(event_type = "death", value = n_deaths, cause = process_params$cause))
@@ -126,7 +133,8 @@ survival_process <- function(
 #' @param require_mate Whether a missing father prevents reproduction.
 #' @param offspring_sex Function called as
 #'   `offspring_sex(mother, father, state, context, params)` and returning
-#'   `"F"` or `"M"`.
+#'   `"F"` or `"M"`. This modeller-owned callback is required; OpenPVA supplies
+#'   no offspring-sex distribution.
 #' @param newborn_initializer Function called with the same arguments as
 #'   `offspring_sex` and returning a named list of additional newborn fields.
 #' @param initializer_fields Character vector naming fields promised by
@@ -136,14 +144,16 @@ survival_process <- function(
 #' @param params Explicit model parameters.
 #'
 #' @return A validated lifecycle process.
+#' @details All callbacks in one execution see the same pre-process state and
+#'   population. Newborns are staged in ledger order and appended together.
 #' @export
 reproduction_process <- function(
     breeding_probability,
     fecundity_mean,
+    offspring_sex,
     name = "reproduction",
     mating = NULL,
     require_mate = FALSE,
-    offspring_sex = NULL,
     newborn_initializer = NULL,
     initializer_fields = character(),
     inherit_fields = character(),
@@ -159,11 +169,6 @@ reproduction_process <- function(
   }
   if (!is.logical(require_mate) || length(require_mate) != 1L || is.na(require_mate)) {
     stop("require_mate must be one non-missing logical value", call. = FALSE)
-  }
-  if (is.null(offspring_sex)) {
-    offspring_sex <- function(mother, father, state, context, params) {
-      sample(c("F", "M"), 1L)
-    }
   }
   if (!is.function(offspring_sex)) {
     stop("offspring_sex must be a function", call. = FALSE)
@@ -195,13 +200,17 @@ reproduction_process <- function(
   pva_process(
     name = name,
     run = function(state, context, process_params) {
+      pre_state <- state
       newborns <- list()
-      initial_population <- state$population
-      mothers <- Filter(function(ind) isTRUE(ind$alive) && identical(ind$sex, "F"), initial_population)
+      initial_population <- pre_state$population
+      mothers <- Filter(
+        function(ind) isTRUE(ind$alive) && identical(ind$sex, "F"),
+        initial_population
+      )
       for (mother in mothers) {
         breeding_p <- process_params$breeding_probability(
           mother,
-          state,
+          pre_state,
           context,
           process_params$model
         )
@@ -227,7 +236,7 @@ reproduction_process <- function(
         }
         lambda <- process_params$fecundity_mean(
           mother,
-          state,
+          pre_state,
           context,
           process_params$model
         )
@@ -244,7 +253,7 @@ reproduction_process <- function(
           sex <- process_params$offspring_sex(
             mother,
             father,
-            state,
+            pre_state,
             context,
             process_params$model
           )
@@ -269,7 +278,7 @@ reproduction_process <- function(
           extras <- process_params$newborn_initializer(
             mother,
             father,
-            state,
+            pre_state,
             context,
             process_params$model
           )
@@ -287,8 +296,10 @@ reproduction_process <- function(
           }
           newborn[names(extras)] <- extras
           newborns[[length(newborns) + 1L]] <- newborn
-          state$population[[length(state$population) + 1L]] <- newborn
         }
+      }
+      if (length(newborns)) {
+        state$population <- c(state$population, newborns)
       }
       events <- if (length(newborns)) {
         list(list(event_type = "birth", value = as.integer(length(newborns))))

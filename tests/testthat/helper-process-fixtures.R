@@ -20,6 +20,7 @@ zero_birth_process <- function(name = "reproduction") {
   reproduction_process(
     breeding_probability = function(mother, state, context, params) 0,
     fecundity_mean = function(mother, state, context, params) 0,
+    offspring_sex = function(mother, father, state, context, params) "F",
     name = name
   )
 }

@@ -30,3 +30,41 @@ test_that("process validation rejects malformed objects and context writes", {
     "n_runs must be a single positive integer"
   )
 })
+
+test_that("scenario execution prepares static process validation once", {
+  scenario <- scenario_spec(
+    "static-execution-metadata",
+    n_runs = 2L,
+    n_steps = 4L,
+    init_fun = function() make_test_population(4L),
+    processes = list(age_process(), zero_birth_process(), census_process()),
+    seed = 8005L
+  )
+  original_validate_process <- .validate_process
+  original_validate_field_plan <- .validate_process_field_plan
+  original_build_plan <- .build_process_plan
+  calls <- new.env(parent = emptyenv())
+  calls$process <- 0L
+  calls$field_plan <- 0L
+  calls$build_plan <- 0L
+  testthat::local_mocked_bindings(
+    .validate_process = function(...) {
+      calls$process <- calls$process + 1L
+      original_validate_process(...)
+    },
+    .validate_process_field_plan = function(...) {
+      calls$field_plan <- calls$field_plan + 1L
+      original_validate_field_plan(...)
+    },
+    .build_process_plan = function(...) {
+      calls$build_plan <- calls$build_plan + 1L
+      original_build_plan(...)
+    },
+    .package = "OpenPVA"
+  )
+
+  expect_silent(run_scenario(scenario))
+  expect_identical(calls$process, 3L)
+  expect_identical(calls$field_plan, 2L)
+  expect_identical(calls$build_plan, 1L)
+})

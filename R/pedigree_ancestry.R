@@ -236,7 +236,7 @@ summarise_pedigree <- function(population, alive_only = TRUE) {
 
 .pedigree_lineage_changed <- function(before, after) {
   fields <- c(
-    "id", "mother_id", "father_id", "pedigree_status", "pedigree_F"
+    "id", "sex", "mother_id", "father_id", "pedigree_status", "pedigree_F"
   )
   extract <- function(population) {
     lapply(population, function(individual) individual[intersect(fields, names(individual))])
@@ -281,33 +281,40 @@ summarise_pedigree <- function(population, alive_only = TRUE) {
   )
 }
 
-.pedigree_topology <- function(population, require_F) {
-  n <- length(population)
+.validate_pedigree_field_presence <- function(population, require_F) {
   required <- c("id", "sex", "alive", "mother_id", "father_id", "pedigree_status")
+  if (require_F) {
+    required <- c(required, "pedigree_F")
+  }
+  n <- length(population)
   for (index in seq_len(n)) {
     individual <- population[[index]]
     if (!is.list(individual) || is.null(names(individual))) {
       stop("every pedigree individual must be a named list", call. = FALSE)
     }
-    missing <- setdiff(required, names(individual))
+    missing <- required[
+      !vapply(required, function(field) {
+        field %in% names(individual) && !is.null(individual[[field]])
+      }, logical(1))
+    ]
     if (length(missing)) {
+      label <- if (length(missing) == 1L) {
+        paste("pedigree field", missing)
+      } else {
+        paste0("pedigree field(s): ", paste(missing, collapse = ", "))
+      }
       stop(
-        sprintf(
-          "individual record %d is missing pedigree field(s): %s",
-          index,
-          paste(missing, collapse = ", ")
-        ),
-        call. = FALSE
-      )
-    }
-    if (require_F && (!"pedigree_F" %in% names(individual) ||
-        is.null(individual$pedigree_F))) {
-      stop(
-        sprintf("individual record %d is missing pedigree field pedigree_F", index),
+        sprintf("individual record %d is missing %s", index, label),
         call. = FALSE
       )
     }
   }
+  invisible(population)
+}
+
+.pedigree_topology <- function(population, require_F) {
+  n <- length(population)
+  .validate_pedigree_field_presence(population, require_F = require_F)
 
   ids <- vapply(population, function(individual) {
     .normalize_integer_scalar(individual$id, "pedigree id", minimum = 1L)

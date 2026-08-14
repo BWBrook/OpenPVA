@@ -238,6 +238,7 @@ test_that("pedigree-enabled births initialise exact fields and downstream use", 
   missing_fields <- reproduction_process(
     breeding_probability = function(mother, state, context, params) 1,
     fecundity_mean = function(mother, state, context, params) 1,
+    offspring_sex = function(mother, father, state, context, params) "F",
     mating = function(population, mother, context, params) population[[2L]],
     require_mate = TRUE
   )
@@ -256,6 +257,7 @@ test_that("pedigree-enabled births initialise exact fields and downstream use", 
       as.numeric(mother$id == 1L)
     },
     fecundity_mean = function(mother, state, context, params) 8,
+    offspring_sex = function(mother, father, state, context, params) "F",
     mating = function(population, mother, context, params) population[[2L]],
     require_mate = TRUE,
     newborn_initializer = function(mother, father, state, context, params) {
@@ -279,6 +281,7 @@ test_that("pedigree-enabled births initialise exact fields and downstream use", 
   incomplete_birth <- reproduction_process(
     breeding_probability = function(mother, state, context, params) 1,
     fecundity_mean = function(mother, state, context, params) 8,
+    offspring_sex = function(mother, father, state, context, params) "F",
     newborn_initializer = function(mother, father, state, context, params) {
       pedigree_newborn_fields(mother, father, state)
     },
@@ -501,6 +504,81 @@ test_that("public engine entry points reject inconsistent pedigree_F", {
   )
 })
 
+test_that("trusted execution exactly validates every actual lineage change", {
+  pedigree <- initialize_pedigree(list(
+    pedigree_record(1L, "F"),
+    pedigree_record(2L, "M"),
+    pedigree_record(3L, "F", 1L, 2L)
+  ))
+  corrupt_lineage <- pva_process(
+    "corrupt_lineage",
+    function(state, context, params) {
+      state$population[[3L]]$pedigree_F <- 0.25
+      pva_result(state)
+    },
+    requires = "population.pedigree_F",
+    writes = "population.pedigree_F"
+  )
+
+  expect_error(
+    execute_processes(pva_state(pedigree), list(corrupt_lineage)),
+    "inconsistent with its recorded ancestry"
+  )
+})
+
+test_that("trusted process results retain complete pedigree record structure", {
+  pedigree <- initialize_pedigree(list(
+    pedigree_record(1L, "F"),
+    pedigree_record(2L, "M"),
+    pedigree_record(3L, "F", 1L, 2L)
+  ))
+  remove_alive <- pva_process(
+    "remove_alive",
+    function(state, context, params) {
+      state$population[[3L]]$alive <- NULL
+      pva_result(
+        state,
+        list(list(event_type = "death", value = 1L, cause = "test"))
+      )
+    },
+    requires = "population.alive",
+    writes = "population.alive"
+  )
+
+  expect_error(
+    execute_processes(pva_state(pedigree), list(remove_alive)),
+    "missing pedigree field.*alive"
+  )
+})
+
+test_that("ordinary pedigree mortality checks structure without rebuilding ancestry", {
+  pedigree <- initialize_pedigree(list(
+    pedigree_record(1L, "F"),
+    pedigree_record(2L, "M"),
+    pedigree_record(3L, "F", 1L, 2L)
+  ))
+  state <- pva_state(pedigree)
+  mortality <- survival_process(
+    probability = function(individual, state, context, params) 0
+  )
+  original_expected_F <- .pedigree_expected_F
+  calls <- new.env(parent = emptyenv())
+  calls$n <- 0L
+  testthat::local_mocked_bindings(
+    .pedigree_expected_F = function(...) {
+      calls$n <- calls$n + 1L
+      original_expected_F(...)
+    },
+    .package = "OpenPVA"
+  )
+
+  set.seed(8007L)
+  result <- execute_processes(state, list(mortality))
+
+  expect_false(any(vapply(result$state$population, `[[`, logical(1), "alive")))
+  expect_identical(calls$n, 1L)
+})
+
 test_that("trusted unchanged and zero-birth intervals audit ancestry once", {
   founders <- initialize_pedigree(list(
     pedigree_record(1L, "F"),
@@ -510,6 +588,7 @@ test_that("trusted unchanged and zero-birth intervals audit ancestry once", {
   zero_birth <- reproduction_process(
     breeding_probability = function(mother, state, context, params) 0,
     fecundity_mean = function(mother, state, context, params) 1,
+    offspring_sex = function(mother, father, state, context, params) "F",
     mating = function(population, mother, context, params) population[[2L]],
     require_mate = TRUE,
     newborn_initializer = function(mother, father, state, context, params) {
