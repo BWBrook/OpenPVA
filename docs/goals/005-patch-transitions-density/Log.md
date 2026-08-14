@@ -98,3 +98,10 @@ out-of-sync advisory was not reconciled.
 - Barry accepted Goal 005 after the narrow acceptance-audit repair.
 - Publication of the reviewed Goal 005 change set is authorised.
 - This entry records authority only; no publication commit is claimed here.
+
+## 2026-08-09 - published
+
+- The accepted Goal 005 change set was committed and pushed as
+  `003960a650373d90804575de13aeef368f40d167`.
+- Goal 005 is closed. The later CI-only maintenance patch at `cd3659e` did not
+  alter its scientific or process contracts.

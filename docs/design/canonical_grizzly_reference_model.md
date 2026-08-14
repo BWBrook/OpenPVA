@@ -98,6 +98,11 @@ starting state at `t = 0`; subsequent census position defines its pre/post-event
 meaning. Step `t` covers interval `t -> t+1`, and births and other events are
 labelled `t`.
 
+The optional immigration extension is configured through the public generic
+introduction process. Its deliberately synthetic count, newcomer state and
+source are benchmark inputs rather than grizzly defaults, and it represents no
+donor population.
+
 ## Rates and stochastic validation
 
 Parameter values are supplied by fixtures, never silently defaulted as grizzly

@@ -147,9 +147,16 @@ processes over the same state. No feature is automatically scientifically
 appropriate. Each process documents assumptions, required evidence, scale and
 validation.
 
-Patch-aware birth is a key invariant: if downstream processes require
-`patch_id`, reproduction must initialize it according to a declared rule. The
-Stage 1 preflight and immediate post-creation checks enforce that invariant.
+Patch-aware creation is a key invariant: if downstream processes require
+`patch_id`, reproduction or introduction must initialize it according to a
+declared rule. The Stage 1 preflight and immediate post-creation checks enforce
+that invariant without hard-coding spatial biology.
+
+Exogenous introductions use one ordinary creator process. The modeller owns a
+fixed or callback-driven count, exact initializer fields, a required source
+label and lifecycle position. The allocator owns IDs; every initializer sees
+one pre-process state; grouped accounting rows partition additions rather than
+duplicating a total. Donor-population dynamics are outside this contract.
 
 ## Extension and package boundary
 

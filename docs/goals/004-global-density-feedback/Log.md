@@ -90,3 +90,10 @@ goal. The pre-existing `renv` out-of-sync advisory was not reconciled.
 - Barry accepted Goal 004 after the narrow extension audit repair.
 - Publication of the accepted Goal 004 change set is authorised.
 - This entry records authority only; no commit or push has yet been performed.
+
+## 2026-08-09 - published
+
+- The accepted Goal 004 change set was committed and pushed as
+  `122e8dde5df8912f28a46049f931bb696a30f6b6`.
+- Goal 004 is closed; later work must preserve its explicit positioned-density
+  contract unless a separately authorised goal changes it.

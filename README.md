@@ -22,8 +22,9 @@ The Stage 1 runtime provides:
 - explicit interval and initial-census timing;
 - independently assigned L'Ecuyer-CMRG replicate streams with caller RNG
   restoration and serial/fork identity;
-- minimal age, survival, reproduction, global/patch-density snapshot,
-  simultaneous dispersal and census process constructors;
+- minimal age, survival, reproduction, generic introduction,
+  global/patch-density snapshot, simultaneous dispersal and census process
+  constructors;
 - pure global and strict keyed patch-density multipliers for explicit
   composition in modeller-owned vital-rate callbacks;
 - an explicitly uncalibrated canonical grizzly-like benchmark with baseline,
@@ -34,7 +35,9 @@ The Stage 1 runtime provides:
 The source-labelled `grizzly_density_extension_scenario()` demonstrates global
 density feedback without adding an empirical carrying-capacity default or
 changing the five canonical scenarios. Discrete patch transitions now use
-explicit domains and event-first evidence; genetics and management helpers
+explicit domains and event-first evidence. Exogenous immigration,
+supplementation, stocking and translocation use one source-labelled creator
+with modeller-owned counts and newcomer state; genetics and harvest/removal
 remain future process-migration sources. YAML,
 uncertainty/calibration execution, `targets` and Quarto reconnection are
 deliberately not active runtime interfaces during this clean break.
@@ -95,6 +98,40 @@ result$sim_output$events
 
 These values are an API example, not biological defaults for any species.
 
+## Exogenous Introductions
+
+One explicit creator covers immigration, supplementation, stocking and
+exogenous translocation. Every initializer call in one execution sees the same
+pre-process state; the engine supplies IDs and `alive = TRUE`.
+
+```r
+stocking <- introduction_process(
+  count = function(state, context, params) {
+    if (context$time == 0L) params$release_count else 0L
+  },
+  initializer = function(index, id, state, context, params) {
+    list(
+      sex = params$sexes[[index]],
+      age = params$ages[[index]],
+      patch_id = params$patch_ids[[index]]
+    )
+  },
+  initializer_fields = c("sex", "age", "patch_id"),
+  source = "project release plan v1",
+  name = "stocking",
+  group_by = "patch_id",
+  params = list(
+    release_count = 2L,
+    sexes = c("F", "M"),
+    ages = c(2L, 3L),
+    patch_ids = c(1L, 2L)
+  )
+)
+```
+
+These release values are illustrative API inputs, not biological defaults or
+management advice. An introduction does not subtract from a donor population.
+
 ## Community Process
 
 A project-defined observer composes through the same public contract:
@@ -128,9 +165,11 @@ or registration is required.
 - [Canonical grizzly reference model](docs/design/canonical_grizzly_reference_model.md)
 - [Global density feedback](docs/design/density_module.md)
 - [Spatial process contract](docs/design/spatial_process_contract.md)
+- [Introduction process contract](docs/design/introduction_process_contract.md)
 - [Goal 003 benchmark packet](docs/goals/003-canonical-grizzly-benchmark/Goal.md)
 - [Goal 004 density packet](docs/goals/004-global-density-feedback/Goal.md)
 - [Goal 005 spatial packet](docs/goals/005-patch-transitions-density/Goal.md)
+- [Goal 006 introductions packet](docs/goals/006-generic-introductions/Goal.md)
 - [Living plan](docs/plan.md)
 
 ## Validation

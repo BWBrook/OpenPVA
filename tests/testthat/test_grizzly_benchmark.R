@@ -74,6 +74,13 @@ test_that("environmental variation and immigration are ordinary extensions", {
   ]
   expect_true(nrow(introductions) >= 1L)
   expect_true(all(introductions$value == 1L))
+  expect_true(all(introductions$source == "illustrative translocation"))
+  expect_true(all(introductions$process_name == "immigration"))
+  expect_true(all(
+    immigration$benchmark_summary$events$source[
+      immigration$benchmark_summary$events$event_type == "introduction"
+    ] == "illustrative translocation"
+  ))
   final_ids <- vapply(immigration$sim_output$runs[[1L]]$population, `[[`, integer(1), "id")
   expect_identical(final_ids, seq_len(max(final_ids)))
 })
@@ -362,7 +369,44 @@ test_that("immigration inputs are normalized before construction", {
   process <- grizzly_benchmark_processes(parameters, "immigration", include_observation = FALSE)
   immigration <- process[[which(vapply(process, function(x) x$name == "immigration", logical(1)))[[1L]]]]
   expect_identical(immigration$params$count, 2L)
-  expect_identical(immigration$params$age, 4L)
+  expect_identical(immigration$params$model$age, 4L)
+  expect_identical(immigration$params$model$sexes, c("M", "F"))
+  expect_identical(immigration$params$source, "illustrative translocation")
+  expect_identical(
+    immigration$description,
+    "Append explicitly counted and initialized exogenous individuals."
+  )
+  expect_identical(
+    vapply(process, `[[`, character(1), "name"),
+    c(
+      "environment", "age", "dependency", "breeding_eligibility",
+      "reproduction", "dependent_survival", "independent_survival",
+      "immigration", "census"
+    )
+  )
+  immigration_result <- execute_processes(pva_state(list()), list(immigration))
+  expect_identical(
+    vapply(immigration_result$state$population, `[[`, character(1), "sex"),
+    c("M", "F")
+  )
+  expect_identical(
+    vapply(immigration_result$state$population, `[[`, integer(1), "age"),
+    c(4L, 4L)
+  )
+  expect_true(all(vapply(
+    immigration_result$state$population,
+    function(individual) {
+      isTRUE(individual$alive) &&
+        identical(individual$dependency, "independent") &&
+        identical(individual$reproductive_status, "ineligible")
+    },
+    logical(1)
+  )))
+  expect_identical(
+    vapply(immigration_result$state$population, `[[`, integer(1), "id"),
+    c(1L, 2L)
+  )
+  expect_identical(immigration_result$state$next_id, 3L)
   parameters$immigration_count <- 1.5
   expect_error(grizzly_benchmark_processes(parameters, "immigration"), "immigration_count")
   parameters$immigration_count <- -1
@@ -370,6 +414,7 @@ test_that("immigration inputs are normalized before construction", {
   parameters$immigration_count <- 0
   process <- grizzly_benchmark_processes(parameters, "immigration", include_observation = FALSE)
   immigration <- process[[which(vapply(process, function(x) x$name == "immigration", logical(1)))[[1L]]]]
+  expect_identical(immigration$params$count, 0L)
   result <- run_grizzly_benchmark("immigration", parameters, n_runs = 1L, n_steps = 1L)
   expect_false(any(result$sim_output$events$event_type == "introduction"))
 })

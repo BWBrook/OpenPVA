@@ -738,4 +738,33 @@
     survivor snapshots confound movement with mortality, births and timing.
   - Explicit domains, matrices and birth rules avoid biologically arbitrary
     defaults while using the accepted generic process seam unchanged.
-- **Status**: implemented and accepted in Goal 005; publication authorised.
+- **Status**: implemented, accepted and published in Goal 005 at `003960a`.
+
+## DEC-039 — Generic exogenous introduction creator
+- **Date**: 2026-08-14
+- **Decision**:
+  - Use one public `introduction_process()` for immigration, supplementation,
+    stocking and exogenous translocation; distinguish interpretations through
+    explicit configuration and process names rather than parallel APIs.
+  - Make count a modeller-owned fixed value or state/context/parameter callback
+    with strict non-negative integer and allocator-range validation. Supply no
+    quota default or empirical distribution.
+  - Reserve `id` and `alive` for the engine. Require an exact modeller
+    initializer declaration for all other newcomer fields, and evaluate every
+    initializer in one execution against the same pre-process state.
+  - Require a nonblank source. Emit aggregate `introduction` accounting, with
+    optional grouping over declared fields as a partition that replaces rather
+    than duplicates the total row.
+  - Keep downstream creation-field enforcement generic: spatial, genetic and
+    community fields are declarations, not creator or controller branches.
+  - Route the synthetic grizzly immigration extension through the public
+    primitive at its existing position and retire `apply_supplementation()`
+    without an adapter.
+- **Rationale**:
+  - One explicit creator separates modeller-owned quota and biological state
+    from engine-owned allocation, provenance and accounting while preserving
+    ordinary process composition and lifecycle-order consequences.
+  - Same-pre-state initialization avoids within-process order artifacts;
+    partitioned events provide useful patch or cohort evidence without
+    double-counting population additions.
+- **Status**: implemented and accepted in Goal 006; publication authorised.

@@ -16,6 +16,7 @@
 - `age_process()`
 - `survival_process()`
 - `reproduction_process()`
+- `introduction_process()`
 - `density_snapshot_process()`
 - `dispersal_process()`
 - `markov_dispersal_process()`
@@ -30,6 +31,12 @@ callbacks. It is not a controller channel or carrying-capacity estimator.
 patch domain. `patch_density_multiplier()` is the strict keyed helper for
 combining full-domain patch counts and capacities inside modeller-owned vital-
 rate callbacks. OpenPVA supplies no default allocation or connectivity matrix.
+
+`introduction_process()` is the one creator for exogenous immigration,
+supplementation, stocking and translocation. It requires a fixed or callback
+count, an exact newcomer initializer declaration and a nonblank source label.
+The engine allocates IDs and stamps aggregate or optionally grouped accounting
+events; OpenPVA supplies no quota, newcomer biology or donor-population model.
 
 ## Canonical benchmark fixture
 
@@ -55,10 +62,12 @@ illustrative rather than an empirical grizzly default.
 
 ## Retained Scientific Helpers
 
-The package continues to export focused individual, demography-table and
-genetic helper functions documented in their R help pages. They are not
-privileged controller channels. The current spatial surface is the explicit
-ordinary-process API above; pedigree genetics remains a later migration.
+The package continues to export focused individual, demography-table, harvest
+and genetic helper functions documented in their R help pages. They are not
+privileged controller channels. The legacy `apply_supplementation()` helper is
+retired; exogenous additions use `introduction_process()`. The current spatial
+surface is the explicit ordinary-process API above; pedigree genetics remains
+a later migration.
 
 `summarise_sensitivity_prcc()` remains available for independent draw-level
 tables. The defective legacy `apply_reproduction()` helper and the

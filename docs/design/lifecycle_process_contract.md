@@ -226,6 +226,10 @@ framework's API.
 ## Implementation boundary
 
 The RNG, field, event, and time/census defaults above are implemented semantics.
+The public introduction constructor applies the same creator contract with a
+modeller-owned count and exact initializer, one shared pre-process state,
+engine-allocated IDs, required source provenance and optionally partitioned
+aggregate events. It adds no biological branch to the executor.
 Native deterministic execution remains deferred: use an independent
 life-table or matrix expected-value oracle to test stochastic means under
 matched assumptions.

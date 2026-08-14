@@ -4,8 +4,8 @@
 
 `docs/vision_and_scope.md` is the product authority. The current operational
 programme is Stage 3 migration through the accepted R-native lifecycle-process
-contract. Goal 005 is the active bounded tranche: patch transitions and patch-
-specific density.
+contract. Goal 006 is the active bounded tranche: generic exogenous
+introductions.
 
 The modeller defines the biological program. OpenPVA supplies execution,
 reusable processes, scientific contracts, RNG/time/event provenance, validation
@@ -16,8 +16,8 @@ and reproducible analysis machinery.
 - Stage 0 was accepted and Stage 1 implemented the generic process seam.
 - `scenario_spec()` and `run_scenario()` take a direct process list; the fixed
   dispatcher and `run_basic_simulation*()` surface are removed.
-- Minimal age, survival, reproduction and census processes compose with
-  project-defined observers or management processes.
+- Minimal age, survival, reproduction, generic introduction and census
+  processes compose with project-defined observers or management processes.
 - Birth and introduction processes explicitly declare created fields; missing
   downstream `patch_id` fails at preflight or runtime.
 - YAML, targets, uncertainty/calibration execution, summaries and optional
@@ -32,8 +32,11 @@ and reproducible analysis machinery.
   implementation is published at `122e8dd`.
 - Goal 005 replaces controller-era spatial conveniences with explicit patch
   assignment, simultaneous event-emitting transitions and positioned full-
-  domain patch counts. Its implementation is under bounded review and remains
-  unpublished.
+  domain patch counts. It is accepted and published at `003960a`.
+- Goal 006 replaces the legacy supplementation helper and benchmark-specific
+  creation loop with one source-labelled ordinary creator. Counts and complete
+  newcomer state are modeller-owned; IDs and accounting remain engine-owned.
+  Its implementation is under bounded review and remains unpublished.
 - The published test/CI/release evidence remains useful historical baseline
   evidence, but it does not select the next product tranche.
 
@@ -99,8 +102,9 @@ surface rather than adapting it:
 
 1. global density measurement and explicit vital-rate feedback (Goal 004,
    implemented, accepted and published);
-2. patch-aware dispersal and patch-specific density (Goal 005, active);
-3. generic introductions and supplementation;
+2. patch-aware dispersal and patch-specific density (Goal 005, implemented,
+   accepted and published);
+3. generic exogenous introductions (Goal 006, active);
 4. optional pedigree/ancestry genetics.
 
 Pedigree and ancestry are primary individual-based state. Marker
@@ -125,6 +129,6 @@ workstreams and should not be extended ahead of Stages 1–2.
 
 ## Stop rule
 
-Do not begin the next Stage 3 module, release exercise, or interface platform
-before Goal 005 passes its bounded acceptance review. Publication, tags and
+Do not begin pedigree genetics, a release exercise or an interface platform
+before Goal 006 passes its bounded acceptance review. Publication, tags and
 releases require separate authority.

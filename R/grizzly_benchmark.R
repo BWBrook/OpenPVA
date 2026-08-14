@@ -332,48 +332,29 @@ grizzly_immigration_process <- function(
   immigration_age <- .normalize_integer_scalar(
     parameters$immigration_age, "immigration_age", minimum = 0L
   )
-  created <- c(
-    "population.id", "population.sex", "population.age", "population.alive",
-    "population.mother_id", "population.father_id", "population.dependency",
-    "population.reproductive_status"
-  )
-  pva_process(
+  introduction_process(
+    count = immigration_count,
+    initializer = function(index, id, state, context, params) {
+      list(
+        sex = params$sexes[[((index - 1L) %% length(params$sexes)) + 1L]],
+        age = params$age,
+        mother_id = NA_integer_,
+        father_id = NA_integer_,
+        dependency = "independent",
+        reproductive_status = "ineligible"
+      )
+    },
+    initializer_fields = c(
+      "sex", "age", "mother_id", "father_id", "dependency",
+      "reproductive_status"
+    ),
+    source = "illustrative translocation",
     name = name,
     params = list(
-      count = immigration_count,
       sexes = parameters$immigration_sex,
       age = immigration_age
     ),
-    run = function(state, context, process_params) {
-      count <- process_params$count
-      if (!count) return(pva_result(state))
-      allocation <- allocate_ids(state, count)
-      state <- allocation$state
-      for (index in seq_len(count)) {
-        state$population[[length(state$population) + 1L]] <- list(
-          id = allocation$ids[[index]],
-          sex = process_params$sexes[[((index - 1L) %% length(process_params$sexes)) + 1L]],
-          age = process_params$age,
-          alive = TRUE,
-          mother_id = NA_integer_,
-          father_id = NA_integer_,
-          dependency = "independent",
-          reproductive_status = "ineligible"
-        )
-      }
-      pva_result(
-        state,
-        list(list(
-          event_type = "introduction",
-          value = count,
-          source = "illustrative translocation"
-        ))
-      )
-    },
-    requires = "next_id",
-    writes = c("population", "next_id"),
-    creates = created,
-    description = "Append explicitly parameterised independent immigrants."
+    requires = character()
   )
 }
 
@@ -836,7 +817,10 @@ summarise_grizzly_benchmark <- function(output, benchmark = NULL) {
     dplyr::mutate(event_value = dplyr::coalesce(as.numeric(.data$value), 0)) |>
     dplyr::group_by(
       .data$run, .data$time, .data$event_type,
-      dplyr::across(dplyr::any_of(c("cause", "sex", "age", "age_class", "dependency", "from", "to")))
+      dplyr::across(dplyr::any_of(c(
+        "cause", "sex", "age", "age_class", "dependency", "from", "to",
+        "source"
+      )))
     ) |>
     dplyr::summarise(event_value = sum(.data$event_value), .groups = "drop")
   list(

@@ -23,8 +23,9 @@ Each run contains:
 
 - `trajectory`: run/time/phase census rows by sex, cub/yearling/independent
   status, eligible females and finite annual growth;
-- `events`: run/time event totals retaining births, introductions, natural and
-  stratum-labelled human deaths, dependency transitions, environment,
+- `events`: run/time event totals retaining births, source-labelled
+  introductions, natural and stratum-labelled human deaths, dependency
+  transitions, environment,
   observation and census rows;
 - `run_summary`: replicate-level final abundance, independent-female
   abundance, geometric finite growth, quasi-extinction flag and first crossing
@@ -59,6 +60,18 @@ the movement ledger and replace connectivity inferred from survivor histories.
 declared patch with `patch_id` and integer `value`, including zeros. The same
 ordered keyed counts are written to `state$globals$patch_density_counts` for
 later ordinary processes.
+
+## Goal 006 introduction events
+
+`introduction_process()` emits `event_type = "introduction"` with a required
+nonblank `source` and integer `value`. Without grouping there is one row for the
+total positive addition. With `group_by`, one row is emitted for each realised
+combination of declared newcomer fields; these rows replace the total row and
+their values sum exactly to the records added. Zero additions emit no row.
+
+All introduction rows retain the Event Core columns below. The synthetic
+grizzly immigration extension uses process name `immigration` and source
+`illustrative translocation`; its benchmark event summary retains that source.
 
 ## Event Core
 
