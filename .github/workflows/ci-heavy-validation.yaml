@@ -42,12 +42,6 @@ jobs:
       - name: Restore dependencies
         run: Rscript scripts/ci_restore.R
 
-      - name: Ensure suggested packages
-        run: Rscript scripts/install_suggests.R
-
-      - name: Full package tests
-        run: Rscript scripts/run_tests.R
-
       - name: Build source tarball
         run: R CMD build --no-build-vignettes .
 

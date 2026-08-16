@@ -16,8 +16,11 @@
   summary, plotting, management, uncertainty, sensitivity and calibration
   stack without compatibility adapters.
 - Simplified current API, delivery documentation and dependencies around the
-  process-native product. YAML, targets and reporting reconnection remains
-  deferred to Stage 4.
+  process-native product. Removed the obsolete Quarto project and dormant
+  YAML/targets/reporting dependencies; Stage 4 will add tools back only with an
+  executable consumer.
+- Right-sized repeated test evidence and CI execution while retaining distinct
+  scientific oracles, process-order, accounting, RNG and pedigree contracts.
 
 This development line intentionally contains breaking changes. Historical
 delivery records and artefacts remain in the repository as provenance.

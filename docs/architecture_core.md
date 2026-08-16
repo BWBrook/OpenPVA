@@ -53,9 +53,10 @@ process all compose through the same execution seam.
 
 ### Analysis workflow
 
-`targets`, `renv`, Quarto and project scripts orchestrate data preparation,
-parameter estimation, simulation, diagnostics and reporting. They are consumers
-of the engine, not lifecycle-process machinery.
+`renv` and project scripts provide the current reproducibility surface. Stage 4
+may add `targets`, Quarto or other established tools when an executable analysis
+consumer requires them. Analysis tools consume the engine; they are not
+lifecycle-process machinery.
 
 ## Core values
 

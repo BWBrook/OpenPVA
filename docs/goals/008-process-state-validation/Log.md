@@ -90,3 +90,8 @@
   `feat: harden process state and validation`.
 - No push, tag, release or other publication occurred. The clean repository was
   `main...origin/main [ahead 1]` before Goal 009 began.
+
+## 2026-08-14 - published
+
+- Goal 008 was subsequently pushed as `d426910` and is present in published
+  `main`.

@@ -23,8 +23,10 @@
 
 - `plan.md` - living priority and decision boundary.
 - `decisions.md` - active and historical decisions.
-- `goals/008-process-state-validation/` - accepted integration hardening.
-- `goals/009-lean-surface-cleanup/` - active lean cleanup packet.
+- `goals/008-process-state-validation/` - published integration hardening.
+- `goals/009-lean-surface-cleanup/` - published lean product cleanup.
+- `goals/010-pre-stage4-hygiene/` - active test, CI, environment and scaffold
+  hygiene packet.
 
 Goals 001-007 remain accepted strategic and delivery records under `goals/`.
 `roadmap.md`, `log/`, `interpretation_notes.md`, tracked artefacts and former
@@ -43,5 +45,6 @@ release evidence are historical provenance, not current product authority.
 - `release_checklist.md` - current release decision gate.
 - `reference/ci_profiles.md` - exact continuous-integration profiles.
 
-YAML, targets and Quarto analysis/reporting are deferred to Stage 4. Historical
-sources are retained for evidence but do not define an executable current API.
+YAML, `targets` and Quarto analysis/reporting are deferred Stage 4 choices, not
+current dependencies or scaffolds. Historical evidence does not define an
+executable current API.

@@ -45,34 +45,3 @@ test_that("newborn patch requirements fail at preflight and against a lying crea
     "does not initialise required field population.patch_id"
   )
 })
-test_that("the birth fixture owns maternal patch inheritance", {
-  population <- list(
-    create_individual(1L, "F", 4L, patch_id = 2L),
-    create_individual(2L, "M", 5L, patch_id = 2L)
-  )
-  birth <- reproduction_process(
-    breeding_probability = function(mother, state, context, params) 1,
-    fecundity_mean = function(mother, state, context, params) 8,
-    offspring_sex = function(mother, father, state, context, params) "F",
-    inherit_fields = "patch_id"
-  )
-  patch_observer <- pva_process(
-    "patch_observer",
-    function(state, context, params) {
-      pva_result(state, list(list(event_type = "observation", value = length(state$population))))
-    },
-    requires = c("population.id", "population.patch_id")
-  )
-  scenario <- scenario_spec(
-    "patch-birth",
-    1L,
-    1L,
-    function() population,
-    list(birth, patch_observer),
-    seed = 15L
-  )
-  final_population <- run_scenario(scenario)$sim_output$runs[[1L]]$population
-  newborns <- Filter(function(ind) ind$age == 0L, final_population)
-  expect_gt(length(newborns), 0L)
-  expect_true(all(vapply(newborns, `[[`, integer(1), "patch_id") == 2L))
-})

@@ -30,14 +30,15 @@ R CMD build --no-build-vignettes .
 R CMD check --no-manual --no-build-vignettes OpenPVA_*.tar.gz
 ```
 
-Run build/check in an isolated temporary directory. Lint is a fast-CI gate.
-The canonical grizzly benchmark is the preferred representative runtime proof
-for changes to engine or demographic behavior.
+Run build/check in an isolated temporary directory. `R CMD check` runs the
+installed package tests and is the CI test authority; `scripts/run_tests.R`
+remains the faster local focused/full runner. Lint is a fast-CI gate through
+`scripts/run_lint.R`. The canonical grizzly benchmark is the preferred
+representative runtime proof for changes to engine or demographic behavior.
 
 ## Deferred workflow surfaces
 
-Targets, YAML compilation and Quarto reporting remain planned Stage 4 analysis
-machinery. They are not mandatory current gates and do not define lifecycle
-semantics. The unrendered legacy `quarto/basic_demo.*` sources and historical
-evidence bundles are retained only as migration evidence until Stage 4 replaces
-them deliberately.
+Targets, YAML compilation and Quarto reporting remain possible Stage 4 analysis
+machinery. They are not current dependencies or scaffolds and do not define
+lifecycle semantics. Historical evidence bundles remain as provenance; Stage 4
+will add a tool only when a real workflow consumes it.

@@ -15,7 +15,7 @@ not prove the current checkout.
 - [ ] `Rscript scripts/run_tests.R` passes.
 - [ ] A representative canonical benchmark completes with plausible bounded
       outputs and exact event accounting.
-- [ ] `lintr::lint_package()` reports no lints.
+- [ ] `Rscript scripts/run_lint.R` reports no lints.
 - [ ] An isolated source build succeeds.
 - [ ] The selected ordinary or `--as-cran` `R CMD check` returns the accepted
       status.

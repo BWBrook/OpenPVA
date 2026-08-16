@@ -43,9 +43,10 @@ Run:
 
 ```sh
 Rscript scripts/run_tests.R
-Rscript -e 'lintr::lint_package()'
+Rscript scripts/run_lint.R
 ```
 
-Use an isolated temporary directory for package build/check. Targets, YAML and
-Quarto are deferred analysis/configuration machinery for Stage 4; they do not
-define the current lifecycle protocol or routine test gate.
+Use an isolated temporary directory for package build/check. YAML, `targets`
+and Quarto are possible Stage 4 analysis/configuration choices, but are not
+current dependencies or scaffolds. Add one back only with an executable
+consumer; none defines the lifecycle protocol or routine test gate.

@@ -82,8 +82,9 @@ contracts. Do not redesign them speculatively.
   require explicit justification and environment updates.
 - Add focused unit, integration, accounting and reproducibility tests for code
   changes. Validate real entry points in proportion to scientific risk.
-- Keep `targets`, `renv`, Quarto and YAML as analysis/configuration machinery;
-  they do not define the lifecycle protocol.
+- Keep `renv` and repository scripts as current reproducibility machinery.
+  YAML, `targets` and Quarto may return for Stage 4 only with an executable
+  consumer; none defines the lifecycle protocol.
 
 ## Records and authority
 

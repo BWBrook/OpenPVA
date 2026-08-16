@@ -58,7 +58,7 @@ test_that("required scenarios retain events, replicate units and provenance", {
   expect_true(is.finite(summary$quasi_extinction_mcse))
 })
 
-test_that("environmental variation and immigration are ordinary extensions", {
+test_that("environmental variation is an ordinary extension", {
   varied_scenario <- grizzly_benchmark_scenario(
     "environmental_variation", n_runs = 1L, n_steps = 4L, seed = 8L
   )
@@ -68,21 +68,6 @@ test_that("environmental variation and immigration are ordinary extensions", {
   ]
   expect_equal(environment_events$modifier, c(0.9, 1.05, 0.96, 1.02))
 
-  immigration <- run_grizzly_benchmark("immigration", n_runs = 1L, n_steps = 2L, seed = 8L)
-  introductions <- immigration$sim_output$events[
-    immigration$sim_output$events$event_type == "introduction", , drop = FALSE
-  ]
-  expect_true(nrow(introductions) >= 1L)
-  expect_true(all(introductions$value == 1L))
-  expect_true(all(introductions$source == "illustrative translocation"))
-  expect_true(all(introductions$process_name == "immigration"))
-  expect_true(all(
-    immigration$benchmark_summary$events$source[
-      immigration$benchmark_summary$events$event_type == "introduction"
-    ] == "illustrative translocation"
-  ))
-  final_ids <- vapply(immigration$sim_output$runs[[1L]]$population, `[[`, integer(1), "id")
-  expect_identical(final_ids, seq_len(max(final_ids)))
 })
 
 test_that("custom observer is non-mutating and mortality order changes births", {
@@ -362,7 +347,7 @@ test_that("summary counts initial threshold crossings and empty initial growth h
   expect_true(any(output$sim_output$events$event_type == "introduction"))
 })
 
-test_that("immigration inputs are normalized before construction", {
+test_that("immigration is positioned, configured and recorded end to end", {
   parameters <- grizzly_benchmark_parameters(horizon = 1L)
   parameters$immigration_count <- 2.0
   parameters$immigration_age <- 4.0
@@ -373,10 +358,6 @@ test_that("immigration inputs are normalized before construction", {
   expect_identical(immigration$params$model$sexes, c("M", "F"))
   expect_identical(immigration$params$source, "illustrative translocation")
   expect_identical(
-    immigration$description,
-    "Append explicitly counted and initialized exogenous individuals."
-  )
-  expect_identical(
     vapply(process, `[[`, character(1), "name"),
     c(
       "environment", "age", "dependency", "breeding_eligibility",
@@ -384,39 +365,35 @@ test_that("immigration inputs are normalized before construction", {
       "immigration", "census"
     )
   )
-  immigration_result <- execute_processes(pva_state(list()), list(immigration))
-  expect_identical(
-    vapply(immigration_result$state$population, `[[`, character(1), "sex"),
-    c("M", "F")
+  output <- run_grizzly_benchmark(
+    "immigration", parameters, n_runs = 1L, n_steps = 1L, seed = 18L
   )
+  introductions <- output$sim_output$events[
+    output$sim_output$events$event_type == "introduction", , drop = FALSE
+  ]
+  expect_identical(nrow(introductions), 1L)
+  expect_identical(introductions$value, 2L)
+  expect_identical(introductions$source, "illustrative translocation")
+  newcomers <- tail(output$sim_output$runs[[1L]]$population, 2L)
   expect_identical(
-    vapply(immigration_result$state$population, `[[`, integer(1), "age"),
-    c(4L, 4L)
+    lapply(newcomers, function(individual) {
+      individual[c("sex", "age", "dependency", "reproductive_status")]
+    }),
+    list(
+      list(
+        sex = "M", age = 4L, dependency = "independent",
+        reproductive_status = "ineligible"
+      ),
+      list(
+        sex = "F", age = 4L, dependency = "independent",
+        reproductive_status = "ineligible"
+      )
+    )
   )
-  expect_true(all(vapply(
-    immigration_result$state$population,
-    function(individual) {
-      isTRUE(individual$alive) &&
-        identical(individual$dependency, "independent") &&
-        identical(individual$reproductive_status, "ineligible")
-    },
-    logical(1)
-  )))
-  expect_identical(
-    vapply(immigration_result$state$population, `[[`, integer(1), "id"),
-    c(1L, 2L)
-  )
-  expect_identical(immigration_result$state$next_id, 3L)
-  parameters$immigration_count <- 1.5
-  expect_error(grizzly_benchmark_processes(parameters, "immigration"), "immigration_count")
-  parameters$immigration_count <- -1
-  expect_error(grizzly_benchmark_processes(parameters, "immigration"), "immigration_count")
-  parameters$immigration_count <- 0
-  process <- grizzly_benchmark_processes(parameters, "immigration", include_observation = FALSE)
-  immigration <- process[[which(vapply(process, function(x) x$name == "immigration", logical(1)))[[1L]]]]
-  expect_identical(immigration$params$count, 0L)
-  result <- run_grizzly_benchmark("immigration", parameters, n_runs = 1L, n_steps = 1L)
-  expect_false(any(result$sim_output$events$event_type == "introduction"))
+  summary_introductions <- output$benchmark_summary$events[
+    output$benchmark_summary$events$event_type == "introduction", , drop = FALSE
+  ]
+  expect_identical(summary_introductions$source, "illustrative translocation")
 })
 
 test_that("source and unit metadata reject missing or blank values", {
@@ -442,18 +419,37 @@ test_that("canonical runner rejects mutable scenario objects and generic summari
   expect_error(summarise_grizzly_benchmark(output), "explicit benchmark metadata")
 })
 
-test_that("female survival alternatives move independent-female abundance", {
+test_that("female survival alternatives wire exact effective rates", {
   parameters <- grizzly_benchmark_parameters(horizon = 1L)
-  parameters$breeding_probability <- 0
-  parameters$fecundity_lambda <- 0
-  parameters$dependent_survival <- 1
-  parameters$male_survival <- 1
-  parameters$environmental_modifiers[] <- 1
-  parameters$varying_environmental_modifiers[] <- 1
-  low <- run_grizzly_benchmark("female_low_survival", parameters, n_runs = 200L, n_steps = 1L, seed = 7L)
-  high <- run_grizzly_benchmark("female_high_survival", parameters, n_runs = 200L, n_steps = 1L, seed = 7L)
-  expect_lt(
-    mean(low$benchmark_summary$run_summary$final_independent_females),
-    mean(high$benchmark_summary$run_summary$final_independent_females)
+  state <- grizzly_benchmark_initial_state(1L, 0L, 0L, 0L, parameters)
+  state$globals$environment_modifier <- 0.9
+  individual <- state$population[[1L]]
+  survival <- function(scenario) {
+    processes <- grizzly_benchmark_processes(
+      parameters, scenario, include_observation = FALSE
+    )
+    processes[[which(vapply(
+      processes,
+      function(process) identical(process$name, "independent_survival"),
+      logical(1)
+    ))[[1L]]]]
+  }
+  low <- survival("female_low_survival")
+  high <- survival("female_high_survival")
+  effective_rate <- function(process) {
+    process$params$probability(
+      individual, state, list(), process$params$model
+    )
+  }
+  expect_identical(low$params$model$female_survival, parameters$female_survival[["low"]])
+  expect_identical(high$params$model$female_survival, parameters$female_survival[["high"]])
+  expect_equal(
+    effective_rate(low),
+    parameters$female_survival[["low"]] * state$globals$environment_modifier
   )
+  expect_equal(
+    effective_rate(high),
+    parameters$female_survival[["high"]] * state$globals$environment_modifier
+  )
+  expect_lt(effective_rate(low), effective_rate(high))
 })

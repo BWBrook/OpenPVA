@@ -40,15 +40,14 @@ supplementation, stocking and translocation use one source-labelled creator
 with modeller-owned counts and newcomer state. Optional pedigree ancestry uses
 exact conditional-IBD coefficients, explicit founder/parentage declarations
 and the same creator seam; marker genetics and harvest/removal remain future
-process-migration sources. YAML,
-uncertainty/calibration execution, `targets` and Quarto reconnection are
-deliberately not active runtime interfaces during this clean break.
+process-migration sources. YAML, uncertainty/calibration execution, `targets`
+and Quarto are deliberately absent from the active dependencies and scaffold;
+Stage 4 may reintroduce each only with an executable consumer.
 
 ## Development Setup
 
 ```r
 source("bootstrap_env.R")
-renv::restore()
 ```
 
 For ordinary development:
@@ -223,4 +222,5 @@ Rscript scripts/run_tests.R
 ```
 
 Package release builds have separate acceptance and publication gates. YAML,
-targets and Quarto workflow reconnection is deferred to Stage 4.
+`targets` and Quarto workflow reconnection is deferred to Stage 4 and currently
+has no dormant package dependency or project scaffold.

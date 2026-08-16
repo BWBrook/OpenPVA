@@ -54,16 +54,5 @@ _targets/
 # editor settings
 .vscode/
 
-# Quarto renders
-quarto/*.html
-quarto/*_files/
-quarto/*.rmarkdown
-quarto/.quarto/
-quarto/_site/
-quarto/.gitignore
-
-# Quarto rendered outputs
-quarto/rendered/
-
 # Generated analysis artefacts
 outputs/

@@ -63,7 +63,8 @@ non-canonical demonstration of explicit density feedback.
 
 ## Deferred interfaces
 
-Harvest/removal, YAML compilation, uncertainty, sensitivity, calibration,
-targets orchestration and reporting are Stage 4 requirements, not current
-runtime APIs. Former controller-era and old-output implementations were removed
-rather than preserved behind adapters.
+Harvest/removal, YAML compilation, uncertainty, sensitivity and calibration are
+possible Stage 4 interfaces, not current runtime APIs. Orchestration and
+reporting tools will be chosen only for an executable consumer rather than
+treated as fixed requirements. Former controller-era and old-output
+implementations were removed rather than preserved behind adapters.

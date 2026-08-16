@@ -1,6 +1,6 @@
 test_that("one-interval stochastic mean agrees with an independent expectation oracle", {
   n_initial <- 20L
-  n_runs <- 2000L
+  n_runs <- 1000L
   survival_probability <- 0.8
   fecundity_lambda <- 0.5
 

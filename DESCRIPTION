@@ -12,12 +12,7 @@ Depends: R (>= 4.6.0)
 Imports: 
     dplyr, 
     tibble
-Suggests: 
-    testthat,
-    lintr,
-    targets,
-    quarto,
-    yaml
+Suggests: testthat
 RoxygenNote: 7.3.3
 Collate:
     'globals.R'

@@ -21,7 +21,7 @@ modeller-defined biological program.
 | Genetics/inbreeding | Former optional allele state plus heterozygosity-derived `F` | **Replaced in Goal 007** | Exact optional pedigree ancestry is primary IBM state; a future marker module must be separate and ID-keyed |
 | Management actions | Harvest and supplementation were privileged labels | **Migrate in bounded tranches** | Generic exogenous introductions are ordinary processes in Goal 006; harvest/removal remains later work |
 | YAML scenarios | Former fixed-simulator schema retained only as history | **Rebuild later** | Parameter compilation in Stage 4; never a lifecycle DSL |
-| `targets`/`renv`/Quarto | Reproducible workflow machinery | **Retain outside engine** | Analysis orchestration and reporting, not process protocol |
+| Analysis tooling | `renv` and lean scripts are active; dormant `targets`/Quarto scaffolds were removed | **Add on use** | Reintroduce established orchestration/reporting tools only with a Stage 4 consumer; never as process protocol |
 | Uncertainty/sensitivity/calibration | Former old-output helpers removed in Goal 009 | **Rebuild later** | Stage 4 analysis over current events/results; do not drive engine architecture |
 | Release/compatibility adapters | Historical clean-up burden and contradictory decisions | **Remove when touched** | No backwards-compatibility preservation for realignment |
 | Canonical empirical model | No accepted end-to-end benchmark | **Add** | Minimal grizzly benchmark and extension fixtures |
@@ -101,8 +101,9 @@ field and RNG contracts.
 ### Stage 4 — reconnect interfaces and analyses
 
 Rebuild YAML parameter compilation, uncertainty, sensitivity, calibration,
-`targets`, and reporting over the accepted process/event/output contracts. Keep
-YAML as parameter configuration, not a lifecycle DSL.
+orchestration and reporting over the accepted process/event/output contracts.
+Choose tools from the needs of the first executable vertical slice; keep YAML
+as parameter configuration, not a lifecycle DSL.
 
 ## Deferred work
 
@@ -116,4 +117,4 @@ YAML as parameter configuration, not a lifecycle DSL.
 ## Stop rule
 
 Do not begin marker genetics, fitness responses or Stage 4 reconnection until
-Goal 009 is accepted and its clean product boundary is published.
+Goal 010 hygiene is accepted.

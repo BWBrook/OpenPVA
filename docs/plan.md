@@ -2,11 +2,9 @@
 
 ## Authority and current objective
 
-`docs/vision_and_scope.md` is product authority. Goals 001-007 are accepted and
-published. Goal 008 is accepted and committed locally at `d426910`. Goal 009 is
-implemented locally and awaiting review as the second lean sweep; it removes
-dormant parallel products before any new development. Publication is not
-authorised.
+`docs/vision_and_scope.md` is product authority. Goals 001-009 are accepted and
+published; Goals 008 and 009 landed at `d426910` and `7dcb850`. Goal 010 is the
+active pre-Stage 4 hygiene tranche. Publication is not authorised.
 
 > The modeller defines the biological program; OpenPVA supplies the execution
 > engine, reusable processes, scientific contracts, and reproducible analysis
@@ -32,24 +30,26 @@ There is no fixed dispatcher, lifecycle DSL, global registry, plugin manager,
 dependency-injection framework, compatibility layer or second aggregate
 population representation.
 
-## Active tranche - Goal 009
+## Active tranche - Goal 010
 
-1. Delete dormant lifecycle/default and old-output analysis clusters.
-2. Retain strict explicit demographic table builders.
-3. Reconcile exports, dependencies and current delivery documentation.
-4. Preserve historical provenance and all active scientific tests.
+1. Right-size repeated test evidence without weakening distinct scientific,
+   engine, process-order, accounting, RNG or pedigree contracts.
+2. Make `R CMD check` the single CI test authority while retaining lean local
+   test and lint entry points.
+3. Remove the obsolete Quarto project and generated residue without replacement.
+4. Lock only executable runtime/development consumers and reconcile the R 4.6.1
+   environment.
 5. Complete proportional package evidence and stop for Barry's acceptance.
 
 ## Next programme decision
 
-After Goal 009 acceptance, frame Stage 4 workflow reconnection against the
-current process/event/output contracts. YAML remains parameter configuration,
-not a lifecycle language. Targets and Quarto remain analysis/reporting tools,
-not mandatory engine protocol. Harvest/removal should return only as an
-ordinary evidence-backed process goal.
+After Goal 010 acceptance, frame the first Stage 4 executable vertical slice
+against the current process/event/output contracts. Choose YAML, orchestration
+or reporting tools only after the consumer is concrete. Harvest/removal should
+return only as an ordinary evidence-backed process goal.
 
 ## Stop rule
 
-Stop after Goal 009 evidence and one material review pass. Do not begin Stage 4,
+Stop after Goal 010 evidence and one material review pass. Do not begin Stage 4,
 prune historical artefacts, split the active engine/benchmark or publish without
 separate authority.

@@ -1,7 +1,6 @@
 ^renv$
 ^renv\.lock$
 ^docs$
-^quarto$
 ^AGENTS\.md$
 ^OpenPVA\.png$
 ^\.github$

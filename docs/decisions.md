@@ -831,8 +831,7 @@
   - Static validation replay and per-newborn ledger scans added cost without a
     new trust boundary. Moving only that work out of repeated intervals keeps
     exact scientific and accounting checks where state can actually change.
-- **Status**: accepted and committed locally in Goal 008 at `d426910`; not
-  published.
+- **Status**: accepted and published in Goal 008 at `d426910`.
 
 ## DEC-042 - Delete dormant parallel products and hidden defaults
 - **Date**: 2026-08-14
@@ -849,12 +848,35 @@
   - Remove the broken release-evidence automation and make current workflow,
     CI and release documentation describe only executable gates. Preserve all
     historical goals, logs and tracked evidence as provenance.
-  - Remove `purrr` and `ggplot2` as now-unused direct imports. Keep `targets`,
-    Quarto, YAML and the lockfile unchanged as deferred Stage 4 machinery.
+  - Remove `purrr` and `ggplot2` as now-unused direct imports. Goal 009 left
+    deferred analysis dependencies and environment reconciliation to a bounded
+    follow-up.
 - **Rationale**:
   - Multiple incompatible product surfaces obscured which contracts users and
     contributors should trust, while silent demographic fallbacks encoded
     unsupported biological choices.
   - A clean deletion leaves fewer concepts, dependencies and self-protecting
     tests without weakening the generic engine or accepted scientific modules.
-- **Status**: implemented in Goal 009 and awaiting review; not published.
+- **Status**: accepted and published in Goal 009 at `7dcb850`.
+
+## DEC-043 - Earn dependencies and avoid duplicate delivery gates
+- **Date**: 2026-08-14
+- **Decision**:
+  - Preserve one copy of each distinct scientific, process-order, accounting,
+    RNG and pedigree contract while removing module-level repetitions of
+    engine-owned reproducibility and provenance evidence.
+  - Use `R CMD check` as the CI test authority. Retain `scripts/run_tests.R` for
+    fast local use and `scripts/run_lint.R` as an executable lint consumer.
+  - Remove the obsolete Quarto project and its generated residue without a
+    placeholder replacement. YAML, `targets` and Quarto may return only when a
+    Stage 4 workflow consumes them.
+  - Keep renv recursive dependency fields at `Imports`, `Depends` and
+    `LinkingTo`. Discover direct development tools from executable repository
+    consumers instead of recursively installing every dependency's `Suggests`.
+- **Rationale**:
+  - Duplicate stochastic and fork runs added maintenance and CI cost without a
+    new failure boundary. Dormant scaffolds and optional dependency universes
+    made the current product appear broader than its executable reality.
+  - Executable consumers produce a smaller, auditable R 4.6.1 lock closure and
+    make future tool additions earn their cost.
+- **Status**: implemented in Goal 010 and awaiting acceptance.

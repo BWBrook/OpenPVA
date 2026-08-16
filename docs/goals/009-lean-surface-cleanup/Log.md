@@ -57,3 +57,8 @@
   repository. The known `renv` out-of-sync advisory remains; `renv.lock` was
   deliberately not churned for removal of two direct imports.
 - No staging, commit, push, tag, release or publication occurred in Goal 009.
+
+## 2026-08-14 - accepted and published
+
+- Barry accepted Goal 009. The reviewed payload was committed and pushed as
+  `7dcb850` (`refactor: complete lean surface cleanup`).
