@@ -21,6 +21,9 @@
   executable consumer.
 - Right-sized repeated test evidence and CI execution while retaining distinct
   scientific oracles, process-order, accounting, RNG and pedigree contracts.
+- Added an installed-package Lord Howe Island woodhen modeller project with
+  explicit sexes, territories and floaters, captive-programme receipts,
+  retained parentage and reloadable replicate evidence.
 
 This development line intentionally contains breaking changes. Historical
 delivery records and artefacts remain in the repository as provenance.

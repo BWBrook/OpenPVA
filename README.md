@@ -30,7 +30,9 @@ The current runtime provides:
 - an explicitly uncalibrated canonical grizzly-like benchmark with baseline,
   female-survival, targeted human-mortality and immigration scenarios;
 - replicate-preserving abundance, event, threshold, growth and provenance
-  summaries from `run_grizzly_benchmark()`.
+  summaries from `run_grizzly_benchmark()`;
+- a standalone Lord Howe Island woodhen model project that consumes only the
+  installed public package surface.
 
 The source-labelled `grizzly_density_extension_scenario()` demonstrates global
 density feedback without adding an empirical carrying-capacity default or
@@ -43,6 +45,14 @@ and the same creator seam; marker genetics and harvest/removal remain future
 process-migration sources. YAML, uncertainty/calibration execution, `targets`
 and Quarto are deliberately absent from the active dependencies and scaffold;
 Stage 4 may reintroduce each only with an executable consumer.
+
+## External Modeller Example
+
+[`inst/examples/woodhen/`](inst/examples/woodhen/README.md) is the first Stage 4
+vertical slice. It is an ordinary-R, source-backed individual model with three
+management scenarios, explicit territory occupancy and floaters, parentage,
+exact population accounting and reloadable evidence. It is historically
+grounded and illustrative, not a calibrated contemporary assessment.
 
 ## Development Setup
 

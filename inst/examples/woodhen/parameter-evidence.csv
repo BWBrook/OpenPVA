@@ -1,0 +1,21 @@
+scenario,parameter,value,unit,provenance_class,source,inference_limit
+all,projection_horizon,40,years,inherited teaching reconstruction,rPVA woodhen scenarios at 8727caa,Does not imply stationary conditions in reality
+all,default_replicates,20,runs per scenario,proportional workflow design,Goal 011 contract,Monte Carlo standard errors expose the intentionally modest precision
+all,initial_female_age_counts,"9;3;2;1;1;1;1",female-equivalent individuals,inherited teaching reconstruction,rPVA _woodhen_base.yaml,Stage allocation is not independently estimated
+all,initial_male_age_counts,"9;3;2;1;1;1;1",individuals,explicit IBM translation,Matched to supplied female-equivalent counts,Sex structure is an explicit reconstruction assumption
+all,annual_survival,"0.35;0.65;0.85;0.75;0.75;0.65;0.50",probability by age,inherited teaching reconstruction,rPVA _woodhen_base.yaml,Not re-estimated for Goal 011
+all,source_female_equivalent_fecundity,"0;1.0;2.0;2.2;2.0;1.5;0.5",female recruits per breeding female,inherited executable teaching reconstruction,rPVA _woodhen_base.yaml,Some source prose calls these total fledglings despite female-equivalent execution
+all,executable_total_fecundity,"0;2.0;4.0;4.4;4.0;3.0;1.0",total offspring per breeding female,explicit IBM translation,Source female-equivalent rates divided by the 0.5 female probability,Preserves intended female recruitment before the explicit sex draw
+all,offspring_female_probability,0.5,probability,explicit reconstruction assumption,rPVA sex_ratio_init,No sex-ratio uncertainty is represented
+all,annual_survival_sd,0.2,probability-scale standard deviation,inherited teaching assumption,rPVA _woodhen_base.yaml,Not a Woodhen field estimate
+all,annual_fecundity_log_sd,0.2,log-scale standard deviation,inherited teaching assumption,rPVA _woodhen_base.yaml,Not a Woodhen field estimate
+all,cyclone_probability,0.04,annual probability,inherited teaching assumption,rPVA _woodhen_base.yaml,Not a current cyclone forecast
+all,cyclone_survival_multiplier,0.5,multiplier,inherited teaching assumption,rPVA _woodhen_base.yaml,Common age effect is phenomenological
+all,cyclone_fecundity_multiplier,0.75,multiplier,inherited teaching assumption,rPVA _woodhen_base.yaml,Timing within the breeding season is omitted
+no_intervention,territory_capacity,10,territory-holding pairs,historically grounded teaching assumption,rPVA 01_no_mgmt.yaml,Capacity is breeding opportunity not mapped habitat or a hard abundance ceiling
+pig_control,territory_capacity,70,territory-holding pairs,historically grounded teaching assumption,rPVA 02_pig_control.yaml,Capacity is breeding opportunity not mapped habitat or a hard abundance ceiling
+pig_control_captive,territory_capacity,70,territory-holding pairs,historically grounded teaching assumption,rPVA 03_captive_pig.yaml,Capacity is breeding opportunity not mapped habitat or a hard abundance ceiling
+pig_control_captive,captive_capture,2,pairs per year for two years,teaching reconstruction,rPVA 03_captive_pig.yaml,Historical sources commonly describe three or four founder pairs
+pig_control_captive,captive_release,13,pairs per year for three years,executable teaching reconstruction,rPVA 03_captive_pig.yaml,Approximate programme schedule rather than individual release ledger
+all,pedigree_founder_relationship,unrelated,declared pedigree base,explicit IBM translation,OpenPVA Goal 007 contract,Unknown pre-horizon kinship is not represented
+all,quasi_extinction_threshold,2,potential breeding pairs,illustrative decision threshold,Goal 011 scientific contract,Not a universal minimum viable population

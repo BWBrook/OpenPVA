@@ -25,8 +25,12 @@
 - `decisions.md` - active and historical decisions.
 - `goals/008-process-state-validation/` - published integration hardening.
 - `goals/009-lean-surface-cleanup/` - published lean product cleanup.
-- `goals/010-pre-stage4-hygiene/` - active test, CI, environment and scaffold
-  hygiene packet.
+- `goals/010-pre-stage4-hygiene/` - published test, CI, environment and
+  scaffold hygiene packet.
+- `goals/011-woodhen-modeller-vertical-slice/` - published first external
+  ordinary-R modeller workflow.
+- `../inst/examples/woodhen/README.md` - runnable Lord Howe Island woodhen
+  model project and scientific translation record.
 
 Goals 001-007 remain accepted strategic and delivery records under `goals/`.
 `roadmap.md`, `log/`, `interpretation_notes.md`, tracked artefacts and former
@@ -45,6 +49,6 @@ release evidence are historical provenance, not current product authority.
 - `release_checklist.md` - current release decision gate.
 - `reference/ci_profiles.md` - exact continuous-integration profiles.
 
-YAML, `targets` and Quarto analysis/reporting are deferred Stage 4 choices, not
-current dependencies or scaffolds. Historical evidence does not define an
+YAML, `targets` and Quarto analysis/reporting remain unearned Stage 4 choices,
+not current dependencies or scaffolds. Historical evidence does not define an
 executable current API.

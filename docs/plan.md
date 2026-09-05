@@ -2,9 +2,8 @@
 
 ## Authority and current objective
 
-`docs/vision_and_scope.md` is product authority. Goals 001-009 are accepted and
-published; Goals 008 and 009 landed at `d426910` and `7dcb850`. Goal 010 is the
-active pre-Stage 4 hygiene tranche. Publication is not authorised.
+`docs/vision_and_scope.md` is product authority. Goals 001-011 are accepted and
+published. Goal 011 is the first Stage 4 external-modeller vertical slice.
 
 > The modeller defines the biological program; OpenPVA supplies the execution
 > engine, reusable processes, scientific contracts, and reproducible analysis
@@ -30,26 +29,29 @@ There is no fixed dispatcher, lifecycle DSL, global registry, plugin manager,
 dependency-injection framework, compatibility layer or second aggregate
 population representation.
 
-## Active tranche - Goal 010
+## Latest completed tranche - Goal 011
 
-1. Right-size repeated test evidence without weakening distinct scientific,
-   engine, process-order, accounting, RNG or pedigree contracts.
-2. Make `R CMD check` the single CI test authority while retaining lean local
-   test and lint entry points.
-3. Remove the obsolete Quarto project and generated residue without replacement.
-4. Lock only executable runtime/development consumers and reconcile the R 4.6.1
-   environment.
-5. Complete proportional package evidence and stop for Barry's acceptance.
+1. Translate the 1980 Lord Howe Island woodhen recovery comparison into a
+   standalone ordinary-R project using only installed public APIs.
+2. Compare no intervention, pig control and pig control plus captive breeding
+   under a common 40-year starting state.
+3. Make sexes, mate availability, territory occupancy, floaters, intervention
+   receipts and parentage explicit without reproducing rPVA's mixed units or
+   hard abundance ceiling.
+4. Retain reproducible replicate evidence, exact accounting and honest Monte
+   Carlo uncertainty without claiming fresh calibration or numerical parity.
+5. Run one proportional installed-package and package validation pass and
+   publish after Barry's acceptance.
 
 ## Next programme decision
 
-After Goal 010 acceptance, frame the first Stage 4 executable vertical slice
-against the current process/event/output contracts. Choose YAML, orchestration
-or reporting tools only after the consumer is concrete. Harvest/removal should
-return only as an ordinary evidence-backed process goal.
+Use the completed external model to identify actual public-API friction.
+Generalise only a repeated modeller need exposed by a second consumer; do not
+infer a project framework, YAML layer or reporting stack from one successful
+case.
 
 ## Stop rule
 
-Stop after Goal 010 evidence and one material review pass. Do not begin Stage 4,
-prune historical artefacts, split the active engine/benchmark or publish without
-separate authority.
+Do not calibrate the woodhen model or generalise its project-local processes
+without a new scientific goal. Select the next consumer before restoring
+workflow machinery.

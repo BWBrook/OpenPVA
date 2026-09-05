@@ -879,4 +879,32 @@
     made the current product appear broader than its executable reality.
   - Executable consumers produce a smaller, auditable R 4.6.1 lock closure and
     make future tool additions earn their cost.
-- **Status**: implemented in Goal 010 and awaiting acceptance.
+- **Status**: accepted and published in Goal 010 at `9d48609`.
+
+## DEC-044 - Prove the public engine with an external Woodhen model
+- **Date**: 2026-08-16
+- **Decision**:
+  - Use the 1980 Lord Howe Island woodhen recovery comparison as the first
+    Stage 4 ordinary-R modeller vertical slice, with no intervention, pig
+    control and pig control plus captive breeding scenarios.
+  - Translate the female-equivalent source state into explicit female and male
+    individuals, double source recruitment rates to total offspring before an
+    explicit 50:50 sex draw, and record that translation rather than claiming
+    numerical parity with rPVA.
+  - Represent annual pair territory occupancy explicitly. Permit at most the
+    annual capacity to breed while retaining surplus mature birds as visible
+    floaters instead of deleting them at a hard population ceiling.
+  - Retain exact parent IDs throughout every run, validate pedigree
+    reconstruction in a short matched audit, and omit an uncalibrated
+    inbreeding-fitness response.
+  - Keep annual conditions, territory allocation and capture project-local.
+    Add no package API or dependency until a repeated external consumer earns
+    it.
+- **Rationale**:
+  - The Woodhen is a robust historical conservation case and was itself used
+    to compare GAPPS with other PVA systems. It therefore tests both the public
+    API and OpenPVA's construction-system North Star.
+  - Biological translation makes the model inspectable without perpetuating
+    mixed abundance units, proxy pairs or destructive carrying-capacity
+    bookkeeping from the teaching model.
+- **Status**: accepted for publication in Goal 011 on 2026-09-05.
