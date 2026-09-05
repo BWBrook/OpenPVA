@@ -65,3 +65,7 @@
 - Barry accepted the validated Goal 011 tranche and authorised commit and push.
 - No scientific or implementation changes occurred after the recorded
   validation; the live diff was re-inspected before publication.
+- The publication-boundary suite passed all 505 assertions, lint found no
+  issues, and `renv::status()` reported a consistent environment.
+- Goal 011 was committed as `6a0c8e6` (`feat: add Woodhen modeller vertical
+  slice`).

@@ -907,4 +907,4 @@
   - Biological translation makes the model inspectable without perpetuating
     mixed abundance units, proxy pairs or destructive carrying-capacity
     bookkeeping from the teaching model.
-- **Status**: accepted for publication in Goal 011 on 2026-09-05.
+- **Status**: accepted and published in Goal 011 at `6a0c8e6`.

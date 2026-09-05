@@ -3,7 +3,8 @@
 ## Authority and current objective
 
 `docs/vision_and_scope.md` is product authority. Goals 001-011 are accepted and
-published. Goal 011 is the first Stage 4 external-modeller vertical slice.
+published; Goal 011 landed at `6a0c8e6` as the first Stage 4 external-modeller
+vertical slice.
 
 > The modeller defines the biological program; OpenPVA supplies the execution
 > engine, reusable processes, scientific contracts, and reproducible analysis
