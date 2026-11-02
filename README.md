@@ -1,5 +1,7 @@
 # OpenPVA
 
+> **Status:** developed in the open as a working record. This is work in progress: contents may change, and nothing here is peer-reviewed unless stated.
+
 OpenPVA is a programmable, inspectable population-viability engine for R.
 
 > The modeller defines the biological program; OpenPVA supplies the execution
