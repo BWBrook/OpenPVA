@@ -92,6 +92,8 @@ Maintain `docs/plan.md`, `docs/decisions.md`, the active goal log, and relevant
 scientific interpretation notes. The living plan must expose only current
 operational work; completed roadmaps and logs remain historical.
 
-Do not commit, push, release, or publish unless the current goal explicitly
-authorises it. Ask Barry only for material scientific or strategic decisions,
+Commit and push coherent, in-scope work to Barry's existing remote. Obtain
+Barry's approval for first public releases, publication, submission,
+protected-data disclosure and destructive operations. Ask Barry only for
+material scientific or strategic decisions,
 not reversible implementation mechanics already settled by the active design.
