@@ -26,8 +26,21 @@ jobs:
       - uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ matrix.r }}
+      - name: Install Linux test build headers
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libuv1-dev
       - name: Install test dependencies
-        run: Rscript --vanilla -e 'install.packages("testthat", repos = "https://cloud.r-project.org"); stopifnot(requireNamespace("testthat", quietly = TRUE))'
+        run: |
+          Rscript -e '
+            repos <- getOption("repos")
+            if (is.null(repos) || !is.character(repos) || is.na(repos["CRAN"]) || identical(unname(repos["CRAN"]), "@CRAN@")) {
+              repos <- c(CRAN = "https://cloud.r-project.org")
+            }
+            install.packages("testthat", repos = repos, Ncpus = 2L)
+            stopifnot(requireNamespace("testthat", quietly = TRUE))
+          '
       - name: Build and check
         run: |
           R CMD build --no-build-vignettes .
