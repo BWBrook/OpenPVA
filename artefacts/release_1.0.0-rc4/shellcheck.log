@@ -1,2 +1,0 @@
-$ shellcheck scripts/build_release_evidence.sh
-exit_status=0

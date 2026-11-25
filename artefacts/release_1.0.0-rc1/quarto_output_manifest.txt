@@ -1,4 +1,0 @@
-about.html
-index.html
-search.json
-site_libs

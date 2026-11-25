@@ -1,3 +1,0 @@
-check summary
-94:* DONE
-96:Status: 3 NOTEs

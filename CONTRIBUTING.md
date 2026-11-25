@@ -6,8 +6,8 @@ Thank you for considering contributing! OpenPVA is a community-driven project, a
 
 - Fork the repo and clone it locally
 - Create a branch for your contribution
-- Use consistent function documentation (roxygen2 style)
-- Run tests via `testthat` before submitting
+- Document exported functions in `scripts/rd_topics.R` and regenerate `man/` with `Rscript scripts/build_rd.R`
+- Run `Rscript scripts/run_tests.R` before submitting
 - Submit a pull request with a clear description
 
 ## Need Help?

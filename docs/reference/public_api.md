@@ -1,70 +1,59 @@
-# Public API
+# Public API (OpenPVA 2.0.0)
 
-OpenPVA exposes one active product: a generic process engine, reusable ordinary
-processes, explicit scientific helpers, and a canonical synthetic benchmark.
+The help pages under `man/` are the reference; this page is the map. Every
+entry is exported.
 
-## Process engine
+| Area | Functions |
+|---|---|
+| State | `pva_population()`, `pva_state()`, `add_individuals()` |
+| Process contract | `pva_process()`, `pva_result()`, `pva_events()`, `validate_processes()`, `execute_processes()` |
+| Demography | `age_process()`, `survival_process()`, `staged_survival_process()`, `reproduction_process()`, `census_process()` |
+| Reproduction helpers | `litter_poisson()`, `litter_binomial()`, `litter_categorical()`, `offspring_sex_bernoulli()`, `mate_random()`, `mate_from_field()` |
+| Management and limits | `removal_process()`, `ceiling_process()`, `introduction_process()`, `pairing_process()` |
+| Environment | `environment_process()`, `catastrophe_process()`, `beta_shapes()`, `shift_logit()` |
+| Density feedback | `ceiling_density_multiplier()`, `beverton_holt_multiplier()`, `ricker_multiplier()` |
+| Inbreeding | `summarise_pedigree()`, `kinship_matrix()`, `inbreeding_multiplier()`, `inbreeding_proxy_process()`, `sex_ratio_effective_size()` |
+| Rates | `validate_age_sex_table()`, `age_sex_rate()` |
+| Space | `patch_counts()`, `dispersal_process()`, `markov_dispersal_process()` |
+| Scenarios | `scenario_spec()`, `run_scenario()` |
+| Summaries and ensembles | `summarise_pva()`, `summarise_trajectory()`, `summarise_accounting()`, `run_pva_ensemble()` |
 
-- `pva_state()`, `pva_process()`, `pva_result()`
-- `validate_processes()`, `allocate_ids()`, `execute_processes()`
-- `scenario_spec()`, `run_scenario()`
+## Outputs of `run_scenario()`
 
-A lifecycle is a direct ordered list of process objects. Community processes
-compose through the same state, context, result, field and event contracts as
-package processes; there is no controller dispatcher or registration layer.
+A `pva_run` is a list with:
 
-## Reusable processes
+- `census`: one row per run, census process and time, with `run`, `time`,
+  `phase` (`initial` or `interval`), `process_name`, `occurrence` and one numeric column per
+  metric;
+- `events`: `run`, `time`, `phase`, `process_index`, `process_name`,
+  `occurrence`, `event_type`, `value`, `label`, `origin_patch_id` and `destination_patch_id`;
+- `accounting`: one row per run, interval and process, with `n_before`,
+  `births`, `introductions`, `deaths_*` and `removals_*` by cohort, `n_after`;
+- `states`: the final `pva_state` of each run;
+- `ledgers`: for each run, every individual that ever lived, with `exit_time`,
+  `exit_process` and `exit_type` (`NA` for survivors);
+- `provenance`: root seed, generator kinds, the replicate streams, validation
+  mode, the process plan and package and R versions.
 
-- `age_process()`
-- `survival_process()`
-- `reproduction_process()`
-- `introduction_process()`
-- `density_snapshot_process()`, `patch_density_snapshot_process()`
-- `dispersal_process()`, `markov_dispersal_process()`
-- `census_process()`
+The default retains census, events and accounting. Include `"state"` for final states and `"ledger"` for full histories. Provenance is always available. Whole-run risk summaries validate the selected census against every scheduled run and interval. Specify `process_name` if several censuses run per interval, and `occurrence` if a name repeats. Both summaries include a scheduled year-zero census by default.
 
-Survival and reproduction callbacks in one execution see one common
-pre-process state. Reproduction requires an explicit `offspring_sex` callback.
-Introduction requires explicit count, source and newcomer state. The package
-does not supply species biology, a sex ratio, an introduction quota, patch
-allocation or connectivity defaults.
+## Event vocabulary
 
-## Explicit scientific helpers
+`death`, `removal`, `birth` and `introduction` are accounting events: their
+values must equal the state change. Built-in processes also emit
+`breeding_females`, `removal_shortfall`, `death_shortfall` (from a ceiling,
+always zero), `pairs_formed`, `unpaired_eligible`, `catastrophe` and
+`dispersal`. The latter counts movers. Each `patch_transition` row records an origin, destination and count, including stays among eligible individuals. Other event rows have missing patch IDs.
 
-- `create_individual()`
-- `validate_survival_table()`, `build_survival_fun_from_table()`
-- `validate_breeding_prob_table()`, `build_breeding_prob_fun_from_table()`
-- `validate_fecundity_lambda_table()`, `build_fecundity_lambda_fun_from_table()`
-- `ceiling_density_multiplier()`, `patch_density_multiplier()`
-- `initialize_patches()`
+## Composing a species model
 
-Demographic tables are modeller-supplied callback ingredients. Every lookup
-must match exactly one age/sex row; missing coverage is an error, not an
-implicit zero or extrapolation. Density helpers are pure rate multipliers, not
-population caps or carrying-capacity estimators.
+Use `mate_random()` for fresh two-sex mating or `mate_from_field()` for a recorded sire. Mating can precede a mortality process in the same interval. With `mate = NULL`, fecundity is female-dominant. A one-sex rate table assigns zero to the omitted sex. Environment variables evaluate in their listed order, so a shared weather draw can affect several rates.
 
-## Optional pedigree ancestry
+Use `pva_state(pedigree = TRUE)` when known parentage or supplementation matters. Inspect `pedigree_F` for individual fitness costs and `kinship_matrix(state, ids)` for selected living pairs. A supplied matrix specifies related or inbred initial animals. The scalar effective-size approximation instead requires generation time in model intervals and explicit migration when introductions occur.
 
-- `initialize_pedigree()`, `validate_pedigree()`
-- `pedigree_founder_fields()`, `pedigree_newborn_fields()`
-- `pedigree_parentage_fields()`
-- `pedigree_ledger()`, `summarise_pedigree()`
+`run_pva_ensemble()` accepts one design row per model and a builder and summary function. Fixed seeds reproduce the member and replicate streams across worker counts. Use `cache_key` to identify revisions of external data read by callbacks. See the [grizzly](../../inst/examples/grizzly/README.md) and [woodhen](../../inst/examples/woodhen/README.md) projects for runnable lifecycles.
 
-Pedigree is complete when enabled. `pedigree_F` is exact conditional pedigree
-IBD under the declared founder horizon; it is not marker heterozygosity.
+## Documentation source
 
-## Canonical benchmark
-
-The `grizzly_benchmark_*()` builders, `run_grizzly_benchmark()` and
-`summarise_grizzly_benchmark()` provide a source-labelled synthetic acceptance
-fixture. Its parameters are illustrative and uncalibrated, not species defaults
-or management advice. `grizzly_density_extension_scenario()` is a separate
-non-canonical demonstration of explicit density feedback.
-
-## Deferred interfaces
-
-Harvest/removal, YAML compilation, uncertainty, sensitivity and calibration are
-possible Stage 4 interfaces, not current runtime APIs. Orchestration and
-reporting tools will be chosen only for an executable consumer rather than
-treated as fixed requirements. Former controller-era and old-output
-implementations were removed rather than preserved behind adapters.
+`scripts/rd_topics.R` holds the text and `scripts/build_rd.R` writes `man/`,
+building every usage section from the function's formals.

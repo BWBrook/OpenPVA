@@ -1,5 +1,44 @@
 # OpenPVA news
 
+## OpenPVA 2.0.0
+
+- The engine runs a direct ordered list of processes with declared
+  `requires`, `writes` and `creates`. Population state is columnar. Dead
+  individuals move to an optional life-history ledger. Callbacks receive the
+  entire living population. Version 2.0.0 uses base and recommended packages
+  on R 4.1.0 or later.
+- Two-sex breeding requires a mate by default when a mate rule is supplied.
+  Stored sire IDs survive intervening mortality. Bounded litters accept a
+  lower limit and preserve the specified conditional mean.
+- Initial parentage sets exact kinships. A value-based dense store and an
+  ancestor calculation above `max_dense_kinship` support related founders
+  and one unknown parent. The scalar drift proxy requires generation time.
+- Staged survival uses the pre- and post-stage rates and supports entrants
+  between stages without requiring a population field for random draws.
+  Management and environmental processes cover pairing, ceilings, harvest,
+  releases, catastrophes and density feedback.
+- Risk summaries check every replicate and interval and share the year-zero
+  rule. Strict validation reconciles entries and losses separately and
+  validates each accounting receipt. Movement records realised patch flows.
+- Socket workers inherit library paths and callback dependencies. Unseeded
+  calls advance the caller's stream once. Ensemble caches track callback
+  revisions, inputs and validation, with deterministic builder and summary RNG.
+- Added a standalone grizzly maternal-care and harvest model and updated
+  the woodhen model to use the survival rates of both sexes. Final states
+  and individual ledgers are opt-in outputs.
+- Removed `create_individual()`, `allocate_ids()`, `initialize_pedigree()`
+  and the other record-list helpers. Use `add_individuals()` for creation,
+  `age_sex_rate()` for rate tables and direct population counts for density.
+- *Development provenance:* Designed, implemented, cross-audited, and hardened
+  under Barry W. Brook's direction using independent multi-model sessions
+  coordinated through `BWBrook/research-advisor`: initial 2.0.0 unified
+  columnar pure-base-R architecture by Anthropic Claude Fable 5.2; release
+  hardening, sparse ancestor pedigree (`R/ancestry.R`), PSOCK/R 4.1.0
+  verification, and standalone grizzly example by OpenAI Codex (GPT-6 family);
+  cross-critique and ancestor-compression pedigree design input from Google
+  Gemini 4 Carbon (High); independent verification and adjudication by Google
+  Gemini 4 Neon.
+
 ## OpenPVA 1.0.1 (development)
 
 - Replaced the fixed biological dispatcher with a validated ordered process
