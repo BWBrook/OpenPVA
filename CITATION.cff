@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use OpenPVA, please cite it as below."
+title: "OpenPVA: Composable Individual-Based Population Viability Analysis"
+version: 2.0.0
+date-released: 2026-11-25
+doi: "10.5281/zenodo.24521839"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.24521839"
+    description: "Version 2.0.0 Zenodo archive"
+  - type: doi
+    value: "10.5281/zenodo.24521838"
+    description: "Concept DOI for all versions of OpenPVA"
+authors:
+  - family-names: Brook
+    given-names: Barry W.
+    orcid: "https://orcid.org/0000-0002-2491-1517"
+    affiliation: University of Tasmania
+license: MIT
+repository-code: "https://github.com/BWBrook/OpenPVA"
+url: "https://github.com/BWBrook/OpenPVA"
+keywords:
+  - population viability analysis
+  - individual-based model
+  - conservation biology
+  - ecology
+  - R package
+  - pedigree inbreeding
