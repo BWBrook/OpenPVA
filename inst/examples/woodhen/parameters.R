@@ -26,6 +26,7 @@ woodhen_parameters <- function() {
     n_steps = 40L,
     default_n_runs = 20L,
     quasi_extinction_pairs = 2L,
+    minimum_breeding_age = 1L,
     offspring_female_probability = 0.5,
     vital_rates = rbind(female_rates, male_rates),
     initial_population = data.frame(
@@ -79,6 +80,7 @@ woodhen_validate_parameters <- function(parameters) {
   required <- c(
     "model_id", "model_version", "source_repo", "source_commit",
     "start_year", "n_steps", "default_n_runs", "quasi_extinction_pairs",
+    "minimum_breeding_age",
     "offspring_female_probability", "vital_rates", "initial_population",
     "annual_environment", "scenarios", "capture", "release"
   )
@@ -88,15 +90,9 @@ woodhen_validate_parameters <- function(parameters) {
   }
 
   rates <- parameters$vital_rates
-  OpenPVA::validate_survival_table(
-    rates[c("age_min", "age_max", "sex", "p_surv")]
-  )
-  OpenPVA::validate_breeding_prob_table(
-    rates[c("age_min", "age_max", "sex", "p_breed")]
-  )
-  OpenPVA::validate_fecundity_lambda_table(
-    rates[c("age_min", "age_max", "sex", "lambda")]
-  )
+  for (value in c("p_surv", "p_breed", "lambda")) {
+    OpenPVA::validate_age_sex_table(rates, value)
+  }
 
   initial <- parameters$initial_population
   if (!is.data.frame(initial) ||

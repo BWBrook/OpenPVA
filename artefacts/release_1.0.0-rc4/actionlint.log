@@ -1,2 +1,0 @@
-$ actionlint .github/workflows/*.yaml
-exit_status=0

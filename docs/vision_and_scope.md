@@ -53,9 +53,9 @@ registry entry.
 
 ## Architectural commitments
 
-- **R-native composition.** Ordinary functions and simple named lists are the
-  default. A minimal S3 tag may aid validation and printing, but inheritance is
-  not the process protocol.
+- **R-native composition.** Ordinary functions, named lists and plain vectors
+  are the default. A minimal S3 tag aids validation and printing, but
+  inheritance is not the process protocol. The package depends on base R only.
 - **Explicit order.** The lifecycle is a direct ordered process list. Repetition
   and omission are meaningful and validated.
 - **Separated ownership.** Processes own biological transformations. The engine
@@ -69,23 +69,23 @@ registry entry.
   proves that simpler R composition is inadequate.
 - **Clean realignment.** Obsolete controller paths will be removed rather than
   preserved behind compatibility adapters when implementation is authorised.
-- **Locked lean defaults.** Goal 001 fixes replicate-level L'Ecuyer-CMRG
-  streams, declared field dependencies, required event provenance, and explicit
-  interval/census semantics. Native deterministic execution is deferred.
+- **Locked lean defaults.** Replicate-level L'Ecuyer-CMRG streams, declared
+  field dependencies, required accounting events, and explicit interval and
+  census semantics. Native deterministic execution is deferred: expectations
+  are checked against independent matrix and Markov-chain oracles.
 
-## Canonical benchmark
+## Reference models
 
-The first acceptance benchmark is a minimal grizzly-bear model derived from the
-scientific questions that motivated and later exercised GAPPS: structured
-survival and reproduction, maternal dependency, stochastic demography,
-human-caused mortality, alternative survival scenarios, and inspectable
-population summaries and, when enabled, genetic summaries. It is defined in
-`docs/design/canonical_grizzly_reference_model.md`.
+Two models exercise the engine end to end, and neither is hard-coded into it:
 
-The benchmark is not a universal default, a calibrated Greater Yellowstone
-model, or a management recommendation. Its purpose is to prove that the engine
-can express and test a consequential long-lived-mammal PVA without hard-coding
-grizzly logic.
+- the Lord Howe Island woodhen example under `inst/examples/woodhen/`, an
+  inherited teaching reconstruction of a fast, territorial bird under habitat
+  and captive-breeding interventions;
+- the grizzly model under `inst/examples/grizzly/`, an illustrative seasonal
+  lifecycle with maternal dependency, delayed parturition and targeted
+  adult-female mortality.
+
+Neither is a calibrated assessment or a management recommendation.
 
 ## Scope boundaries
 
@@ -110,15 +110,15 @@ OpenPVA is not:
 
 ## Current decision boundary
 
-Goal 002 removed the former six-label controller and Goal 003 supplies the first
-end-to-end synthetic, uncalibrated grizzly-like benchmark through ordinary
-process composition. Goals 004 and 005 published explicit global density,
-discrete patch transitions and patch-specific density, and Goal 006 published
-generic exogenous introductions through the same creator contract. Goal 007 is
-the current bounded review surface for optional exact pedigree ancestry.
-`docs/design/lifecycle_process_contract.md` supplies the approved lean defaults
-for RNG, fields, events and time/census semantics. Empirical parameterisation,
-marker genetics and management inference remain later goals.
+OpenPVA 2.0.0 keeps the lifecycle contract and replaces the engine's internals:
+columnar state of living individuals, cohort-level accounting, engine-owned
+exact pedigree inbreeding, serial, fork and PSOCK execution, and the PVA
+essentials (removal, environmental variation, catastrophes, density feedback,
+pairing and territories, inbreeding depression, viability summaries and
+designed ensembles) as ordinary processes and helpers.
+`docs/design/lifecycle_process_contract.md` is the engine contract. Empirical
+parameterisation, marker genetics, observation models and management inference
+remain later goals.
 
 Current capabilities and historical roadmaps are evidence about the starting
 point, not the authority for product direction. This document is the authority.

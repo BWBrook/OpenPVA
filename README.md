@@ -1,238 +1,141 @@
 # OpenPVA
 
-> **Status:** developed in the open as a working record. This is work in progress: contents may change, and nothing here is peer-reviewed unless stated.
+OpenPVA 2.0.0 is a modular, individual-based engine for population viability
+analysis in R. A model specifies a population, the order of biological processes
+within each interval, and the census that defines the risk endpoint. Processes
+declare the fields they read, write and create. The engine assigns individual
+IDs, tracks parentage, reconciles population changes and allocates a
+reproducible random stream to each replicate.
 
-OpenPVA is a programmable, inspectable population-viability engine for R.
+Install from this checkout with `R CMD INSTALL .`. The package uses base and
+recommended R packages and supports R 4.1.0 and later.
 
-> The modeller defines the biological program; OpenPVA supplies the execution
-> engine, reusable processes, scientific contracts, and reproducible analysis
-> machinery.
+## What the engine provides
 
-The project is being realigned as a modern open-R descendant of GAPPS. A model
-is a direct ordered list of ordinary R process objects. Processes can be added,
-removed, repeated or reordered without editing the controller.
+- A columnar population of living individuals (`pva_population()`,
+  `pva_state()`), with the dead moved to an optional ledger.
+- One generic execution loop with strict validation after every process:
+  declared writes, field types, engine-owned fields, and accounting reconciled
+  separately for existing and newly created individuals, by cohort.
+- Exact pedigree inbreeding from recorded parentage, including a known sire
+  lost after mating. Above the dense slot limit the engine traces ancestors of
+  the breeders, retaining any specified starting kinships.
+- One preassigned L'Ecuyer-CMRG stream per replicate: results are bit-identical
+  on one core, on fork workers and on a PSOCK cluster.
+- Reusable processes: `age_process()`, `survival_process()`,
+  `staged_survival_process()`, `reproduction_process()` with Poisson, bounded
+  and categorical litters, `pairing_process()` for mate and territory limits,
+  `removal_process()`, `ceiling_process()`, `introduction_process()`,
+  `environment_process()`, `catastrophe_process()`,
+  `inbreeding_proxy_process()`, dispersal among patches, and `census_process()`.
+- Helpers: age-by-sex rate tables, Beverton–Holt, Ricker and ceiling density
+  multipliers, lethal-equivalent inbreeding depression.
+- `run_scenario()`, `summarise_pva()` (first-crossing and horizon risk, time to
+  threshold and final abundance with Monte Carlo standard errors),
+  `summarise_trajectory()`, `summarise_accounting()` and `run_pva_ensemble()`,
+  which separates a structural, parametric and management design from the inner
+  Monte Carlo replicates.
 
-## Current Core
-
-The current runtime provides:
-
-- validated `pva_state`, `pva_process` and `pva_result` objects;
-- one generic ordered execution loop;
-- explicit field dependencies and newborn/introduction field declarations;
-- engine-stamped events and exact population accounting;
-- stable IDs and engine-owned `next_id` allocation;
-- explicit interval and initial-census timing;
-- independently assigned L'Ecuyer-CMRG replicate streams with caller RNG
-  restoration and serial/fork identity;
-- minimal age, survival, reproduction, generic introduction,
-  global/patch-density snapshot, simultaneous dispersal and census process
-  constructors;
-- pure global and strict keyed patch-density multipliers for explicit
-  composition in modeller-owned vital-rate callbacks;
-- an explicitly uncalibrated canonical grizzly-like benchmark with baseline,
-  female-survival, targeted human-mortality and immigration scenarios;
-- replicate-preserving abundance, event, threshold, growth and provenance
-  summaries from `run_grizzly_benchmark()`;
-- a standalone Lord Howe Island woodhen model project that consumes only the
-  installed public package surface.
-
-The source-labelled `grizzly_density_extension_scenario()` demonstrates global
-density feedback without adding an empirical carrying-capacity default or
-changing the five canonical scenarios. Discrete patch transitions now use
-explicit domains and event-first evidence. Exogenous immigration,
-supplementation, stocking and translocation use one source-labelled creator
-with modeller-owned counts and newcomer state. Optional pedigree ancestry uses
-exact conditional-IBD coefficients, explicit founder/parentage declarations
-and the same creator seam; marker genetics and harvest/removal remain future
-process-migration sources. YAML, uncertainty/calibration execution, `targets`
-and Quarto are deliberately absent from the active dependencies and scaffold;
-Stage 4 may reintroduce each only with an executable consumer.
-
-## External Modeller Example
-
-[`inst/examples/woodhen/`](inst/examples/woodhen/README.md) is the first Stage 4
-vertical slice. It is an ordinary-R, source-backed individual model with three
-management scenarios, explicit territory occupancy and floaters, parentage,
-exact population accounting and reloadable evidence. It is historically
-grounded and illustrative, not a calibrated contemporary assessment.
-
-## Development Setup
+## A minimal model
 
 ```r
-source("bootstrap_env.R")
-```
+library(OpenPVA)
 
-For ordinary development:
-
-```r
-pkgload::load_all()
-testthat::test_dir("tests/testthat")
-```
-
-## Minimal Process Program
-
-```r
-pkgload::load_all(quiet = TRUE)
-
-population <- list(
-  create_individual(1L, "F", age = 4L),
-  create_individual(2L, "M", age = 5L)
+survival <- survival_process(
+  probability = function(pop, state, context, params) {
+    ifelse(pop$age == 0, params$juvenile, params$adult)
+  },
+  requires = "population.age",
+  params = list(juvenile = 0.5, adult = 0.9)
 )
 
-processes <- list(
-  age_process(),
-  survival_process(
-    probability = function(individual, state, context, params) {
-      params$annual_survival
-    },
-    requires = "population.age",
-    params = list(annual_survival = 0.9)
-  ),
-  reproduction_process(
-    breeding_probability = function(mother, state, context, params) 0.5,
-    fecundity_mean = function(mother, state, context, params) 1.2,
-    offspring_sex = function(mother, father, state, context, params) {
-      sample(c("F", "M"), 1L)
-    }
-  ),
-  census_process()
+breeding <- reproduction_process(
+  breeding_probability = function(pop, state, context, params) as.numeric(pop$age >= 2),
+  litter_size = litter_poisson(1.2),
+  offspring_sex = offspring_sex_bernoulli(0.5),
+  mate = mate_random(function(pop, state, context, params) pop$age >= 2),
+  requires = "population.age"
 )
 
 scenario <- scenario_spec(
   name = "minimal-example",
-  n_runs = 10L,
-  n_steps = 20L,
-  init_fun = function() population,
-  processes = processes,
-  seed = 2026L
+  n_runs = 200,
+  n_steps = 20,
+  init_fun = function() pva_population(sex = rep(c("F", "M"), 10), age = 3),
+  processes = list(survival, age_process(), breeding, census_process()),
+  seed = 2026
 )
 
 result <- run_scenario(scenario)
-result$sim_output$census
-result$sim_output$events
+summarise_pva(result, threshold = 10)
+all(summarise_accounting(result)$reconciled)
 ```
 
-These values are an API example, not biological defaults for any species.
-Within one survival or reproduction process, every individual-level callback
-sees the same pre-process state and realised changes are staged. Offspring sex
-is always an explicit modeller-owned callback; OpenPVA supplies no sex-ratio
-default.
+These illustrative rates specify a two-sex model. Each breeding female needs
+an eligible male. With `mate = NULL` the model is female-dominant and a
+breeding female can produce offspring with an unknown sire. For seasonal
+mating, record pairs first and pass `mate_from_field()` at birth; refresh
+pairing fields each interval because dead mates from an earlier interval are
+rejected. When using `age_sex_rate()`, one-sex tables return `0` for the
+omitted sex (intended for female-only fecundity tables; always supply both
+sexes for survival tables).
 
-## Exogenous Introductions
+The census follows breeding here, so each interval's abundance includes its
+newborns. Supply `initial_census = census_process()` to count year zero as
+well. Both risk summaries use the same observations and check the schedule
+against the full replicate design. The default run keeps census, events and
+accounting. Request `keep = c("census", "state", "ledger")` to inspect the
+survivors and individual histories.
 
-One explicit creator covers immigration, supplementation, stocking and
-exogenous translocation. Every initializer call in one execution sees the same
-pre-process state; the engine supplies IDs and `alive = TRUE`.
+## A project-defined process
 
-```r
-stocking <- introduction_process(
-  count = function(state, context, params) {
-    if (context$time == 0L) params$release_count else 0L
-  },
-  initializer = function(index, id, state, context, params) {
-    list(
-      sex = params$sexes[[index]],
-      age = params$ages[[index]],
-      patch_id = params$patch_ids[[index]]
-    )
-  },
-  initializer_fields = c("sex", "age", "patch_id"),
-  source = "project release plan v1",
-  name = "stocking",
-  group_by = "patch_id",
-  params = list(
-    release_count = 2L,
-    sexes = c("F", "M"),
-    ages = c(2L, 3L),
-    patch_ids = c(1L, 2L)
-  )
-)
-```
-
-These release values are illustrative API inputs, not biological defaults or
-management advice. An introduction does not subtract from a donor population.
-
-## Optional Pedigree Ancestry
-
-Pedigree founders are declared explicitly. Assignment by field name replaces
-the generic missing parent fields rather than appending duplicates.
+Anything that satisfies the contract composes with the built-in processes; no
+registration is needed.
 
 ```r
-female <- create_individual(1L, "F", age = 4L)
-male <- create_individual(2L, "M", age = 5L)
-founder_fields <- pedigree_founder_fields()
-female[names(founder_fields)] <- founder_fields
-male[names(founder_fields)] <- founder_fields
-population <- initialize_pedigree(list(female, male))
-
-pedigree_birth <- reproduction_process(
-  breeding_probability = function(mother, state, context, params) 0.5,
-  fecundity_mean = function(mother, state, context, params) 1.2,
-  offspring_sex = function(mother, father, state, context, params) "F",
-  mating = function(population, mother, context, params) population[[2L]],
-  require_mate = TRUE,
-  newborn_initializer = function(mother, father, state, context, params) {
-    pedigree_newborn_fields(mother, father, state)
-  },
-  initializer_fields = c("pedigree_status", "pedigree_F"),
-  requires = c(
-    "population.mother_id", "population.father_id",
-    "population.pedigree_status", "population.pedigree_F"
-  )
-)
-```
-
-`pedigree_F` is conditional pedigree IBD, not marker heterozygosity. These
-birth values remain illustrative API inputs rather than species defaults.
-
-## Community Process
-
-A project-defined observer composes through the same public contract:
-
-```r
-female_observer <- pva_process(
-  name = "female_observer",
+harvest_oldest <- pva_process(
+  name = "harvest_oldest",
   run = function(state, context, params) {
-    n_female <- sum(vapply(
-      state$population,
-      function(ind) isTRUE(ind$alive) && identical(ind$sex, "F"),
-      logical(1)
-    ))
-    pva_result(
-      state,
-      list(list(event_type = "observation", value = n_female))
-    )
+    oldest <- which.max(state$population$age)
+    state$population$alive[oldest] <- FALSE
+    pva_result(state, pva_events("removal", length(oldest), "harvest"))
   },
-  requires = c("population.sex", "population.alive")
+  requires = "population.age",
+  writes = "population.alive"
 )
 ```
 
-Insert `female_observer` anywhere in `processes`; no OpenPVA controller change
-or registration is required.
+If that process forgot its `removal` event, or changed a field it did not
+declare, strict validation would stop the run and name the process.
 
-## Architecture
+## Species examples
 
-- [Vision and scope](docs/vision_and_scope.md)
-- [Core architecture](docs/architecture_core.md)
-- [Lifecycle-process contract](docs/design/lifecycle_process_contract.md)
-- [Canonical grizzly reference model](docs/design/canonical_grizzly_reference_model.md)
-- [Global density feedback](docs/design/density_module.md)
-- [Spatial process contract](docs/design/spatial_process_contract.md)
-- [Introduction process contract](docs/design/introduction_process_contract.md)
-- [Pedigree ancestry contract](docs/design/pedigree_ancestry_contract.md)
-- [Goal 003 benchmark packet](docs/goals/003-canonical-grizzly-benchmark/Goal.md)
-- [Goal 004 density packet](docs/goals/004-global-density-feedback/Goal.md)
-- [Goal 005 spatial packet](docs/goals/005-patch-transitions-density/Goal.md)
-- [Goal 006 introductions packet](docs/goals/006-generic-introductions/Goal.md)
-- [Goal 007 pedigree packet](docs/goals/007-pedigree-ancestry/Goal.md)
-- [Living plan](docs/plan.md)
+- Follow a breeding female through summer mating, autumn harvest, winter birth
+  and three years of maternal care. This example links adult-female mortality
+  to cub survival and inter-birth intervals. [Grizzly model](inst/examples/grizzly/README.md)
+- Compare recovery scenarios with sex-specific survival, shared environmental
+  variation, territorial pairs and captive releases. The example provides
+  parameters, their evidence and a script that runs on a socket cluster.
+  [Lord Howe Island woodhen model](inst/examples/woodhen/README.md)
 
-## Validation
+Both projects use the exported API and include runnable scripts. Their rates
+illustrate model construction and management comparisons.
+
+## Development
 
 ```sh
-Rscript scripts/run_tests.R
+Rscript scripts/run_tests.R      # install to a temporary library and run all tests
+Rscript scripts/build_rd.R       # regenerate man/*.Rd from scripts/rd_topics.R
+R CMD build --no-build-vignettes . && R CMD check --as-cran --no-manual OpenPVA_*.tar.gz
 ```
 
-Package release builds have separate acceptance and publication gates. YAML,
-`targets` and Quarto workflow reconnection is deferred to Stage 4 and currently
-has no dormant package dependency or project scaffold.
+Documentation is generated by `scripts/build_rd.R`, which builds every usage
+section from the functions' formals, so `roxygen2` is not required.
+
+## Design documents
+
+- [Vision and scope](docs/vision_and_scope.md)
+- [Lifecycle-process contract](docs/design/lifecycle_process_contract.md)
+- [Public API](docs/reference/public_api.md)
+- [GAPPS heritage](docs/gapps_heritage.md) and
+  [evidence review](docs/literature/gapps_evidence_review.md)

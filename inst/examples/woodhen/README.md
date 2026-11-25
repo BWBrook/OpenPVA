@@ -18,8 +18,8 @@ compare:
 3. pig control plus capture for captive breeding and three years of releases.
 
 The primary endpoints are extinction at the horizon, ever falling below two
-potential breeding pairs, final abundance, retained parentage and exact
-intervention/accounting receipts.
+potential breeding pairs, final abundance, pedigree inbreeding and exact
+intervention and accounting receipts.
 
 ## Run
 
@@ -31,16 +31,20 @@ Rscript run.R
 
 The default is 20 replicates per scenario. This is sufficient to prove the
 workflow while its reported Monte Carlo standard errors make the limited
-precision explicit. The script uses two deterministic fork workers on Unix and
-one worker on Windows. An output directory, replicate count and worker count
-can be supplied explicitly:
+precision explicit. The script uses two workers, with fork on Unix and PSOCK on
+Windows. Supply an output directory, replicate count, worker count and optional
+backend to change these settings.
 
 ```sh
-Rscript run.R /tmp/openpva-woodhen 100 4
+Rscript run.R woodhen-output 100 4 psock
 ```
 
 The directory contains `result.rds` with replicate evidence and CSV views of
-the manifest, summaries, accounting, events, censuses and parentage receipts.
+the manifest, summaries, cohort accounting, events, censuses and pedigree
+summaries.
+
+The breeding-pair risk uses interval censuses, after territories have been
+allocated. At the starting census the founders have yet to pair.
 
 ## Biological programme
 
@@ -50,16 +54,12 @@ The declared annual order is:
 annual conditions -> survival -> age -> territory allocation -> reproduction -> management -> census
 ```
 
-The project defines three local processes through `OpenPVA::pva_process()`:
-
-- annual environmental, cyclone and breeding-capacity conditions;
-- annual assignment of at most the available territory capacity to explicit
-  female-male pairs, while retaining surplus mature birds as floaters;
-- scheduled capture of living female-male pairs for captive breeding.
-
-All other execution uses current OpenPVA constructors. Captive releases use
-`introduction_process()`. Only territory holders breed, and non-holders remain
-in the population rather than being removed by a hard abundance ceiling.
+Every process is built from an OpenPVA constructor: `environment_process()` for
+the annual environmental, cyclone and capacity conditions; `pairing_process()`
+for territories; `removal_process()` for the scheduled capture; and
+`introduction_process()` for captive releases. Only territory holders breed,
+and non-holders remain in the population as floaters rather than being removed
+by a hard abundance ceiling.
 
 ## Translation decisions
 
@@ -69,20 +69,19 @@ in the population rather than being removed by a hard abundance ceiling.
   though some prose calls it fledglings. This project doubles those rates to
   total offspring before an explicit 50:50 sex draw, preserving the intended
   female recruitment while repairing the mixed state unit.
-- One-to-one mate and territory availability is resolved by stable ID order.
-  This is reproducible occupancy bookkeeping, not a model of competition,
-  territory turnover or persistent pair bonds.
+- One-to-one mate and territory availability is resolved by stable identifier
+  order. This is reproducible occupancy bookkeeping, not a model of
+  competition, territory turnover or persistent pair bonds.
 - The executable rPVA captive schedule is interpreted as 13 pairs released in
-  each of three years, approximately 78 birds in total.
-- Initial and released birds are pedigree base founders relative to the
-  recorded horizon. The simulation retains exact parent IDs, then reconstructs
-  and validates exact pedigree coefficients in a short matched audit. Parent
-  IDs remain available for every full run, while long-horizon coefficient
-  reconstruction is deliberately omitted because pedigree does not drive this
-  model's demography. No aggregate `F`, lethal-equivalent, purging or
-  inbreeding-fitness response is imposed during population dynamics.
+  each of three years, 78 birds in total.
+- Initial and released birds are pedigree base founders. `run.R` enables exact
+  pedigree tracking, and `pedigree.csv` reports the inbreeding and kinship of
+  each run's final population. No inbreeding cost is imposed on the dynamics
+  in this example.
 - Environmental and catastrophe settings are inherited teaching assumptions.
-  They are not Woodhen field estimates.
+  Female and male survival share an annual environmental percentile within
+  each age class, evaluated against each sex's own beta distribution. The
+  lognormal fecundity multiplier has mean one.
 - Numerical parity with rPVA is neither expected nor asserted because its own
   scientific audit records mixed abundance/sex semantics and a hard population
   truncation.

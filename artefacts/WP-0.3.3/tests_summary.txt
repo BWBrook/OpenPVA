@@ -1,2 +1,0 @@
-devtools::test summary
-63:[ FAIL 0 | WARN 0 | SKIP 0 | PASS 301 ]

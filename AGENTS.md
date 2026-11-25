@@ -1,99 +1,65 @@
 # AGENTS: OpenPVA repository contract
 
-This file is the highest-authority instruction for automated agents in this
-repository. If another current-facing document conflicts with it, this file
-wins. Historical roadmaps, decisions and logs record evolution; they do not
-override the active North Star.
+This file is the project-level instruction for automated agents in `BWBrook/OpenPVA`.
 
-## Product authority
+## Product North Star
 
-> The modeller defines the biological program; OpenPVA supplies the execution
+> The modeller defines the biological programme; OpenPVA supplies the execution
 > engine, reusable processes, scientific contracts, and reproducible analysis
 > machinery.
 
-Read before architecture or implementation work:
+OpenPVA is a modern, open-R descendant of the GAPPS construction philosophy—built
+so conservation biologists (and their AI agents) can compose transparent,
+inspectable, individual-based Population Viability Analyses in ordinary R.
 
-1. `docs/vision_and_scope.md`
-2. `docs/architecture_core.md`
-3. `docs/design/lifecycle_process_contract.md`
-4. `docs/design/canonical_grizzly_reference_model.md`
-5. `docs/design/realignment_gap_map.md`
-6. `docs/goals/001-north-star-realignment/Goal.md`
+## Core architecture (OpenPVA 2.0.0)
 
-`docs/gapps_heritage.md` supplies historical evidence, not an API to reproduce.
+- **One unified, pure-base-R engine:** `NeedsCompilation: no`, `Depends: R (>= 4.1.0)`,
+  and runtime `Imports` restricted to base/recommended packages (`codetools`,
+  `parallel`, `stats`, `tools`, `utils`). Do not add `dplyr`, `tibble`, `renv`
+  boilerplate, a lifecycle DSL, a global registry, an S4/R6 hierarchy, or a
+  second compiled sidecar engine unless a measured, unavoidable bottleneck proves
+  pure R inadequate.
+- **Direct ordered process list:** A lifecycle is an ordinary ordered list of
+  `pva_process()` objects declaring `requires`, `writes`, and `creates`. Community
+  processes compose through the exact same public contract without controller edits.
+- **Columnar living state:** `pva_population()` / `pva_state()` hold living
+  individuals as equal-length vectors; dead/removed records move to an optional
+  life-history ledger. Callbacks are vectorised over the living population and see
+  a shared pre-process state.
+- **Engine-owned invariants:** The engine owns interval time, consecutive IDs,
+  preassigned per-replicate L'Ecuyer-CMRG RNG streams (bit-identical across
+  serial, fork, and PSOCK workers; caller `.Random.seed` restored on explicit
+  seeds), cohort-by-origin accounting, and exact conditional pedigree inbreeding
+  (value-semantic dense kinship store up to `max_dense_kinship`, switching cleanly
+  to sparse ancestor tracing in `R/ancestry.R` above that threshold).
 
-## Active architecture
+## Development and verification rules
 
-OpenPVA's target is a programmable, inspectable PVA engine in R:
+- **No backwards compatibility layers:** Remove obsolete paths and update callers,
+  tests, help pages, and docs together.
+- **Documentation without `roxygen2`:** Update `scripts/rd_topics.R` and run
+  `Rscript --vanilla scripts/build_rd.R` to regenerate `man/*.Rd` from live
+  function formals.
+- **Qualified calls:** Use `pkg::fun()` for non-base calls under `R/`, `tests/`,
+  and `inst/examples/`; keep species models (`inst/examples/grizzly/`,
+  `inst/examples/woodhen/`) outside the exported package namespace.
+- **Standard local checks:**
+  ```sh
+  Rscript --vanilla scripts/run_tests.R
+  R CMD build --no-build-vignettes .
+  R CMD check --as-cran --no-manual OpenPVA_*.tar.gz
+  bash scripts/benchmark_gate.sh
+  ```
+- **Proportional rigour:** Protect likelihood/demographic maths, RNG parity,
+  cohort accounting, pedigree oracles (`< 1e-13`), and CRAN check cleanliness
+  (`0 errors, 0 warnings`). Do not turn the repository into a journal-manuscript
+  project unless Barry explicitly triggers one.
 
-- a lifecycle is a direct ordered list of validated ordinary R process objects;
-- processes declare parameters, required fields and written fields, and return
-  state plus events;
-- the engine owns time, replicate RNG streams, stable IDs, event collection,
-  provenance and failure context;
-- community processes compose through the public contract without controller
-  edits or central registration;
-- a minimal S3 tag may support printing or validation, but inheritance is not
-  the protocol;
-- there is no lifecycle DSL, global registry, plugin manager, dependency-
-  injection framework, or S4/R6 process hierarchy.
+## Delivery and authority
 
-The former six-label dispatcher has been removed. **Do not restore a fixed
-label, controller biological conditional, privileged parameter channel, or
-compatibility adapter.** All executable lifecycle work must compose through
-the generic process seam.
-
-Existing individual/population lists and scientific helpers may be retained
-where they satisfy the target state, field, process, result and accounting
-contracts. Do not redesign them speculatively.
-
-## Scientific defaults for realignment
-
-- Use one independently reproducible L'Ecuyer-CMRG stream per replicate,
-  preassigned so serial and parallel execution match. Processes use ordinary R
-  RNG calls but never `set.seed()`; the engine scopes and restores RNG state.
-- Reserve and validate core engine field names and types. Ordinary named
-  contributed attributes remain allowed. Birth and introduction processes must
-  initialize every field required downstream or fail immediately.
-- Processes declare `event_type`; the engine stamps `run`, `time`, phase,
-  process position/name/occurrence and provenance. Accounting events cannot be
-  suppressed. Aggregate detail is the default.
-- Step `t` is interval `t -> t+1`. Processes and events use label `t`; time
-  advances after the ordered list. Census is an explicitly positioned observer,
-  apart from an optional initial census at `t = 0`.
-- Use an independent life-table or matrix expected-value oracle to test
-  stochastic means. Do not introduce a second aggregate/fractional population
-  representation or native deterministic engine mode without demonstrated need.
-
-## Development rules
-
-- Work only within the explicitly authorised goal and paths. Preserve unrelated
-  user or agent changes.
-- Prefer the smallest ordinary-R implementation that satisfies the approved
-  scientific contract. Avoid speculative abstraction and hidden state.
-- Do not guess biological defaults. Parameter evidence, estimands, observation
-  processes and inference scope belong to the modeller or named model fixture.
-- No backwards-compatibility preservation is required. When an obsolete path is
-  replaced, remove it and update its call sites, tests and current documentation
-  together.
-- Use `package::function()` for non-base calls under `R/`, tests and
-  `_targets.R`; do not call `library()` or `require()` there.
-- Do not call `install.packages()` outside `bootstrap_env.R`. New dependencies
-  require explicit justification and environment updates.
-- Add focused unit, integration, accounting and reproducibility tests for code
-  changes. Validate real entry points in proportion to scientific risk.
-- Keep `renv` and repository scripts as current reproducibility machinery.
-  YAML, `targets` and Quarto may return for Stage 4 only with an executable
-  consumer; none defines the lifecycle protocol.
-
-## Records and authority
-
-Maintain `docs/plan.md`, `docs/decisions.md`, the active goal log, and relevant
-scientific interpretation notes. The living plan must expose only current
-operational work; completed roadmaps and logs remain historical.
-
-Commit and push coherent, in-scope work to Barry's existing remote. Obtain
-Barry's approval for first public releases, publication, submission,
-protected-data disclosure and destructive operations. Ask Barry only for
-material scientific or strategic decisions,
-not reversible implementation mechanics already settled by the active design.
+- Local commits and routine pushes to Barry's own repository are authorised
+  reversible work (scan staged changes with `GIT_CONFIG_GLOBAL=/dev/null gitleaks protect --staged`
+  before pushing).
+- Obtain Barry's explicit approval before CRAN submission, Zenodo/GitHub release
+  tagging, or external outreach.
