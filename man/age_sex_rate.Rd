@@ -6,14 +6,15 @@
 \usage{
 validate_age_sex_table(table, value)
 
-age_sex_rate(table, value)
+age_sex_rate(table, value, missing_sex = c("error", "zero"))
 }
 \arguments{
 \item{table}{Data frame with \code{age_min}, \code{age_max} (which may be \code{Inf}), \code{sex} and the value column.}
 \item{value}{Name of the column holding the rate.}
+\item{missing_sex}{When a living individual's sex has no rows in the table, \code{"error"} (the default) raises an error and \code{"zero"} returns zero for that individual. Use \code{"zero"} for a female-only fecundity table when males should receive zero.}
 }
 \description{
-\code{age_sex_rate()} compiles a table into a vectorised rate function for \code{\link{survival_process}()} or \code{\link{reproduction_process}()}. A one-sex table assigns zero to the omitted sex. An uncovered age for a represented sex raises an error.
+\code{age_sex_rate()} compiles a table into a vectorised rate function for \code{\link{survival_process}()} or \code{\link{reproduction_process}()}. An uncovered age for a represented sex raises an error in either mode.
 }
 \value{
 \code{validate_age_sex_table()} returns the table invisibly. \code{age_sex_rate()} returns a function of \code{(pop, state, context, params)}.

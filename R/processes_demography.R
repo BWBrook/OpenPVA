@@ -179,17 +179,26 @@ mate_random <- function(eligible) {
   }
 }
 
-mate_from_field <- function(field = "mate_id") {
+mate_from_field <- function(field = "mate_id", stale = c("error", "unpaired")) {
+  stale <- match.arg(stale)
   if (!.is_name(field)) {
     .stop("field must be one non-empty name")
   }
   lookup <- function(pop, state, context, params) {
     ids <- pop[[field]]
-    if (!is.numeric(ids) || length(ids) != length(pop$id) || any(is.nan(ids)) ||
-        any(ids < 1L | ids > .Machine$integer.max | ids != floor(ids), na.rm = TRUE)) {
+    if (!is.numeric(ids) || !is.null(dim(ids)) || length(ids) != length(pop$id) ||
+        any(is.nan(ids)) || any(ids < 1L | ids > .Machine$integer.max |
+                                ids != floor(ids), na.rm = TRUE)) {
       .stop("mate field must contain positive integer IDs or NA")
     }
-    match(ids, pop$id)
+    rows <- match(ids, pop$id)
+    if (stale == "error") {
+      absent <- pop$sex == "F" & is.na(rows) & !is.na(ids)
+      if (any(absent) && !all(ids[absent] %in% context$departed_males)) {
+        .stop("recorded sire must be a living male or one lost earlier in this interval")
+      }
+    }
+    rows
   }
   attr(lookup, "mate_field") <- field
   lookup
@@ -259,15 +268,10 @@ reproduction_process <- function(
         .stop("mate returned a row that is not male for a female")
       }
       father_id <- pop$id[as.integer(father)]
-      if (!is.null(params$mate_field)) {
+      if (!is.null(params$mate_field) && length(context$departed_males)) {
         recorded <- pop[[params$mate_field]]
-        absent <- female & is.na(father) & !is.na(recorded)
-        if (any(absent)) {
-          if (!all(recorded[absent] %in% context$departed_males)) {
-            .stop("recorded sire must be a living male or one lost earlier in this interval")
-          }
-          father_id[absent] <- recorded[absent]
-        }
+        departed <- female & recorded %in% context$departed_males
+        father_id[departed] <- recorded[departed]
       }
       candidates <- which(female & probability > 0)
       if (params$require_mate) {

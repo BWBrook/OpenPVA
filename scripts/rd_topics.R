@@ -41,7 +41,7 @@ topics <- list(
       globals = "Named list of shared dynamic values, such as the year's environmental deviates.",
       pedigree = r"(Whether the engine tracks exact pedigree inbreeding. When \code{TRUE} the population gains the engine-owned field \code{pedigree_F}.)",
       kinship = "Optional matrix of starting coancestries in population order. It takes precedence over recorded initial parentage.",
-      max_dense_kinship = "Maximum dense slots per replicate. Above this limit the engine computes exact kinship from a compact ancestry ledger. The default is 2000."
+      max_dense_kinship = "Maximum number of dense pedigree slots per replicate (default 2000). Once the required slots exceed this limit, the engine uses exact sparse ancestor tracing for the rest of that replicate, even if the population later falls below the limit."
     ),
     description = r"(The population is columnar: a named list of equal-length vectors with one element per \emph{living} individual. \code{pva_population()} builds it, \code{pva_state()} wraps it with shared globals and the identifier allocator, and \code{add_individuals()} is the only way for a process to create individuals.)",
     details = r"(Core fields are \code{id}, \code{sex}, \code{age}, \code{alive}, \code{mother_id}, \code{father_id}, \code{origin} and \code{entry_time}. The engine owns \code{id}, \code{origin} (\code{"initial"}, \code{"birth"} or \code{"introduction"}), \code{entry_time} (the interval of entry, \code{-1} for the initial population) and \code{pedigree_F}; processes cannot write them. A process records mortality by setting \code{alive} to \code{FALSE}. After each process the engine moves those records out of the living table into the optional ledger, so every process starts with living individuals only.
@@ -174,12 +174,15 @@ summarise_pva(run_scenario(scenario), threshold = 10))"
       sizes = "Distinct litter sizes of the categorical distribution.",
       probabilities = r"(Probabilities of \code{sizes}; they must sum to one.)",
       female_probability = "Probability that a newborn is female.",
+      field = r"(Name of the population field holding recorded mate IDs. Initialise unpaired individuals with \code{NA_integer_}.)",
+      stale = r"(How to handle a female's recorded sire ID when the sire is absent and did not depart in the current interval. The default \code{"error"} rejects that ID. With \code{"unpaired"}, reproduction treats the female as having no mate and preserves the field.)",
       eligible = paste0(
         "Function of ", callback,
         " returning one logical value per living individual; males flagged TRUE can sire offspring."
       )
     ),
-    description = r"(Building blocks for \code{\link{reproduction_process}()}. Litter size can be Poisson, bounded binomial (under-dispersed, with a maximum) or an explicit categorical distribution. \code{mate_random()} gives each female a sire drawn at random from the eligible males, so breeding is limited only when no eligible male is alive. \code{mate_from_field()} reads a field of stable mate IDs, including sires lost since pairing in this interval. A bounded binomial litter adds \code{min_size} to a binomial draw with \code{size - min_size} trials, giving the specified conditional mean.)",
+    description = r"(Building blocks for \code{\link{reproduction_process}()}. Litter size can be Poisson, bounded binomial (under-dispersed, with a maximum) or an explicit categorical distribution. \code{mate_random()} gives each female a sire drawn at random from the eligible males, so breeding is limited only when no eligible male is alive. A bounded binomial litter adds \code{min_size} to a binomial draw with \code{size - min_size} trials, giving the specified conditional mean.)",
+    details = r"(\code{mate_from_field()} reads a vector of positive integer IDs or \code{NA}. A female's living sire must be male. A sire who died or was removed earlier in the current interval still fathers her offspring in either mode. The offspring retain his ID and pedigree, and \code{newborn_fields} receives \code{NA} for his living row. With \code{stale = "unpaired"}, any other absent sire is treated as \code{NA} for this breeding event. An unpaired female skips breeding unless \code{require_mate = FALSE}, in which case her offspring have an unknown sire.)",
     value = r"(A function suitable for the corresponding argument of \code{\link{reproduction_process}()}.)",
     examples = r"(cubs <- litter_categorical(sizes = 1:3, probabilities = c(0.2, 0.6, 0.2))
 pop <- pva_population(sex = c("F", "F", "M"), age = 6)
@@ -411,9 +414,10 @@ run_pva_ensemble(design, build, n_runs = 40, seed = 7,
     functions = c("validate_age_sex_table", "age_sex_rate"),
     arguments = list(
       table = r"(Data frame with \code{age_min}, \code{age_max} (which may be \code{Inf}), \code{sex} and the value column.)",
-      value = "Name of the column holding the rate."
+      value = "Name of the column holding the rate.",
+      missing_sex = r"(When a living individual's sex has no rows in the table, \code{"error"} (the default) raises an error and \code{"zero"} returns zero for that individual. Use \code{"zero"} for a female-only fecundity table when males should receive zero.)"
     ),
-    description = r"(\code{age_sex_rate()} compiles a table into a vectorised rate function for \code{\link{survival_process}()} or \code{\link{reproduction_process}()}. A one-sex table assigns zero to the omitted sex. An uncovered age for a represented sex raises an error.)",
+    description = r"(\code{age_sex_rate()} compiles a table into a vectorised rate function for \code{\link{survival_process}()} or \code{\link{reproduction_process}()}. An uncovered age for a represented sex raises an error in either mode.)",
     value = paste0(
       r"(\code{validate_age_sex_table()} returns the table invisibly. \code{age_sex_rate()} returns a function of )",
       callback, "."

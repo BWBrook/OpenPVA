@@ -30,7 +30,8 @@ validate_age_sex_table <- function(table, value) {
   invisible(table)
 }
 
-age_sex_rate <- function(table, value) {
+age_sex_rate <- function(table, value, missing_sex = c("error", "zero")) {
+  missing_sex <- match.arg(missing_sex)
   validate_age_sex_table(table, value)
   lookup <- lapply(split(table, as.character(table$sex)), function(rows) {
     rows <- rows[order(rows$age_min), , drop = FALSE]
@@ -42,12 +43,15 @@ age_sex_rate <- function(table, value) {
   })
   function(pop, state, context, params) {
     out <- numeric(length(pop$id))
-    for (sex in names(lookup)) {
-      rows <- which(pop$sex == sex)
-      if (!length(rows)) {
+    for (sex in unique(pop$sex)) {
+      classes <- lookup[[sex]]
+      if (is.null(classes)) {
+        if (missing_sex == "error") {
+          .stop(value, " table has no entry for sex ", sex)
+        }
         next
       }
-      classes <- lookup[[sex]]
+      rows <- which(pop$sex == sex)
       class <- findInterval(pop$age[rows], classes$age_min)
       covered <- class > 0L
       covered[covered] <- pop$age[rows][covered] <= classes$age_max[class[covered]]

@@ -190,6 +190,51 @@ test_that("mate indices and litter sizes are checked before they can alter birth
   }
 })
 
+testthat::test_that("recorded sires distinguish this interval's losses from earlier losses", {
+  kin <- diag(0.5, 6L)
+  kin[1L, 6L] <- kin[6L, 1L] <- 0.125
+  kin[2L, 5L] <- kin[5L, 2L] <- 0.25
+  initial <- pva_state(adult_population(3L, 3L, mate_id = c(6:4, 3:1)),
+                       pedigree = TRUE, kinship = kin)
+  remove_sire <- function(id) {
+    removal_process(select = function(pop, state, context, params) pop$id == id)
+  }
+  previous <- execute_processes(initial, list(remove_sire(4L)), time = 0L)$state
+  breed <- function(mate, require_mate = TRUE) {
+    reproduction_process(1, litter_categorical(1, 1), offspring_sex_bernoulli(1),
+                         mate = mate, require_mate = require_mate,
+                         newborn_fields = function(...) list(mate_id = NA_integer_),
+                         newborn_field_names = "mate_id")
+  }
+  this_year <- function(process) {
+    execute_processes(previous, list(remove_sire(5L), process), time = 1L)$state$population
+  }
+  testthat::expect_error(this_year(breed(mate_from_field())), "recorded sire")
+  unpaired <- mate_from_field(stale = "unpaired")
+  pop <- this_year(breed(unpaired))
+  born <- pop$origin == "birth"
+  testthat::expect_identical(pop$mother_id[born], 1:2)
+  testthat::expect_identical(pop$father_id[born], 6:5)
+  testthat::expect_identical(pop$pedigree_F[born], c(0.125, 0.25))
+  testthat::expect_identical(pop$mate_id[1:3], 6:4)
+  optional <- this_year(breed(unpaired, require_mate = FALSE))
+  testthat::expect_identical(optional$father_id[optional$origin == "birth"], c(6:5, NA_integer_))
+})
+
+testthat::test_that("both stale-mate policies reject malformed IDs and living non-male sires", {
+  state <- pva_state(adult_population(1L, 1L, mate_id = NA_integer_))
+  for (stale in c("error", "unpaired")) {
+    breed <- reproduction_process(0, litter_poisson(1), offspring_sex_bernoulli(),
+                                  mate = mate_from_field(stale = stale), inherit = "mate_id")
+    state$population$mate_id <- c(1L, NA_integer_)
+    testthat::expect_error(execute_processes(state, list(breed)), "not male")
+    for (bad in list(0L, 1.5, NaN, Inf, .Machine$integer.max + 1, TRUE, "2")) {
+      state$population$mate_id <- c(bad, NA)
+      testthat::expect_error(execute_processes(state, list(breed)), "positive integer IDs")
+    }
+  }
+})
+
 test_that("bounded litters match the conditional mean, including a positive minimum", {
   pop <- pva_population(c("F", "M"), age = 2)
   draw <- function(size, mean, minimum, n) {
@@ -335,10 +380,16 @@ test_that("age-by-sex tables compile to strict vectorised lookups", {
   lookup <- age_sex_rate(table, "rate")
   pop <- pva_population(sex = c("F", "F", "F", "M", "F"), age = c(0, 3, 40, 9, 4))
   expect_equal(lookup(pop, NULL, NULL, NULL), c(0.4, 0.8, 0.6, 0.7, 0.6))
-  female_rates <- age_sex_rate(table[table$sex == "F", ], "rate")
-  expect_equal(female_rates(pop, NULL, NULL, NULL), c(0.4, 0.8, 0.6, 0, 0.6))
+  females <- table[table$sex == "F", ]
+  female_rates <- age_sex_rate(females, "rate")
+  testthat::expect_error(female_rates(pop, NULL, NULL, NULL), "rate table has no entry for sex M")
+  testthat::expect_identical(female_rates(pva_population("F", 3), NULL, NULL, NULL), 0.8)
+  with_zero <- age_sex_rate(females, "rate", missing_sex = "zero")
+  testthat::expect_identical(with_zero(pop, NULL, NULL, NULL), c(0.4, 0.8, 0.6, 0, 0.6))
   gap <- table[-2L, ]
   expect_error(age_sex_rate(gap, "rate")(pop, NULL, NULL, NULL), "no rate class covers sex F at age 3")
+  testthat::expect_error(age_sex_rate(gap, "rate", missing_sex = "zero")(pop, NULL, NULL, NULL),
+                         "no rate class covers sex F at age 3")
   overlap <- table
   overlap$age_max[[1L]] <- 2
   expect_error(age_sex_rate(overlap, "rate"), "overlap")

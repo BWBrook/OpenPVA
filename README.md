@@ -73,12 +73,18 @@ all(summarise_accounting(result)$reconciled)
 
 These illustrative rates specify a two-sex model. Each breeding female needs
 an eligible male. With `mate = NULL` the model is female-dominant and a
-breeding female can produce offspring with an unknown sire. For seasonal
-mating, record pairs first and pass `mate_from_field()` at birth; refresh
-pairing fields each interval because dead mates from an earlier interval are
-rejected. When using `age_sex_rate()`, one-sex tables return `0` for the
-omitted sex (intended for female-only fecundity tables; always supply both
-sexes for survival tables).
+breeding female can produce offspring with an unknown sire.
+
+For seasonal mating, `mate_from_field()` preserves the recorded sire if he
+dies or is removed earlier in the birth interval. By default, a recorded
+sire who is absent for any other reason raises an error. For multi-year
+pair bonds, `mate_from_field(stale = "unpaired")` treats that female as
+unpaired for breeding and leaves her stored mate ID intact. In either mode,
+a recorded sire who is living must be male.
+
+`age_sex_rate()` requires a rate for each sex present in the population.
+To give an omitted sex a rate of zero, as with a female-only fecundity
+table, use `age_sex_rate(table, "fecundity", missing_sex = "zero")`.
 
 The census follows breeding here, so each interval's abundance includes its
 newborns. Supply `initial_census = census_process()` to count year zero as

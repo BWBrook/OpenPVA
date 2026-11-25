@@ -267,20 +267,19 @@ validate_processes <- function(processes, state = NULL) {
   }
   n_new <- n_after - n_before
   existing <- seq_len(n_before)
-  for (field in names(old)) {
-    column <- new[[field]]
-    if (length(column) != n_after || !identical(typeof(column), typeof(old[[field]])) ||
+  fields <- names(old)
+  writable <- fields %in% population_writes
+  for (i in seq_along(old)) {
+    column <- new[[i]]
+    previous <- old[[i]]
+    if (length(column) != n_after || typeof(column) != typeof(previous) ||
         !is.null(attributes(column))) {
-      .stop(label, " returned population field ", field, " with the wrong type or length")
+      .stop(label, " returned population field ", fields[[i]], " with the wrong type or length")
     }
-    if (!match(field, population_writes, 0L)) {
-      unchanged <- if (n_new) {
-        identical(column[existing], old[[field]])
-      } else {
-        identical(column, old[[field]])
-      }
-      if (!unchanged) {
-        .stop(label, " changed undeclared field population.", field)
+    if (!writable[[i]]) {
+      if (n_new) column <- column[existing]
+      if (!identical(column, previous)) {
+        .stop(label, " changed undeclared field population.", fields[[i]])
       }
     }
   }
@@ -331,14 +330,16 @@ validate_processes <- function(processes, state = NULL) {
   if (!is.list(new_globals) || anyDuplicated(names(new_globals))) {
     .stop(label, " returned invalid globals")
   }
-  global_names <- names(new_globals)
-  if (!identical(global_names, names(old_globals))) {
-    global_names <- union(names(old_globals), global_names)
-  }
-  for (name in global_names) {
-    if (!match(name, global_writes, 0L) &&
-        !identical(old_globals[[name]], new_globals[[name]])) {
-      .stop(label, " changed undeclared field globals.", name)
+  if (length(global_writes) || !identical(old_globals, new_globals)) {
+    global_names <- names(new_globals)
+    if (!identical(global_names, names(old_globals))) {
+      global_names <- union(names(old_globals), global_names)
+    }
+    for (name in global_names) {
+      if (!match(name, global_writes, 0L) &&
+          !identical(old_globals[[name]], new_globals[[name]])) {
+        .stop(label, " changed undeclared field globals.", name)
+      }
     }
   }
 
