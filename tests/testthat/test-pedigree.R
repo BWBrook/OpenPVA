@@ -120,6 +120,12 @@ test_that("known parents resolve in both modes and a missing parent is unrelated
     pva_result(state)
   })
   expect_error(execute_processes(state, list(scribble)), "engine-owned kinship")
+  alter_pending <- custom_process(function(state, context, params) {
+    state$kinship$pending$F[1L] <- 0.25
+    pva_result(state)
+  })
+  testthat::expect_error(execute_processes(state, list(creator(NA, NA), alter_pending)),
+                         "engine-owned kinship")
   expect_identical(kinship_matrix(state)[1L, 2L], 0)
   # Inside a process the living kinship matrix is available on request.
   seen <- NULL

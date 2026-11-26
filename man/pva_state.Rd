@@ -34,7 +34,7 @@ add_individuals(
 \item{globals}{Named list of shared dynamic values, such as the year's environmental deviates.}
 \item{pedigree}{Whether the engine tracks exact pedigree inbreeding. When \code{TRUE} the population gains the engine-owned field \code{pedigree_F}.}
 \item{kinship}{Optional matrix of starting coancestries in population order. It takes precedence over recorded initial parentage.}
-\item{max_dense_kinship}{Maximum dense slots per replicate. Above this limit the engine computes exact kinship from a compact ancestry ledger. The default is 2000.}
+\item{max_dense_kinship}{Maximum number of dense pedigree slots per replicate (default 2000). Once the required slots exceed this limit, the engine uses exact sparse ancestor tracing for the rest of that replicate, even if the population later falls below the limit.}
 \item{state}{A \code{pva_state}.}
 }
 \description{

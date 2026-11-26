@@ -1,46 +1,52 @@
 # The small-population store is an ordinary R value. Copy-on-modify isolates
 # callbacks, and strict transition validation catches unauthorised writes.
-.dense_store <- function(kinship, ids, limit) {
-  n <- length(ids)
-  capacity <- min(limit, max(16L, ceiling(1.25 * n)))
-  values <- matrix(0, capacity, capacity)
-  if (n) values[seq_len(n), seq_len(n)] <- kinship
-  list(values = values, ids = c(ids, rep(NA_integer_, capacity - n)),
-       pending = NULL, retained = integer())
+.dense_store <- function(kinship, ids) {
+  values <- matrix(0, length(ids), length(ids))
+  values[] <- kinship
+  list(values = values, ids = ids, pending = NULL, retained = integer())
 }
 
-.dense_materialise <- function(store, limit) {
+.offspring_kinship_rows <- function(values, mother, father, columns) {
+  maternal <- values[mother, columns, drop = FALSE]
+  paternal <- values[father, columns, drop = FALSE]
+  if (anyNA(mother)) maternal[is.na(mother), ] <- 0
+  if (anyNA(father)) paternal[is.na(father), ] <- 0
+  0.5 * maternal + 0.5 * paternal
+}
+
+.dense_materialise <- function(store) {
   pending <- store$pending
   n <- length(pending$id)
   ids <- store$ids
   if (n) {
-    values <- store$values
     occupied <- which(!is.na(ids))
     capacity <- length(ids)
     needed <- length(occupied) + n
     if (needed > capacity) {
-      grown <- min(limit, max(ceiling(1.5 * capacity), needed))
-      larger <- matrix(0, grown, grown)
-      larger[seq_len(capacity), seq_len(capacity)] <- values
-      values <- larger
-      ids <- c(ids, rep(NA_integer_, grown - capacity))
+      values <- matrix(0, needed, needed)
+      values[seq_len(capacity), seq_len(capacity)] <- store$values
+      length(ids) <- needed
+    } else {
+      values <- store$values
     }
     slots <- which(is.na(ids))[seq_len(n)]
-    to_old <- matrix(0, n, length(occupied))
-    among <- matrix(0, n, n)
-    for (parent in list(pending$mother, pending$father)) {
-      k <- which(!is.na(parent))
-      to_old[k, ] <- to_old[k, , drop = FALSE] + 0.5 * values[parent[k], occupied, drop = FALSE]
-    }
-    for (parent in list(pending$mother, pending$father)) {
-      k <- which(!is.na(parent))
-      among[, k] <- among[, k, drop = FALSE] +
-        0.5 * to_old[, match(parent[k], occupied), drop = FALSE]
-    }
-    diag(among) <- 0.5 * (1 + pending$F)
-    values[slots, occupied] <- to_old
-    values[occupied, slots] <- t(to_old)
-    values[slots, slots] <- 0.5 * (among + t(among))
+    # Compute inherited kinship once per group of adjacent full siblings.
+    mother <- pending$mother
+    father <- pending$father
+    siblings <- mother[-1L] == mother[-n] & father[-1L] == father[-n]
+    first <- c(TRUE, is.na(siblings) | !siblings)
+    family <- cumsum(first)
+    mother <- mother[first]
+    father <- father[first]
+    to_old <- .offspring_kinship_rows(store$values, mother, father, occupied)
+    from_old <- t(to_old)
+    among <- .offspring_kinship_rows(from_old, match(mother, occupied), match(father, occupied),
+                                    seq_along(mother))
+    among <- 0.5 * (among + t(among))
+    values[slots, occupied] <- to_old[family, , drop = FALSE]
+    values[occupied, slots] <- from_old[, family, drop = FALSE]
+    values[slots, slots] <- among[family, family, drop = FALSE]
+    values[cbind(slots, slots)] <- 0.5 * (1 + pending$F)
     ids[slots] <- pending$id
     store$values <- values
   }
@@ -64,7 +70,7 @@
           "' supplied an unknown parent ID, non-female mother or non-male father in this interval")
   }
   if (!is.null(store$values)) {
-    store <- .dense_materialise(store, limit)
+    store <- .dense_materialise(store)
     occupied <- which(!is.na(store$ids))
     if (length(occupied) + length(new) > limit) {
       store <- .ancestry_base(store$ids[occupied], store$values[occupied, occupied, drop = FALSE])
@@ -106,7 +112,7 @@
 
 .open_kinship <- function(state) {
   if (is.matrix(state$kinship)) {
-    state$kinship <- .dense_store(state$kinship, state$population$id, state$max_dense_kinship)
+    state$kinship <- .dense_store(state$kinship, state$population$id)
   }
   state
 }
@@ -125,7 +131,7 @@ kinship_matrix <- function(state, ids = state$population$id) {
   if (anyNA(rows) || anyDuplicated(rows)) .stop("ids must identify distinct living individuals")
   if (is.matrix(store)) return(store[rows, rows, drop = FALSE])
   if (is.null(store$values)) return(.ancestry_matrix(store, ids))
-  store <- .dense_materialise(store, state$max_dense_kinship)
+  store <- .dense_materialise(store)
   slots <- match(ids, store$ids)
   store$values[slots, slots, drop = FALSE]
 }

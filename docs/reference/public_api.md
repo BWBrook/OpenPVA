@@ -47,7 +47,7 @@ always zero), `pairs_formed`, `unpaired_eligible`, `catastrophe` and
 
 ## Composing a species model
 
-Use `mate_random()` for fresh two-sex mating or `mate_from_field()` for a recorded sire. Mating can precede a mortality process in the same interval. With `mate = NULL`, fecundity is female-dominant. A one-sex rate table assigns zero to the omitted sex. Environment variables evaluate in their listed order, so a shared weather draw can affect several rates.
+Use `mate_random()` for fresh two-sex mating or `mate_from_field()` for a recorded sire. Mating can precede a mortality process in the same interval. Use `mate_from_field(stale = "unpaired")` to treat a sire lost in a previous interval as absent for breeding. With `mate = NULL`, fecundity is female-dominant. A one-sex rate table requires `missing_sex = "zero"` to assign zero when the omitted sex is present. Environment variables evaluate in their listed order, so a shared weather draw can affect several rates.
 
 Use `pva_state(pedigree = TRUE)` when known parentage or supplementation matters. Inspect `pedigree_F` for individual fitness costs and `kinship_matrix(state, ids)` for selected living pairs. A supplied matrix specifies related or inbred initial animals. The scalar effective-size approximation instead requires generation time in model intervals and explicit migration when introductions occur.
 

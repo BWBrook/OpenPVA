@@ -19,7 +19,7 @@ offspring_sex_bernoulli(female_probability = 0.5)
 
 mate_random(eligible)
 
-mate_from_field(field = "mate_id")
+mate_from_field(field = "mate_id", stale = c("error", "unpaired"))
 }
 \arguments{
 \item{mean}{Mean litter size: one number, or a function of \code{(pop, state, context, params)} returning one mean per living individual.}
@@ -29,10 +29,14 @@ mate_from_field(field = "mate_id")
 \item{probabilities}{Probabilities of \code{sizes}; they must sum to one.}
 \item{female_probability}{Probability that a newborn is female.}
 \item{eligible}{Function of \code{(pop, state, context, params)} returning one logical value per living individual; males flagged TRUE can sire offspring.}
-\item{field}{Name of the population field the process reads or writes.}
+\item{field}{Name of the population field holding recorded mate IDs. Initialise unpaired individuals with \code{NA_integer_}.}
+\item{stale}{How to handle a female's recorded sire ID when the sire is absent and did not depart in the current interval. The default \code{"error"} rejects that ID. With \code{"unpaired"}, reproduction treats the female as having no mate and preserves the field.}
 }
 \description{
-Building blocks for \code{\link{reproduction_process}()}. Litter size can be Poisson, bounded binomial (under-dispersed, with a maximum) or an explicit categorical distribution. \code{mate_random()} gives each female a sire drawn at random from the eligible males, so breeding is limited only when no eligible male is alive. \code{mate_from_field()} reads a field of stable mate IDs, including sires lost since pairing in this interval. A bounded binomial litter adds \code{min_size} to a binomial draw with \code{size - min_size} trials, giving the specified conditional mean.
+Building blocks for \code{\link{reproduction_process}()}. Litter size can be Poisson, bounded binomial (under-dispersed, with a maximum) or an explicit categorical distribution. \code{mate_random()} gives each female a sire drawn at random from the eligible males, so breeding is limited only when no eligible male is alive. A bounded binomial litter adds \code{min_size} to a binomial draw with \code{size - min_size} trials, giving the specified conditional mean.
+}
+\details{
+\code{mate_from_field()} reads a vector of positive integer IDs or \code{NA}. A female's living sire must be male. A sire who died or was removed earlier in the current interval still fathers her offspring in either mode. The offspring retain his ID and pedigree, and \code{newborn_fields} receives \code{NA} for his living row. With \code{stale = "unpaired"}, any other absent sire is treated as \code{NA} for this breeding event. An unpaired female skips breeding unless \code{require_mate = FALSE}, in which case her offspring have an unknown sire.
 }
 \value{
 A function suitable for the corresponding argument of \code{\link{reproduction_process}()}.

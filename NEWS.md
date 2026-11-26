@@ -1,5 +1,16 @@
 # OpenPVA news
 
+## OpenPVA 2.0.1
+
+- `age_sex_rate()` now reports an error when a living individual's sex is
+  absent from the table. Set `missing_sex = "zero"` to assign zero explicitly.
+- `mate_from_field(stale = "unpaired")` lets a female skip breeding when a
+  previous interval's mate is absent. Sires lost earlier in the birth
+  interval retain their parentage under both policies.
+- Dense pedigrees reuse calculations for full siblings and grow the matrix
+  only as needed. A new benchmark checks exact kinship through the switch
+  to ancestor tracing with related and inbred founders.
+
 ## OpenPVA 2.0.0
 
 - The engine runs a direct ordered list of processes with declared
